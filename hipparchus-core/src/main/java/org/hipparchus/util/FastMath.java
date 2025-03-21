@@ -39,9 +39,9 @@ import org.hipparchus.exception.MathRuntimeException;
  * to native code present in many JVMs today, and use of large tables.
  * The larger tables are lazily initialized on first use, so that the setup
  * time does not penalize methods that don't need them.
- * 
+ *
  * TODO: where are the tables being lazily initialized?
- * 
+ *
  * <p>
  * Note that FastMath is
  * extensively used inside Hipparchus, so by calling some algorithms,
@@ -899,7 +899,7 @@ public class FastMath {
     /**
      * Exponential function.<br>
      * <br>
-     * 
+     *
      * Delegates to {@link Math#exp(double)}
      *
      * @param x   a double
@@ -911,14 +911,14 @@ public class FastMath {
 
     /**
      * Internal helper method for computing a high-precision exponential in
-     * 
+     *
      * <ul>
      * <li>{@link #sinh(double)},</li>
      * <li>{@link #cosh(double)},</li>
      * <li>{@link #tanh(double)}, and</li>
      * <li>{@link #sinhCosh(double)}</li>
      * </ul>
-     * 
+     *
      * @param x original argument of the exponential function
      * @param extra extra bits of precision on input (To Be Confirmed)
      * @param hiPrec extra bits of precision on output (To Be Confirmed)
@@ -1206,7 +1206,7 @@ public class FastMath {
     /**
      * Natural logarithm.<br>
      * <br>
-     * 
+     *
      * Delegates to {@link Math#log(double)}
      *
      * @param x   a double
@@ -1219,7 +1219,7 @@ public class FastMath {
     /**
      * Computes log(1 + x).<br>
      * <br>
-     * 
+     *
      * Delegates to {@link Math#log1p(double)}
      *
      * @param x Number.
@@ -1231,9 +1231,9 @@ public class FastMath {
 
     /** Compute the base 10 logarithm.<br>
      * <br>
-     * 
+     *
      * Delegates to {@link Math#log10(double)}
-     * 
+     *
      * @param x a number
      * @return log10(x)
      */
@@ -1263,7 +1263,7 @@ public class FastMath {
     /**
      * Power function.  Compute x^y.<br>
      * <br>
-     * 
+     *
      * Delegates to {@link Math#pow(double, double)}
      *
      * @param x   a double
@@ -1430,7 +1430,7 @@ public class FastMath {
     /**
      * Sine function.<br>
      * <br>
-     * 
+     *
      * Delegates to {@link Math#sin(double)}
      *
      * @param x Argument.
@@ -1443,7 +1443,7 @@ public class FastMath {
     /**
      * Cosine function.<br>
      * <br>
-     * 
+     *
      * Delegates to {@link Math#cos(double)}
      *
      * @param x Argument.
@@ -1456,7 +1456,7 @@ public class FastMath {
     /**
      * Combined Sine and Cosine function.<br>
      * <br>
-     * 
+     *
      * Delegates to {@link Math#sin(double)} and {@link Math#cos(double)}
      *
      * @param x Argument.
@@ -1909,9 +1909,9 @@ public class FastMath {
 
     /** Compute the cubic root of a number.<br>
      * <br>
-     * 
+     *
      * Delegates to {@link Math#cbrt(double)}
-     * 
+     *
      * @param x number on which evaluation is done
      * @return cubic root of x
      */
@@ -2028,9 +2028,9 @@ public class FastMath {
     /**
      * Absolute value.<br>
      * <br>
-     * 
+     *
      * Delegates to {@link Math#abs(double)}
-     * 
+     *
      * @param x number from which absolute value is requested
      * @return abs(x)
      */
@@ -2376,9 +2376,9 @@ public class FastMath {
 
     /** Get the largest whole number smaller than x.<br>
      * <br>
-     * 
+     *
      * Delegates to {@link Math#floor(double)}
-     * 
+     *
      * @param x number from which floor is requested
      * @return a double number f such that f is an integer f &lt;= x &lt; f + 1.0
      */
@@ -2388,9 +2388,9 @@ public class FastMath {
 
     /** Get the smallest whole number larger than x.<br>
      * <br>
-     * 
+     *
      * Delegates to {@link Math#ceil(double)}
-     * 
+     *
      * @param x number from which ceil is requested
      * @return a double number c such that c is an integer c - 1.0 &lt; x &lt;= c
      */
@@ -2618,9 +2618,9 @@ public class FastMath {
      * <li> If either argument is infinite, then the result is positive infinity.</li>
      * <li> else, if either argument is NaN then the result is NaN.</li>
      * </ul>
-     * 
+     *
      * Delegates to {@link Math#hypot(double, double)}
-     * 
+     *
      * @param x a value
      * @param y a value
      * @return sqrt(<i>x</i><sup>2</sup>&nbsp;+<i>y</i><sup>2</sup>)
