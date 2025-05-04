@@ -589,7 +589,10 @@ public enum LocalizedCoreFormats implements Localizable {
     RIGHT_EDGE_GREATER_THAN_LEFT_EDGE("left edge {0} should be smaller than right edge {1}"),
 
     /** INPUT_EXPECTED_BETWEEN_ZERO_AND_ONE_INCLUDED. */
-    INPUT_EXPECTED_BETWEEN_ZERO_AND_ONE_INCLUDED("input {0} is expected to be between [0:1]");
+    INPUT_EXPECTED_BETWEEN_ZERO_AND_ONE_INCLUDED("input {0} is expected to be between [0:1]"),
+
+    /** IRREGULAR_GRID. */
+    IRREGULAR_GRID("grid should have {0} elements at index {1}, it has {2} elements");
 
     /** Source English format. */
     private final String sourceFormat;
