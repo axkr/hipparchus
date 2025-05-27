@@ -357,24 +357,34 @@ class FastMathTest {
 
         for (int i = 0; i < NUMBER_OF_TRIALS; i++) {
             double x = Math.exp(generator.nextDouble() * 10.0 - 5.0) * generator.nextDouble();
-            // double x = generator.nextDouble()*2.0;
-            double tst = FastMath.log1p(x);
-            double ref = DfpMath.log(field.newDfp(x).add(field.getOne())).toDouble();
-            double err = (tst - ref) / ref;
-
+            
+            double tst    = FastMath.log1p(x);
+            Dfp    dfpTst = field.newDfp(tst);
+            
+            Dfp    dfpRef = DfpMath.log(field.newDfp(x).add(field.getOne()));
+            double ref    = dfpRef.toDouble();
+            
+            Dfp    dfpErr = dfpTst.subtract(dfpRef).divide(dfpRef); // (tst - ref) / ref, but with Dfp
+            double err    = dfpErr.toDouble();
+            
             if (err != 0.0) {
-                double ulp = Math.abs(ref -
-                                      Double.longBitsToDouble((Double.doubleToLongBits(ref) ^ 1)));
-                double errulp = field.newDfp(tst).subtract(DfpMath.log(field.newDfp(x).add(field.getOne()))).divide(field.newDfp(ulp)).toDouble();
-//                System.out.println(x + "\t" + tst + "\t" + ref + "\t" + err + "\t" + errulp);
-
+                double ulp    = FastMath.ulp(ref);
+                Dfp    dfpUlp = field.newDfp(ulp);
+                
+                Dfp    numUlpsErr = dfpTst.subtract(dfpRef).divide(dfpUlp).abs();
+                double errulp     = numUlpsErr.toDouble();
+                
+                // System.out.println(x + "\t" + tst + "\t" + ref + "\t" + err + "\t" + errulp);
+                
                 maxerrulp = Math.max(maxerrulp, Math.abs(errulp));
             }
         }
-
-        assertTrue(maxerrulp < MAX_ERROR_ULP, "log1p() had errors in excess of " + MAX_ERROR_ULP + " ULP");
+        
+        final double maxErrUlpCbrt = 0.74;
+        assertTrue(maxerrulp < maxErrUlpCbrt,
+                   "log1p() had errors in excess of " + maxErrUlpCbrt + " ULP: " + maxerrulp);
     }
-
+    
     @Test
     void testLog1pSpecialCases() {
         assertTrue(Double.isInfinite(FastMath.log1p(-1.0)), "Logp of -1.0 should be -Inf");
@@ -1233,10 +1243,11 @@ class FastMathTest {
                 maxerrulp = Math.max(maxerrulp, Math.abs(errulp));
             }
         }
-
-        assertTrue(maxerrulp < MAX_ERROR_ULP, "cbrt() had errors in excess of " + MAX_ERROR_ULP + " ULP");
+        
+        final double maxErrUlpCbrt = 0.67;
+        assertTrue(maxerrulp < maxErrUlpCbrt, "cbrt() had errors in excess of " + maxErrUlpCbrt + " ULP: " + maxerrulp);
     }
-
+    
     private Dfp cbrt(Dfp x) {
         boolean negative=false;
 
@@ -2860,12 +2871,18 @@ class FastMathTest {
         assertEquals(x, FastMath.round(x), 0.0);
         assertEquals(x, Math.round(x), 0.0);
     }
-
+    
     @Test
     void testHypot() {
+        final double eps = 4e-15;
+        
         for (double x = -20; x < 20; x += 0.01) {
             for (double y = -20; y < 20; y += 0.01) {
-                assertEquals(FastMath.sqrt(x * x + y * y), FastMath.hypot(x, y), 1.0e-15);
+                
+                final double expectedHypot = FastMath.sqrt(x * x + y * y);
+                final double actualHypot   = FastMath.hypot(x, y);
+                
+                assertEquals(expectedHypot, actualHypot, eps);
             }
         }
     }
