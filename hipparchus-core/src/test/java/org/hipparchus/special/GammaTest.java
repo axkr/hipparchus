@@ -282,6 +282,24 @@ class GammaTest {
     }
 
     @Test
+    void testDigammaNegative() {
+        checkRelativeError("Test       -1.5: ",  0.703156638, Gamma.digamma(      -1.5), 1.0e-8);
+        checkRelativeError("Test      -20.5: ",  3.044616880, Gamma.digamma(     -20.5), 1.0e-8);
+        checkRelativeError("Test     -101.5: ",  4.624976815, Gamma.digamma(    -101.5), 1.0e-8);
+        checkRelativeError("Test   -10000.5: ",  9.210440364, Gamma.digamma(  -10000.5), 1.0e-8);
+        checkRelativeError("Test -1000000.5: ", 13.815511555, Gamma.digamma(-1000000.5), 1.0e-8);
+    }
+
+    @Test
+    void testDigammaNegativeField() {
+        checkRelativeError("Test       -1.5: ",  0.703156638, Gamma.digamma(new Binary64(      -1.5)).getReal(), 1.0e-8);
+        checkRelativeError("Test      -20.5: ",  3.044616880, Gamma.digamma(new Binary64(     -20.5)).getReal(), 1.0e-8);
+        checkRelativeError("Test     -101.5: ",  4.624976815, Gamma.digamma(new Binary64(    -101.5)).getReal(), 1.0e-8);
+        checkRelativeError("Test   -10000.5: ",  9.210440364, Gamma.digamma(new Binary64(  -10000.5)).getReal(), 1.0e-8);
+        checkRelativeError("Test -1000000.5: ", 13.815511555, Gamma.digamma(new Binary64(-1000000.5)).getReal(), 1.0e-8);
+    }
+
+    @Test
     void testTrigamma() {
         double eps = 1e-13;
         // computed using webMathematica.  For example, to compute trigamma($i) = Polygamma(1, $i), use
