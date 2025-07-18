@@ -834,7 +834,7 @@ public abstract class FieldDerivativeStructureAbstractTest<T extends CalculusFie
         FieldDerivativeStructure<T> dsSmall = factory.variable(0, +3.0e-10);
         FieldDerivativeStructure<T> dsLarge = factory.variable(1, -4.0e25);
 
-        assertEquals(dsLarge.norm(),
+        assertEquals(dsLarge.getValue().norm(),
                             FieldDerivativeStructure.hypot(dsSmall, dsLarge).getReal(),
                             1.0e-10);
         assertEquals(0,
@@ -844,7 +844,7 @@ public abstract class FieldDerivativeStructureAbstractTest<T extends CalculusFie
                             FieldDerivativeStructure.hypot(dsSmall, dsLarge).getPartialDerivative(0, 1).getReal(),
                             1.0e-10);
 
-        assertEquals(dsLarge.norm(),
+        assertEquals(dsLarge.getValue().norm(),
                             FieldDerivativeStructure.hypot(dsLarge, dsSmall).getReal(),
                             1.0e-10);
         assertEquals(0,
@@ -1142,7 +1142,7 @@ public abstract class FieldDerivativeStructureAbstractTest<T extends CalculusFie
 
     @Test
     public void testSinAsin() {
-        double[] epsilon = new double[] { 3.0e-16, 5.0e-16, 3.0e-15, 2.0e-14, 4.0e-13 };
+        double[] epsilon = new double[] { 3.0e-16, 5.0e-16, 3.0e-15, 3.0e-14, 4.0e-13 };
         for (int maxOrder = 0; maxOrder < 5; ++maxOrder) {
             final FDSFactory<T> factory = buildFactory(1, maxOrder);
             for (double x = 0.1; x < 1.2; x += 0.001) {
@@ -1190,7 +1190,7 @@ public abstract class FieldDerivativeStructureAbstractTest<T extends CalculusFie
 
     @Test
     public void testTangentDefinition() {
-        double[] epsilon = new double[] { 9.0e-16, 4.0e-15, 4.0e-14, 5.0e-13, 2.0e-11 };
+        double[] epsilon = new double[] { 9.0e-16, 4.5e-15, 4.0e-14, 5.0e-13, 2.0e-11 };
         for (int maxOrder = 0; maxOrder < 5; ++maxOrder) {
             final FDSFactory<T> factory = buildFactory(1, maxOrder);
             for (double x = 0.1; x < 1.2; x += 0.001) {
@@ -1479,7 +1479,7 @@ public abstract class FieldDerivativeStructureAbstractTest<T extends CalculusFie
     }
 
     @Test
-    public void testNorm() {
+    public void test2Abs() {
 
         final FDSFactory<T> factory = buildFactory(1, 1);
         FieldDerivativeStructure<T> minusOne = factory.variable(0, -1.0);

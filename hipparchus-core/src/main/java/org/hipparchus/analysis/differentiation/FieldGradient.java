@@ -877,6 +877,16 @@ public class FieldGradient<T extends CalculusFieldElement<T>> implements FieldDe
         return result;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public double norm() {
+        double sum = getValue().norm();
+        for (int i = 0; i < getFreeParameters(); i++) {
+            sum += getPartialDerivative(i).norm();
+        }
+        return sum;
+    }
+
     /**
      * Add an independent variable to the Taylor expansion.
      * @return object with one more variable

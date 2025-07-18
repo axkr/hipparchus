@@ -35,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
@@ -46,6 +47,12 @@ class GradientTest extends CalculusFieldElementAbstractTest<Gradient> {
     protected Gradient build(final double x) {
         // the function is really a two variables function : f(x) = g(x, 0) with g(x, y) = x + y / 1024
         return new Gradient(x, 1.0, FastMath.scalb(1.0, -10));
+    }
+
+    @Test
+    void testNorm() {
+        final Gradient x = new Gradient(1, 2, 3);
+        assertEquals(6., x.norm());
     }
 
     @Test

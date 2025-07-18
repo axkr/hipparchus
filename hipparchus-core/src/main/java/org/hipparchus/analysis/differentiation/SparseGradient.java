@@ -755,6 +755,16 @@ public class SparseGradient implements Derivative1<SparseGradient>, Serializable
 
     /** {@inheritDoc} */
     @Override
+    public double norm() {
+        double sum = getValue();
+        for (final double derivative: derivatives.values()) {
+            sum += FastMath.abs(derivative);
+        }
+        return sum;
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public SparseGradient getPi() {
         return new SparseGradient(FastMath.PI, null);
     }

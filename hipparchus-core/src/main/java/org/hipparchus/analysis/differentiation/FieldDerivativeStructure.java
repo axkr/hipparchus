@@ -1304,6 +1304,16 @@ public class FieldDerivativeStructure<T extends CalculusFieldElement<T>>
 
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public double norm() {
+        double sum = 0.;
+        for (final T derivative: data) {
+            sum += derivative.norm();
+        }
+        return sum;
+    }
+
     /** {@inheritDoc}
      */
     @Override
