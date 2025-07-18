@@ -48,6 +48,7 @@ public interface Vector<S extends Space, V extends Vector<S, V>> extends Point<S
 
     /** Get the L<sub>2</sub> norm for the vector.
      * @return Euclidean norm for the vector
+     * @since 4.1
      */
     default double getNorm2() {
         return getNorm();
