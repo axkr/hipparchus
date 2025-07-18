@@ -75,6 +75,16 @@ class Vector3DTest {
     }
 
     @Test
+    void testGetNorm2() {
+        // GIVEN
+        final Vector3D vector3D = new Vector3D(1, 2, 3);
+        // WHEN
+        final double norm2 = vector3D.getNorm2();
+        // THEN
+        assertEquals(vector3D.getNorm(), norm2);
+    }
+
+    @Test
     void testZero() {
         assertEquals(0, new Vector3D(1, 2, 2).getZero().getNorm(), 1.0e-15);
     }
