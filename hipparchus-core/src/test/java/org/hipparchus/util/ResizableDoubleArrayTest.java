@@ -656,7 +656,7 @@ class ResizableDoubleArrayTest {
                                   ResizableDoubleArray b) {
         assertNotEquals(b, a);
         assertNotEquals(a, b);
-        assertFalse(a.hashCode() == b.hashCode());
+        assertNotEquals(a.hashCode(), b.hashCode());
     }
 
 }

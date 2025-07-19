@@ -30,6 +30,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class Binary64FieldTest {
@@ -66,7 +67,7 @@ class Binary64FieldTest {
     void testSerial() {
         // deserializing the singleton should give the singleton itself back
         Binary64Field field = Binary64Field.getInstance();
-        assertTrue(field == UnitTestUtils.serializeAndRecover(field));
+        assertSame(field, UnitTestUtils.serializeAndRecover(field));
     }
 
 }

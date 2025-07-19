@@ -37,6 +37,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -283,9 +284,9 @@ class FieldLUDecompositionTest {
         }
 
         // check the same cached instance is returned the second time
-        assertTrue(l == lu.getL());
-        assertTrue(u == lu.getU());
-        assertTrue(p == lu.getP());
+        assertSame(l, lu.getL());
+        assertSame(u, lu.getU());
+        assertSame(p, lu.getP());
 
     }
 
@@ -324,9 +325,9 @@ class FieldLUDecompositionTest {
         }
 
         // check the same cached instance is returned the second time
-        assertTrue(l == lu.getL());
-        assertTrue(u == lu.getU());
-        assertTrue(p == lu.getP());
+        assertSame(l, lu.getL());
+        assertSame(u, lu.getU());
+        assertSame(p, lu.getP());
     }
 
     @Test

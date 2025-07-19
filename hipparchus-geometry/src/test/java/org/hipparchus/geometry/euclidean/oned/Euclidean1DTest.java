@@ -26,6 +26,7 @@ import org.hipparchus.geometry.Space;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -47,7 +48,7 @@ class Euclidean1DTest {
     void testSerialization() {
         Space e1 = Euclidean1D.getInstance();
         Space deserialized = (Space) UnitTestUtils.serializeAndRecover(e1);
-        assertTrue(e1 == deserialized);
+        assertSame(e1, deserialized);
     }
 
 }

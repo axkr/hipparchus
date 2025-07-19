@@ -580,9 +580,9 @@ public class MathArraysTest {
         final double[] sx = {1, 2, 3};
         final double[] sy = {2, 3, 1};
         final double[] sz = {5, 7, 0};
-        assertTrue(Arrays.equals(sx, x));
-        assertTrue(Arrays.equals(sy, y));
-        assertTrue(Arrays.equals(sz, z));
+        assertArrayEquals(sx, x);
+        assertArrayEquals(sy, y);
+        assertArrayEquals(sz, z);
     }
 
     @Test

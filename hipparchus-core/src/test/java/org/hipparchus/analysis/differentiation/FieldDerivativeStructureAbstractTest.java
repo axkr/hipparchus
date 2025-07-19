@@ -1909,11 +1909,11 @@ public abstract class FieldDerivativeStructureAbstractTest<T extends CalculusFie
         final FDSFactory<T> factory33 = buildFactory(3, 3);
         final FDSFactory<T> factory35 = buildFactory(3, 5);
         final FDSFactory<T> factory55 = buildFactory(5, 5);
-        Assertions.assertFalse(factory33.variable(0, 1.0).equals(factory35.variable(0, 1.0)));
-        Assertions.assertFalse(factory33.variable(0, 1.0).equals(factory55.variable(0, 1.0)));
-        Assertions.assertTrue(factory33.variable(0, 1.0).equals(factory33.variable(0, 1.0)));
-        Assertions.assertFalse(factory33.variable(0, 1.0).equals(new UnivariateDerivative1(0, 0)));
-        Assertions.assertFalse(factory33.variable(0, 1.0).equals(factory33.variable(1, 1.0)));
+        assertNotEquals(factory33.variable(0, 1.0), factory35.variable(0, 1.0));
+        assertNotEquals(factory33.variable(0, 1.0), factory55.variable(0, 1.0));
+        assertEquals(factory33.variable(0, 1.0), factory33.variable(0, 1.0));
+        assertNotEquals(factory33.variable(0, 1.0), new UnivariateDerivative1(0, 0));
+        assertNotEquals(factory33.variable(0, 1.0), factory33.variable(1, 1.0));
         final FieldDerivativeStructure<T> x = factory33.variable(0, 1.0);
         Assertions.assertEquals(x, x);
         Assertions.assertNotEquals(0, x.hashCode());

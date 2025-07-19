@@ -26,6 +26,7 @@ import org.hipparchus.geometry.Space;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -47,7 +48,7 @@ class Sphere1Test {
     void testSerialization() {
         Space s1 = Sphere1D.getInstance();
         Space deserialized = (Space) UnitTestUtils.serializeAndRecover(s1);
-        assertTrue(s1 == deserialized);
+        assertSame(s1, deserialized);
     }
 
 }
