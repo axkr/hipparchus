@@ -21,8 +21,6 @@ import org.hipparchus.exception.NullArgumentException;
 import org.hipparchus.random.Well1024a;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
