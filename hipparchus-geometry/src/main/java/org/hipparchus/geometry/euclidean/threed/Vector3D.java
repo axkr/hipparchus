@@ -248,6 +248,13 @@ public class Vector3D implements Serializable, Vector<Euclidean3D, Vector3D> {
 
     /** {@inheritDoc} */
     @Override
+    public double getNorm2Sq() {
+        // there are no cancellation problems here, so we use the straightforward formula
+        return x * x + y * y + z * z;
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public double getNorm() {
         // there are no cancellation problems here, so we use the straightforward formula
         return FastMath.sqrt (x * x + y * y + z * z);
@@ -255,9 +262,10 @@ public class Vector3D implements Serializable, Vector<Euclidean3D, Vector3D> {
 
     /** {@inheritDoc} */
     @Override
+    @Deprecated
     public double getNormSq() {
         // there are no cancellation problems here, so we use the straightforward formula
-        return x * x + y * y + z * z;
+        return getNorm2Sq();
     }
 
     /** {@inheritDoc} */
@@ -598,7 +606,7 @@ public class Vector3D implements Serializable, Vector<Euclidean3D, Vector3D> {
 
     /** Compute the square of the distance between two vectors.
      * <p>Calling this method is equivalent to calling:
-     * <code>v1.subtract(v2).getNormSq()</code> except that no intermediate
+     * <code>v1.subtract(v2).getNorm2Sq()</code> except that no intermediate
      * vector is built</p>
      * @param v1 first vector
      * @param v2 second vector

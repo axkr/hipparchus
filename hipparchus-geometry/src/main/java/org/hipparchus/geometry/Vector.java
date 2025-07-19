@@ -54,6 +54,14 @@ public interface Vector<S extends Space, V extends Vector<S, V>> extends Point<S
         return getNorm();
     }
 
+    /** Get the square of the 2-norm for the vector.
+     * @return square of the Euclidean norm for the vector
+     * @since 4.1
+     */
+    default double getNorm2Sq() {
+        return getNorm2() * getNorm2();
+    }
+
     /** Get the most common norm for the vector. By default, it is the Euclidean one.
      * @return norm for the vector
      */
@@ -61,7 +69,9 @@ public interface Vector<S extends Space, V extends Vector<S, V>> extends Point<S
 
     /** Get the square of the norm for the vector.
      * @return square of the Euclidean norm for the vector
+     * @deprecated since 4.1, use getNorm2Sq
      */
+    @Deprecated
     double getNormSq();
 
     /** Get the L<sub>&infin;</sub> norm for the vector.
@@ -146,7 +156,7 @@ public interface Vector<S extends Space, V extends Vector<S, V>> extends Point<S
 
     /** Compute the square of the distance between the instance and another vector.
      * <p>Calling this method is equivalent to calling:
-     * <code>q.subtract(p).getNormSq()</code> except that no intermediate
+     * <code>q.subtract(p).getNorm2Sq()</code> except that no intermediate
      * vector is built</p>
      * @param v second vector
      * @return the square of the distance between the instance and p
