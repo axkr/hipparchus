@@ -52,6 +52,12 @@ class UnivariateDerivative2Test extends UnivariateDerivativeAbstractTest<Univari
     }
 
     @Test
+    void testNormUD2() {
+        final UnivariateDerivative2 udA = new UnivariateDerivative2(1, 2, 3);
+        assertEquals(6., udA.norm());
+    }
+
+    @Test
     void testConversion() {
         UnivariateDerivative2 udA = new UnivariateDerivative2(-0.5, 2.5, 4.5);
         DerivativeStructure ds = udA.toDerivativeStructure();

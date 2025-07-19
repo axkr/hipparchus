@@ -19,6 +19,7 @@ package org.hipparchus.analysis.differentiation;
 
 import org.hipparchus.util.Binary64;
 import org.hipparchus.util.Binary64Field;
+import org.hipparchus.util.FastMath;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -27,6 +28,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Test for class {@link FieldUnivariateDerivative1} on {@link Binary64}.
  */
 class FieldUnivariateDerivative1Binary64Test extends FieldUnivariateDerivative1AbstractTest<Binary64> {
+
+    @Test
+    void test2Norm() {
+        final FieldUnivariateDerivative1<Binary64> fud2 = new FieldUnivariateDerivative1<>(Binary64.ONE, Binary64.PI);
+        assertEquals(1 + FastMath.PI, fud2.norm());
+    }
 
     @Override
     protected Binary64Field getValueField() {
