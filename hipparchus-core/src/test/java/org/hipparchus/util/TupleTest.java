@@ -46,6 +46,12 @@ public class TupleTest extends CalculusFieldElementAbstractTest<Tuple> {
     }
 
     @Test
+    void testNorm() {
+        final Tuple oneToFive = new Tuple(1, 2, 3);
+        assertEquals(6., oneToFive.norm());
+    }
+
+    @Test
     void testComponents() {
         assertEquals(2, PLUS_ZERO.getDimension());
         final Tuple oneToFive = new Tuple(1, 2, 3, 4, 5);
