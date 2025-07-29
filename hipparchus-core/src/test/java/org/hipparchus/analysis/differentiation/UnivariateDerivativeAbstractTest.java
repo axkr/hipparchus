@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
@@ -67,6 +68,12 @@ public abstract class UnivariateDerivativeAbstractTest<T extends UnivariateDeriv
             assertEquals(2, ((Integer) miae.getParts()[0]).intValue());
             assertEquals(1, ((Integer) miae.getParts()[1]).intValue());
         }
+    }
+
+    @Test
+    public void testNorm() {
+        final T x = build(3.0);
+        assertTrue(x.norm() >= FastMath.abs(x.getValue()));
     }
 
     @Test

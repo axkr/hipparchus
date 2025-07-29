@@ -21,8 +21,6 @@ import org.hipparchus.exception.NullArgumentException;
 import org.hipparchus.random.Well1024a;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -580,9 +578,9 @@ public class MathArraysTest {
         final double[] sx = {1, 2, 3};
         final double[] sy = {2, 3, 1};
         final double[] sz = {5, 7, 0};
-        assertTrue(Arrays.equals(sx, x));
-        assertTrue(Arrays.equals(sy, y));
-        assertTrue(Arrays.equals(sz, z));
+        assertArrayEquals(sx, x);
+        assertArrayEquals(sy, y);
+        assertArrayEquals(sz, z);
     }
 
     @Test

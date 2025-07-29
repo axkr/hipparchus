@@ -37,7 +37,7 @@ Hipparchus releases are provided in source and binary distributions via the link
 
 Hipparchus is also available in maven central repository, with groupID org.hipparchus and artifactIds hipparchus-core,
 hipparchus-clustering, hipparchus-fft, hipparchus-fitting, hipparchus-filtering, hipparchus-geometry, hipparchus-ode, hipparchus-optim and hipparchus-stat.
-There is also a hipparchus-migration artifact to help migrating from Apache Commons Math.
+There used to be a hipparchus-migration artifact to help migrating from Apache Commons Math.
 Maven's internal mechanism will automatically download any internal dependencies among the artifacts.  Signatures may be verified using the Hipparchus [KEYS](http://www.hipparchus.org/KEYS).
 
 ---

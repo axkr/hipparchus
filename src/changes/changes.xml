@@ -49,14 +49,21 @@ If the output is not quite correct, check for invisible trailing spaces!
     <title>Hipparchus Release Notes</title>
   </properties>
   <body>
-    <release version="TBD" date="TBD" description="TBD">
+    <release version="4.1" date="TBD" description="TBD">
+      <action dev="serrof" type="update" issue="issues/398">
+        Implement non-trivial norm for CalculusField inheritors.
+      </action>
+      <action dev="serrof" type="add" issue="issues/400">
+        Add getNorm2Sq in geometry.
+      </action>
+      <action dev="serrof" type="add" issue="issues/386">
+        Add getNorm2 for Vector.
+      </action>
       <action dev="ryan" type="update" issue="issues/391">
         Replaced custom FastMath implementations of
           sin, cos, tan, sinCos, log1p, log10, log, exp, hypot, cbrt, pow, floor, ceil, and abs
         with delegates to Math
       </action>
-    </release>
-    <release version="4.1" date="TBD" description="TBD">
       <action dev="luc" type="fix" issue="issues/394">
         Prevent stack overflow in digamma function.
       </action>
