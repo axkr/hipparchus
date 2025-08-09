@@ -715,7 +715,7 @@ public class Gradient implements Derivative1<Gradient>, Serializable {
     /** {@inheritDoc} */
     @Override
     public double norm() {
-        double sum = getValue();
+        double sum = FastMath.abs(getValue());
         for (int i = 0; i < getFreeParameters(); i++) {
             sum += FastMath.abs(getPartialDerivative(i));
         }

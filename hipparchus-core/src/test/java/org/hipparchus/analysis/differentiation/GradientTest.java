@@ -50,7 +50,7 @@ class GradientTest extends CalculusFieldElementAbstractTest<Gradient> {
 
     @Test
     void testNorm() {
-        final Gradient x = new Gradient(1, 2, 3);
+        final Gradient x = new Gradient(-1, 2, 3);
         assertEquals(6., x.norm());
     }
 
