@@ -24,14 +24,14 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.List;
 
-public class AxisIndexerTest {
+public class AxisCheckerTest {
 
     @Test
     public void testMonoDimensional() {
 
         final List<D1> data = Arrays.asList(new D1(2.0), new D1(1.0), new D1(4.0), new D1(3.0));
 
-        final AxisIndexer indexer = new AxisIndexer(data, D1::getX, 1.0e-15);
+        final RegularIndexer indexer = new AxisChecker<>(D1::getX, 1.0e-15).checkGridData(data);
 
         Assertions.assertEquals(1.0, indexer.getMin(),  1.0e-15);
         Assertions.assertEquals(4.0, indexer.getMax(),  1.0e-15);
@@ -57,8 +57,8 @@ public class AxisIndexerTest {
                                             new D2(2.0, 3.0), new D2(2.0, 1.0), new D2(0.0, 4.0), new D2(0.0, 3.0),
                                             new D2(4.0, 2.0), new D2(0.0, 1.0), new D2(4.0, 4.0), new D2(4.0, 3.0));
 
-        final AxisIndexer xIndexer = new AxisIndexer(data, D2::getX, 1.0e-15);
-        final AxisIndexer yIndexer = new AxisIndexer(data, D2::getY, 1.0e-15);
+        final RegularIndexer xIndexer = new AxisChecker<>(D2::getX, 1.0e-15).checkGridData(data);
+        final RegularIndexer yIndexer = new AxisChecker<>(D2::getY, 1.0e-15).checkGridData(data);
 
         Assertions.assertEquals(0.0, xIndexer.getMin(),  1.0e-15);
         Assertions.assertEquals(4.0, xIndexer.getMax(),  1.0e-15);
@@ -94,7 +94,7 @@ public class AxisIndexerTest {
     public void testNaN() {
         final List<D1> data = Arrays.asList(new D1(2.0), new D1(1.0), new D1(Double.NaN), new D1(3.0));
         try {
-            new AxisIndexer(data, D1::getX, 1.0e-15);
+            new AxisChecker<>(D1::getX, 1.0e-15).checkGridData(data);
             Assertions.fail("an exception should have been thrown");
         } catch (MathIllegalArgumentException miae) {
             Assertions.assertEquals(LocalizedCoreFormats.NAN_ELEMENT_AT_INDEX, miae.getSpecifier());
@@ -103,81 +103,13 @@ public class AxisIndexerTest {
     }
 
     @Test
-    public void testCoordinateOutOfRange() {
-        final List<D1> data = Arrays.asList(new D1(2.0), new D1(1.0), new D1(4.0), new D1(3.0));
-        final AxisIndexer indexer = new AxisIndexer(data, D1::getX, 1.0e-15);
-
-        try {
-            indexer.index(0.499);
-            Assertions.fail("an exception should have been thrown");
-        } catch (MathIllegalArgumentException miae) {
-            Assertions.assertEquals(LocalizedCoreFormats.OUT_OF_RANGE_SIMPLE, miae.getSpecifier());
-            Assertions.assertEquals(-1L, miae.getParts()[0]);
-            Assertions.assertEquals( 0L, miae.getParts()[1]);
-            Assertions.assertEquals( 3L, miae.getParts()[2]);
-        }
-
-        Assertions.assertEquals(0, indexer.index(0.501));
-        Assertions.assertEquals(0, indexer.index(1.499));
-        Assertions.assertEquals(1, indexer.index(1.501));
-        Assertions.assertEquals(1, indexer.index(2.499));
-        Assertions.assertEquals(2, indexer.index(2.501));
-        Assertions.assertEquals(2, indexer.index(3.499));
-        Assertions.assertEquals(3, indexer.index(3.501));
-        Assertions.assertEquals(3, indexer.index(4.499));
-
-        try {
-            indexer.index(4.501);
-            Assertions.fail("an exception should have been thrown");
-        } catch (MathIllegalArgumentException miae) {
-            Assertions.assertEquals(LocalizedCoreFormats.OUT_OF_RANGE_SIMPLE, miae.getSpecifier());
-            Assertions.assertEquals(4L, miae.getParts()[0]);
-            Assertions.assertEquals(0L, miae.getParts()[1]);
-            Assertions.assertEquals(3L, miae.getParts()[2]);
-        }
-
-    }
-
-    @Test
-    public void testIndexOutOfRange() {
-        final List<D1> data = Arrays.asList(new D1(2.0), new D1(1.0), new D1(4.0), new D1(3.0));
-        final AxisIndexer indexer = new AxisIndexer(data, D1::getX, 1.0e-15);
-
-        try {
-            indexer.coordinate(-1);
-            Assertions.fail("an exception should have been thrown");
-        } catch (MathIllegalArgumentException miae) {
-            Assertions.assertEquals(LocalizedCoreFormats.OUT_OF_RANGE_SIMPLE, miae.getSpecifier());
-            Assertions.assertEquals(-1L, miae.getParts()[0]);
-            Assertions.assertEquals( 0L, miae.getParts()[1]);
-            Assertions.assertEquals( 3L, miae.getParts()[2]);
-        }
-
-        Assertions.assertEquals(1.0, indexer.coordinate(0), 1.0e-15);
-        Assertions.assertEquals(2.0, indexer.coordinate(1), 1.0e-15);
-        Assertions.assertEquals(3.0, indexer.coordinate(2), 1.0e-15);
-        Assertions.assertEquals(4.0, indexer.coordinate(3), 1.0e-15);
-
-        try {
-            indexer.coordinate(4);
-            Assertions.fail("an exception should have been thrown");
-        } catch (MathIllegalArgumentException miae) {
-            Assertions.assertEquals(LocalizedCoreFormats.OUT_OF_RANGE_SIMPLE, miae.getSpecifier());
-            Assertions.assertEquals(4L, miae.getParts()[0]);
-            Assertions.assertEquals(0L, miae.getParts()[1]);
-            Assertions.assertEquals(3L, miae.getParts()[2]);
-        }
-
-    }
-
-    @Test
-    public void testIrregularGrid() {
+    public void testDuplicatedNode() {
 
         final List<D2> data = Arrays.asList(new D2(0.0, 2.0), new D2(4.0, 1.0), new D2(2.0, 4.0), new D2(2.0, 2.0),
                                             new D2(2.0, 3.0), new D2(2.0, 1.0), new D2(0.0, 3.0), new D2(0.0, 3.0),
                                             new D2(4.0, 2.0), new D2(0.0, 1.0), new D2(4.0, 4.0), new D2(4.0, 3.0));
 
-        final AxisIndexer xIndexer = new AxisIndexer(data, D2::getX, 1.0e-15);
+        final RegularIndexer xIndexer = new AxisChecker<>(D2::getX, 1.0e-15).checkGridData(data);
         Assertions.assertEquals(0.0, xIndexer.getMin(),  1.0e-15);
         Assertions.assertEquals(4.0, xIndexer.getMax(),  1.0e-15);
         Assertions.assertEquals(  3, xIndexer.getN());
@@ -188,13 +120,30 @@ public class AxisIndexerTest {
         Assertions.assertEquals(2, xIndexer.index(4.0));
 
         try {
-            new AxisIndexer(data, D2::getY, 1.0e-15);
+            new AxisChecker<>(D2::getY, 1.0e-15).checkGridData(data);
             Assertions.fail("an exception should have been thrown");
         } catch (MathIllegalArgumentException miae) {
             Assertions.assertEquals(LocalizedCoreFormats.IRREGULAR_GRID, miae.getSpecifier());
             Assertions.assertEquals(3, miae.getParts()[0]);
             Assertions.assertEquals(2, miae.getParts()[1]);
             Assertions.assertEquals(4, miae.getParts()[2]);
+        }
+    }
+
+    @Test
+    public void testOffsetPoint() {
+
+        final List<D2> data = Arrays.asList(new D2(0.0,   2.0), new D2(4.0, 1.0), new D2(2.0, 4.0), new D2(2.0, 2.0),
+                                            new D2(2.001, 3.0), new D2(2.0, 1.0), new D2(0.0, 3.0), new D2(0.0, 4.0),
+                                            new D2(4.0,   2.0), new D2(0.0, 1.0), new D2(4.0, 4.0), new D2(4.0, 3.0));
+        try {
+            new AxisChecker<>(D2::getX, 1.0e-15).checkGridData(data);
+            Assertions.fail("an exception should have been thrown");
+        } catch (MathIllegalArgumentException miae) {
+            Assertions.assertEquals(LocalizedCoreFormats.MISALIGNED_GRID_POINT, miae.getSpecifier());
+            Assertions.assertEquals(1,      miae.getParts()[0]);
+            Assertions.assertEquals(2.0,    (Double) miae.getParts()[1], 1.0e-15);
+            Assertions.assertEquals(1.0e-3, (Double) miae.getParts()[2], 1.0e-15);
         }
     }
 

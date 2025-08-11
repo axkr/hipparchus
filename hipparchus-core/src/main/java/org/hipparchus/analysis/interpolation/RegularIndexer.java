@@ -16,51 +16,15 @@
  */
 package org.hipparchus.analysis.interpolation;
 
-import org.hipparchus.exception.LocalizedCoreFormats;
-import org.hipparchus.exception.MathIllegalArgumentException;
 import org.hipparchus.util.FastMath;
 import org.hipparchus.util.MathUtils;
 
-import java.util.List;
-import java.util.function.ToDoubleFunction;
-
 /**
- * Indexer for sampled data along a regular grid.
- * <p>
- * This class is intended to be check one axis of n-dimensional grid data.
- * </p>
- * <p>
- * A typical use case is loading data from a file with entries of the form:
- * </p>
- * <pre>
- *   x₁ y₁ valueA₁₁ valueB₁₁
- *   x₁ y₂ valueA₁₂ valueB₁₂
- *   ⋮
- *   x₁ yₙ valueA₁ₙ valueB₁ₙ
- *   x₂ y₁ valueA₂₁ valueB₂₁
- *   x₂ y₂ valueA₂₂ valueB₂₂
- *   ⋮
- *   x₂ yₙ valueA₂ₙ valueB₂ₙ
- *   x₃ yₙ valueA₃ₙ valueB₃ₙ
- *   ⋮
- *   xₘ yₙ valueAₘₙ valueBₘₙ
- * </pre>
- * <p>
- * In this case, the grid is two-dimensional, with x axis having m steps
- *  * ranging from x₁ to xₘ and y axis having n steps
- *  * ranging from y₁ to yₙ.
- * </p>
- * <p>
- * In this case, users could store the entries in some custom container
- * class {@code Entry} with getters {@code getX()}, {@code getY()}, {@code getValueA()}, and
- * {@code getValueB()}. Then the indexers for both x and y axes could be built as follows:
- * <pre>{@code
- *   AxisIndexer xIndexer = new AxisIndexer(List<Entry> data, Entry::getX(), tolerance);
- *   AxisIndexer yIndexer = new AxisIndexer(List<Entry> data, Entry::getY(), tolerance);
- * }</pre>
+ * Helper for sampled data along a regular grid.
+ * @see AxisChecker
  * @since 4.1
  */
-public class AxisIndexer {
+public class RegularIndexer {
 
     /** Minimum value. */
     private final double min;
@@ -75,50 +39,15 @@ public class AxisIndexer {
     private final double step;
 
     /** Simple constructor.
-     * @param data grid data
-     * @aram extractor for coordinate
-     * @param tolerance tolerance below which extracted coordinates are considered equal
+     * @param min minimum value
+     * @param max maximum value
+     * @param n number of points (including min and max)
      */
-    public <T> AxisIndexer(final List<T> data, ToDoubleFunction<T> extractor, final double tolerance) {
-
-        // first pass, extract statistics
-        double currentMin = Double.POSITIVE_INFINITY;
-        double currentMax = Double.NEGATIVE_INFINITY;
-        int    minCount   = 0;
-        for (int i = 0; i < data.size(); i++) {
-            final T t = data.get(i);
-            final double coordinate = extractor.applyAsDouble(t);
-            if (Double.isNaN(coordinate)) {
-                throw new MathIllegalArgumentException(LocalizedCoreFormats.NAN_ELEMENT_AT_INDEX, i);
-            }
-            if (coordinate < currentMin - tolerance) {
-                // this is a new minimum, we reset counter
-                currentMin = coordinate;
-                minCount   = 1;
-            } else if (coordinate - currentMin < tolerance) {
-                // we found again an already known minimum, update the count
-                ++minCount;
-            }
-            currentMax = FastMath.max(currentMax, coordinate);
-        }
-
-        // store global indexing data
-        this.min  = currentMin;
-        this.max  = currentMax;
-        this.n    = data.size() / minCount;
+    public RegularIndexer(final double min, final double max, final int n) {
+        this.min  = min;
+        this.max  = max;
+        this.n    = n;
         this.step = (max - min) / (n - 1);
-
-        // second pass, check grid data is regular
-        final int[] count = new int[n];
-        for (final T t : data) {
-            count[index(extractor.applyAsDouble(t))]++;
-        }
-        for (int i = 0; i < n; i++) {
-            if (count[i] != minCount) {
-                throw new MathIllegalArgumentException(LocalizedCoreFormats.IRREGULAR_GRID, minCount, i, count[i]);
-            }
-        }
-
     }
 
     /** Get the minimum coordinate.
@@ -151,7 +80,7 @@ public class AxisIndexer {
 
     /** Get index corresponding to coordinate.
      * <p>
-     * The method rounds to closest index, so it may be called with
+     * The method rounds to the closest index, so it may be called with
      * {@code coordinate} slightly overshooting nominal range. If called
      * with {@code coordinate} between {@link #getMin()} - {@link #getStep()}/2
      * and {@link #getMin()} + {@link #getStep()}/2, it will return 0. If called

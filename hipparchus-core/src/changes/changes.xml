@@ -50,6 +50,9 @@ If the output is not quite correct, check for invisible trailing spaces!
   </properties>
   <body>
     <release version="4.1" date="TBD" description="TBD">
+      <action dev="luc" type="add" issue="issues/406">
+        Added AxisChecker helper class to check grid data consistency.
+      </action>
       <action dev="serrof" type="update" issue="issues/398">
         Implement non-trivial norm for CalculusField inheritors.
       </action>
