@@ -1,5 +1,3 @@
-package org.hipparchus.optim.nonlinear.vector.constrained;
-
 /*
  * Licensed to the Hipparchus project under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -17,6 +15,7 @@ package org.hipparchus.optim.nonlinear.vector.constrained;
  * limitations under the License.
  */
 
+package org.hipparchus.optim.nonlinear.vector.constrained;
 
 import org.hipparchus.linear.Array2DRowRealMatrix;
 import org.hipparchus.linear.ArrayRealVector;

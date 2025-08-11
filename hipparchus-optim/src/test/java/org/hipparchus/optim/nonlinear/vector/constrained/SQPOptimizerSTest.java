@@ -97,7 +97,7 @@ class SQPOptimizerSTest extends AbstractTestAbstractSQPOptimizerTest {
 
     @Test
     void testRosenbrock() {
-        doTestProblem(new double[] { 1, 1 }, 1.5e-7,
+        doTestProblem(new double[] { 1, 1 }, 9.6e-7,
                       new double[] { 0, 0, 0, 0, 0}, 1.0e-15,
                       0.0, 3.4e-15,
                       new ObjectiveFunction(new RosenbrockFunction()),
