@@ -59,7 +59,16 @@ public interface Localizable extends Serializable {
     default String getLocalizedString(final String baseName, final String key, final Locale locale) {
 
         try {
-            final ResourceBundle bundle = ResourceBundle.getBundle(baseName, locale, new UTF8Control());
+            ResourceBundle bundle;
+            try {
+                bundle = ResourceBundle.getBundle(baseName, locale, new UTF8Control());
+            }
+            catch (UnsupportedOperationException uoe) {
+                // fix for Java 9+ on module path
+                // (see issue https://github.com/Hipparchus-Math/hipparchus/issues/392)
+                bundle = ResourceBundle.getBundle(baseName, locale);
+            }
+
             if (bundle.getLocale().getLanguage().equals(locale.getLanguage()))
             {
                 final String translated = bundle.getString(key);
