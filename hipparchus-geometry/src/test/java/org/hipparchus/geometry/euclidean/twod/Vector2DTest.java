@@ -123,8 +123,15 @@ class Vector2DTest {
         final Vector2D v = new Vector2D(3.0, -4.0);
         assertEquals( 7.0, v.getNorm1(),   1.0e-15);
         assertEquals( 5.0, v.getNorm(),    1.0e-15);
-        assertEquals(25.0, v.getNormSq(),  1.0e-15);
+        assertEquals(25.0, v.getNorm2Sq(),  1.0e-15);
         assertEquals( 4.0, v.getNormInf(), 1.0e-15);
+    }
+
+    @Deprecated
+    @Test
+    void testNormSq() {
+        final Vector2D v = new Vector2D(3.0, -4.0);
+        assertEquals( v.getNorm2Sq(), v.getNormSq());
     }
 
     @Test

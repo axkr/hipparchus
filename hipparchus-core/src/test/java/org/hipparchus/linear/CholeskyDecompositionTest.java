@@ -27,8 +27,8 @@ import org.hipparchus.exception.MathIllegalArgumentException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class CholeskyDecompositionTest {
@@ -169,7 +169,7 @@ class CholeskyDecompositionTest {
         assertEquals(0, lt.subtract(lRef.transpose()).getNorm1(), 1.0e-13);
 
         // check the same cached instance is returned the second time
-        assertTrue(l  == llt.getL());
-        assertTrue(lt == llt.getLT());
+        assertSame(l, llt.getL());
+        assertSame(lt, llt.getLT());
     }
 }

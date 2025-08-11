@@ -33,7 +33,7 @@ public class FieldTuple<T extends CalculusFieldElement<T>> implements CalculusFi
     private final T[] values;
 
     /** Field the instance belongs to. */
-    private final transient FieldTupleField<T> field;
+    private final FieldTupleField<T> field;
 
     /** Creates a new instance from its components.
      * @param x components of the tuple
@@ -764,6 +764,16 @@ public class FieldTuple<T extends CalculusFieldElement<T>> implements CalculusFi
                                                               a4, b4.values[i]);
         }
         return result;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public double norm() {
+        double sum = 0;
+        for (final T value: values) {
+            sum += value.norm();
+        }
+        return sum;
     }
 
     /** {@inheritDoc} */

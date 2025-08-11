@@ -735,9 +735,9 @@ public class FieldComplexTest extends CalculusFieldElementAbstractTest<FieldComp
     void testHashCode() {
         FieldComplex<Binary64> x = build(0.0, 0.0);
         FieldComplex<Binary64> y = build(0.0, 0.0 + Double.MIN_VALUE);
-        assertFalse(x.hashCode()==y.hashCode());
+        assertNotEquals(x.hashCode(), y.hashCode());
         y = build(0.0 + Double.MIN_VALUE, 0.0);
-        assertFalse(x.hashCode()==y.hashCode());
+        assertNotEquals(x.hashCode(), y.hashCode());
         FieldComplex<Binary64> realNaN = build(Double.NaN, 0.0);
         FieldComplex<Binary64> imaginaryNaN = build(0.0, Double.NaN);
         assertEquals(realNaN.hashCode(), imaginaryNaN.hashCode());

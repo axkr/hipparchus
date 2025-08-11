@@ -712,6 +712,16 @@ public class Gradient implements Derivative1<Gradient>, Serializable {
         return result;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public double norm() {
+        double sum = FastMath.abs(getValue());
+        for (int i = 0; i < getFreeParameters(); i++) {
+            sum += FastMath.abs(getPartialDerivative(i));
+        }
+        return sum;
+    }
+
     /**
      * Add an independent variable to the Taylor expansion.
      * @return object with one more variable

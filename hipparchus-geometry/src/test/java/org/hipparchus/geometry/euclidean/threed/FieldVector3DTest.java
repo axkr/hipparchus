@@ -273,13 +273,20 @@ class FieldVector3DTest {
         assertEquals( 3.0 / r, createVector(1, 2, 3, 3).getNorm().getPartialDerivative(0, 0, 1), 0);
     }
 
+    @Deprecated
     @Test
     void testNormSq() {
-        assertEquals(0.0, createVector(0, 0, 0, 3).getNormSq().getReal(), 0);
-        assertEquals(14, createVector(1, 2, 3, 3).getNormSq().getReal(), 1.0e-12);
-        assertEquals( 2, createVector(1, 2, 3, 3).getNormSq().getPartialDerivative(1, 0, 0), 0);
-        assertEquals( 4, createVector(1, 2, 3, 3).getNormSq().getPartialDerivative(0, 1, 0), 0);
-        assertEquals( 6, createVector(1, 2, 3, 3).getNormSq().getPartialDerivative(0, 0, 1), 0);
+        final FieldVector3D<?> vector3D = createVector(1, 2, 3, 5);
+        assertEquals(vector3D.getNorm2Sq(), vector3D.getNormSq());
+    }
+
+    @Test
+    void testNorm2Sq() {
+        assertEquals(0.0, createVector(0, 0, 0, 3).getNorm2Sq().getReal(), 0);
+        assertEquals(14, createVector(1, 2, 3, 3).getNorm2Sq().getReal(), 1.0e-12);
+        assertEquals( 2, createVector(1, 2, 3, 3).getNorm2Sq().getPartialDerivative(1, 0, 0), 0);
+        assertEquals( 4, createVector(1, 2, 3, 3).getNorm2Sq().getPartialDerivative(0, 1, 0), 0);
+        assertEquals( 6, createVector(1, 2, 3, 3).getNorm2Sq().getPartialDerivative(0, 0, 1), 0);
     }
 
     @Test

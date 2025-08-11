@@ -680,9 +680,9 @@ class ComplexTest extends CalculusFieldElementAbstractTest<Complex> {
     void testHashCode() {
         Complex x = new Complex(0.0, 0.0);
         Complex y = new Complex(0.0, 0.0 + Double.MIN_VALUE);
-        assertFalse(x.hashCode()==y.hashCode());
+        assertNotEquals(x.hashCode(), y.hashCode());
         y = new Complex(0.0 + Double.MIN_VALUE, 0.0);
-        assertFalse(x.hashCode()==y.hashCode());
+        assertNotEquals(x.hashCode(), y.hashCode());
         Complex realNaN = new Complex(Double.NaN, 0.0);
         Complex imaginaryNaN = new Complex(0.0, Double.NaN);
         assertEquals(realNaN.hashCode(), imaginaryNaN.hashCode());

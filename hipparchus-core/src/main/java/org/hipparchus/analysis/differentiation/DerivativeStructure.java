@@ -1085,6 +1085,16 @@ public class DerivativeStructure implements Derivative<DerivativeStructure>, Ser
 
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public double norm() {
+        double sum = 0;
+        for (final double derivative: data) {
+            sum += FastMath.abs(derivative);
+        }
+        return sum;
+    }
+
     /** {@inheritDoc}
      */
     @Override

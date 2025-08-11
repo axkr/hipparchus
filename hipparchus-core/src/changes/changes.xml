@@ -49,6 +49,22 @@ If the output is not quite correct, check for invisible trailing spaces!
     <title>Hipparchus Core Release Notes</title>
   </properties>
   <body>
+    <release version="4.1" date="TBD" description="TBD">
+      <action dev="serrof" type="update" issue="issues/398">
+        Implement non-trivial norm for CalculusField inheritors.
+      </action>
+      <action dev="ryan" type="update" issue="issues/391">
+        Replaced custom FastMath implementations of
+          sin, cos, tan, sinCos, log1p, log10, log, exp, hypot, cbrt, pow, floor, ceil, and abs
+        with delegates to Math
+      </action>
+      <action dev="luc" type="fix" issue="issues/394">
+        Prevent stack overflow in digamma function.
+      </action>
+      <action dev="emeric" type="fix" issue="issues/392">
+        Fixed default Localizable.getLocalizedString when running on module path.
+      </action>
+    </release>
     <release version="4.0.1" date="2025-03-21" description="This is a patch release.">
       <action dev="luc" type="fix" issue="issues/386">
         Restores a Java 8 compatible mockito version, which is used only for tests purposes;

@@ -37,6 +37,7 @@ import java.lang.reflect.Method;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -185,7 +186,7 @@ final class MicrosphereProjectionInterpolatorTest {
                         new UnitSphereRandomVectorGenerator(3, new Well19937a(0x265318ael));
         InterpolatingMicrosphere original = new InterpolatingMicrosphere(3, 30, 0.5, 0.2, 0.0, random);
         InterpolatingMicrosphere copy     = original.copy();
-        assertFalse(original == copy);
+        assertNotSame(original, copy);
         assertEquals(original.getDimension(), copy.getDimension());
         assertEquals(original.getSize(),      copy.getSize());
     }

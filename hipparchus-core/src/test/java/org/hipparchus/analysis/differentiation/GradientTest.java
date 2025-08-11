@@ -49,6 +49,12 @@ class GradientTest extends CalculusFieldElementAbstractTest<Gradient> {
     }
 
     @Test
+    void testNorm() {
+        final Gradient x = new Gradient(-1, 2, 3);
+        assertEquals(6., x.norm());
+    }
+
+    @Test
     void testGetGradient() {
         Gradient g = new Gradient(-0.5, 2.5, 10.0, -1.0);
         assertEquals(-0.5, g.getReal(), 1.0e-15);

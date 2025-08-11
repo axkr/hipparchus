@@ -389,6 +389,7 @@ public class DerivativeStructureTest extends CalculusFieldElementAbstractTest<De
 
     }
 
+    @Override
     @Test
     public void testScalb() {
         for (int maxOrder = 1; maxOrder < 5; ++maxOrder) {
@@ -419,6 +420,7 @@ public class DerivativeStructureTest extends CalculusFieldElementAbstractTest<De
         }
     }
 
+    @Override
     @Test
     public void testUlp() {
         final RandomGenerator random = new Well19937a(0x85d201920b5be954l);
@@ -951,7 +953,7 @@ public class DerivativeStructureTest extends CalculusFieldElementAbstractTest<De
 
     @Test
     void testLog1pExpm1() {
-        double[] epsilon = new double[] { 6.0e-17, 3.0e-16, 5.0e-16, 9.0e-16, 6.0e-15 };
+        double[] epsilon = new double[] { 1.2e-16, 3.0e-16, 5.0e-16, 9.0e-16, 6.0e-15 };
         for (int maxOrder = 0; maxOrder < 5; ++maxOrder) {
             DSFactory factory = new DSFactory(1, maxOrder);
             for (double x = 0.1; x < 1.2; x += 0.001) {
@@ -1052,7 +1054,7 @@ public class DerivativeStructureTest extends CalculusFieldElementAbstractTest<De
 
     @Test
     void testSinAsin() {
-        double[] epsilon = new double[] { 3.0e-16, 5.0e-16, 3.0e-15, 2.0e-14, 4.0e-13 };
+        double[] epsilon = new double[] { 3.0e-16, 5.0e-16, 3.0e-15, 3.0e-14, 4.0e-13 };
         for (int maxOrder = 0; maxOrder < 5; ++maxOrder) {
             DSFactory factory = new DSFactory(1, maxOrder);
             for (double x = 0.1; x < 1.2; x += 0.001) {
@@ -1084,7 +1086,7 @@ public class DerivativeStructureTest extends CalculusFieldElementAbstractTest<De
 
     @Test
     void testTanAtan() {
-        double[] epsilon = new double[] { 6.0e-17, 2.0e-16, 2.0e-15, 4.0e-14, 2.0e-12 };
+        double[] epsilon = new double[] { 2.0e-16, 2.0e-16, 2.0e-15, 4.0e-14, 2.0e-12 };
         for (int maxOrder = 0; maxOrder < 5; ++maxOrder) {
             DSFactory factory = new DSFactory(1, maxOrder);
             for (double x = 0.1; x < 1.2; x += 0.001) {
@@ -2096,6 +2098,13 @@ public class DerivativeStructureTest extends CalculusFieldElementAbstractTest<De
         final DerivativeStructure operand = factory.variable(0, 1.).
                 add(factory.variable(1, 0.).multiply(2.));
         compareReciprocalToVersionViaPower(operand, 1e-15);
+    }
+
+    @Test
+    void testNorm() {
+        final Gradient x = new Gradient(1, 2, 3);
+        final DerivativeStructure ds = x.toDerivativeStructure();
+        assertEquals(6., ds.norm());
     }
 
     @Test
