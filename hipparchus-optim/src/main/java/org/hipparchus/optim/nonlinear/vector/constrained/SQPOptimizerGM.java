@@ -37,7 +37,9 @@ import org.hipparchus.util.FastMath;
  * Algorithm based on paper:"Some Theoretical properties of an augmented lagrangian merit function
  * (Gill,Murray,Sauders,Wriht,April 1986)"
  * @since 3.1
+ * @deprecated as of 4.1, replaced by {@link SQPOptimizerS2}
  */
+@Deprecated
 public class SQPOptimizerGM extends AbstractSQPOptimizer {
 
     /** Jacobian constraint. */
@@ -123,25 +125,20 @@ public class SQPOptimizerGM extends AbstractSQPOptimizer {
 
             RealVector s = calculateSvector(y,rho);
             RealVector se = null;
-            RealMatrix jacobi; // NOPMD - PMD detext a false positive here
             RealVector q = null;
             RealVector qe = null;
 
             //TEST CON SI SOLO PER INEQUALITY AND Q FOR ALL
             if (getEqConstraint() != null) {
                 se = new ArrayRealVector(me);
-                jacobi = constraintJacob.getSubMatrix(0, me - 1, 0, x.getDimension() - 1); // NOPMD - PMD detect a false positive here
                 qe = new ArrayRealVector(me);
             }
             if (getIqConstraint() != null) {
-                jacobi = constraintJacob.getSubMatrix(me, me + mi - 1, 0, x.getDimension() - 1);
+                final RealMatrix jacobi = constraintJacob.getSubMatrix(me, me + mi - 1, 0, x.getDimension() - 1);
                 q = jacobi.operate(p).add(inequalityEval.subtract(getIqConstraint().getLowerBound())).subtract(s);
             }
 
-
-
             //CALCULATE PENALTY GRADIENT
-            //
             double penaltyGradient = penaltyFunctionGrad(p, y, s, e, qe, q, rho);
             ArrayRealVector g = new ArrayRealVector(me + mi);
             if (me > 0) {
@@ -447,7 +444,9 @@ public class SQPOptimizerGM extends AbstractSQPOptimizer {
         double thirtTerm = s.dotProduct(oldH1.operate(s));
         RealMatrix Hnew = oldH1.add(firstTerm).subtract(secondTerm.scalarMultiply(1.0 / thirtTerm));
         //RESET HESSIAN IF NOT POSITIVE DEFINITE
-        EigenDecompositionSymmetric dsX = new EigenDecompositionSymmetric(Hnew);
+        EigenDecompositionSymmetric dsX = new EigenDecompositionSymmetric(Hnew,
+                                                                          getMatrixDecompositionTolerance().getEpsMatrixDecomposition(),
+                                                                          true);
         double min = new ArrayRealVector(dsX.getEigenvalues()).getMinValue();
         if (new ArrayRealVector(dsX.getEigenvalues()).getMinValue() < 0) {
 

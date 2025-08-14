@@ -19,8 +19,6 @@ package org.hipparchus.optim.nonlinear.vector.constrained;
 import org.hipparchus.exception.LocalizedCoreFormats;
 import org.hipparchus.exception.MathIllegalArgumentException;
 import org.hipparchus.linear.EigenDecompositionSymmetric;
-import org.hipparchus.linear.RealMatrix;
-import org.hipparchus.linear.RealVector;
 import org.hipparchus.optim.LocalizedOptimFormats;
 import org.hipparchus.optim.OptimizationData;
 import org.hipparchus.optim.nonlinear.scalar.ObjectiveFunction;
@@ -29,10 +27,8 @@ import org.hipparchus.util.MathUtils;
 /**
  * Abstract class for Sequential Quadratic Programming solvers
  * @since 3.1
- * @deprecated as of 4.1, replaced by {@link AbstractSQPOptimizer2}
  */
-@Deprecated
-public abstract class AbstractSQPOptimizer extends ConstraintOptimizer {
+public abstract class AbstractSQPOptimizer2 extends ConstraintOptimizer {
 
     /** Algorithm settings. */
     private SQPOption settings;
@@ -50,10 +46,16 @@ public abstract class AbstractSQPOptimizer extends ConstraintOptimizer {
 
     /** Inequality constraint (may be null). */
     private InequalityConstraint iqConstraint;
+    
+    /** Inequality constraint (may be null). */
+    private BoundedConstraint boxConstraint;
+    
+    /** Default QPSolver. */
+    private QPOptimizer QPSolver=new QPDualActiveSolver();
 
     /** Simple constructor.
      */
-    protected AbstractSQPOptimizer() {
+    protected AbstractSQPOptimizer2() {
         this.settings                     = new SQPOption();
         this.matrixDecompositionTolerance = new MatrixDecompositionTolerance(EigenDecompositionSymmetric.DEFAULT_EPSILON);
     }
@@ -93,6 +95,20 @@ public abstract class AbstractSQPOptimizer extends ConstraintOptimizer {
     public InequalityConstraint getIqConstraint() {
         return iqConstraint;
     }
+    
+     /** Getter for box constraint.
+     * @return inequality constraint
+     */
+    public BoundedConstraint getBoxConstraint() {
+        return boxConstraint;
+    }
+    
+    /** Getter for QP Solver.
+     * @return QP Solver
+     */
+    public QPOptimizer getQPSolver() {
+        return QPSolver;
+    }
 
     @Override
     public LagrangeSolution optimize(OptimizationData... optData) {
@@ -100,7 +116,7 @@ public abstract class AbstractSQPOptimizer extends ConstraintOptimizer {
     }
 
     @Override
-    protected void parseOptimizationData(OptimizationData... optData) {
+    public void parseOptimizationData(OptimizationData... optData) {
         super.parseOptimizationData(optData);
         for (OptimizationData data : optData) {
 
@@ -117,9 +133,18 @@ public abstract class AbstractSQPOptimizer extends ConstraintOptimizer {
                 iqConstraint = (InequalityConstraint) data;
                 continue;
             }
+            
+            if (data instanceof BoundedConstraint) {
+                boxConstraint = (BoundedConstraint) data;
+                continue;
+            }
 
             if (data instanceof SQPOption) {
                 settings = (SQPOption) data;
+            }
+            
+            if (data instanceof QPOptimizer) {
+                QPSolver = (QPOptimizer) data;
             }
 
             if (data instanceof MatrixDecompositionTolerance) {
@@ -132,7 +157,7 @@ public abstract class AbstractSQPOptimizer extends ConstraintOptimizer {
         int n = obj.dim();
         if (eqConstraint != null) {
             int nDual = eqConstraint.dimY();
-            if (nDual >= n) {
+            if (nDual > n) {
                 throw new MathIllegalArgumentException(LocalizedOptimFormats.CONSTRAINTS_RANK, nDual, n);
             }
             int nTest = eqConstraint.dim();
@@ -142,46 +167,6 @@ public abstract class AbstractSQPOptimizer extends ConstraintOptimizer {
             MathUtils.checkDimension(nTest, n);
         }
 
-    }
-
-    /**
-     * Compute Lagrangian gradient for variable X
-     *
-     * @param currentGrad current gradient
-     * @param jacobConstraint Jacobian
-     * @param x value of x
-     * @param y value of y
-     * @return Lagrangian
-     */
-    protected RealVector lagrangianGradX(final RealVector currentGrad, final RealMatrix jacobConstraint,
-                                         final RealVector x, final RealVector y) {
-
-        int me = 0;
-        int mi;
-        RealVector partial = currentGrad.copy();
-        if (getEqConstraint() != null) {
-            me = getEqConstraint().dimY();
-
-            RealVector ye = y.getSubVector(0, me);
-            RealMatrix jacobe = jacobConstraint.getSubMatrix(0, me - 1, 0, x.getDimension() - 1);
-
-            RealVector firstTerm = jacobe.transpose().operate(ye);
-
-            // partial = partial.subtract(firstTerm).add(jacobe.transpose().operate(ge).mapMultiply(rho));
-            partial = partial.subtract(firstTerm);
-        }
-
-        if (getIqConstraint() != null) {
-            mi = getIqConstraint().dimY();
-
-            RealVector yi = y.getSubVector(me, mi);
-            RealMatrix jacobi = jacobConstraint.getSubMatrix(me, me + mi - 1, 0, x.getDimension() - 1);
-
-            RealVector firstTerm = jacobi.transpose().operate(yi);
-
-            partial = partial.subtract(firstTerm);
-        }
-        return partial;
     }
 
 }
