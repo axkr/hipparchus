@@ -17,26 +17,17 @@
 package org.hipparchus.optim.nonlinear.vector.constrained;
 
 
-import org.hipparchus.linear.Array2DRowRealMatrix;
 import org.hipparchus.linear.ArrayRealVector;
 import org.hipparchus.linear.RealVector;
 import org.hipparchus.linear.RealMatrix;
 import org.hipparchus.optim.InitialGuess;
 import org.hipparchus.optim.nonlinear.scalar.ObjectiveFunction;
-import org.hipparchus.optim.nonlinear.vector.constrained.LagrangeSolution;
-import org.hipparchus.optim.nonlinear.vector.constrained.EqualityConstraint;
-import org.hipparchus.optim.nonlinear.vector.constrained.InequalityConstraint;
-import org.hipparchus.optim.nonlinear.vector.constrained.TwiceDifferentiableFunction;
 import org.hipparchus.util.FastMath;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 public class HS017Test {
-    private static final double pi = FastMath.PI;
 
     private static class HS017Obj extends TwiceDifferentiableFunction {
         @Override public int dim() { return 2; }
@@ -50,7 +41,7 @@ public class HS017Test {
     private static class HS017Ineq extends InequalityConstraint {
         HS017Ineq() { super(new ArrayRealVector(new double[]{ 0.0, 0.0, 0.0, 0.0, 0.0 })); }
         @Override public RealVector value(RealVector x) {
-            return new ArrayRealVector(new double[]{ (((-x.getEntry(0)) + FastMath.pow(x.getEntry(1), 2))) - (0), ((FastMath.pow(x.getEntry(0), 2) - x.getEntry(1))) - (0), (x.getEntry(0)) - (((-1) / 2)), ((1 / 2)) - (x.getEntry(0)), (1) - (x.getEntry(1)) });
+            return new ArrayRealVector(new double[]{ (((-x.getEntry(0)) + FastMath.pow(x.getEntry(1), 2))) - (0), ((FastMath.pow(x.getEntry(0), 2) - x.getEntry(1))) - (0), (x.getEntry(0)) - (((-1.0) / 2)), ((1.0 / 2)) - (x.getEntry(0)), (1) - (x.getEntry(1)) });
         }
         @Override public RealMatrix jacobian(RealVector x) { throw new UnsupportedOperationException(); }
         @Override public int dim() { return 2; }
@@ -60,7 +51,7 @@ public class HS017Test {
     public void testHS017() {
         InitialGuess guess = new InitialGuess(new double[]{-2, 1});
         SQPOptimizerS2 optimizer = new SQPOptimizerS2();
-        optimizer.setDebugPrinter(System.out::println);
+        optimizer.setDebugPrinter(s -> {});
         SQPOption sqpOption=new SQPOption();
         sqpOption.setMaxLineSearchIteration(20);
         sqpOption.setB(0.5);

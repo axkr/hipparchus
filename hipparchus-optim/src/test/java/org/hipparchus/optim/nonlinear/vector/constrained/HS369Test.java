@@ -108,7 +108,7 @@ public class HS369Test {
         InitialGuess guess = new InitialGuess(start);
 
         SQPOptimizerS2 optimizer = new SQPOptimizerS2();
-        optimizer.setDebugPrinter(System.out::println);
+        optimizer.setDebugPrinter(s -> {});
 
         double val = 7049.2480;
         LagrangeSolution sol = optimizer.optimize(

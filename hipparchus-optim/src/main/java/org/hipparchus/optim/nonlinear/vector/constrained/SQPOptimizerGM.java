@@ -125,25 +125,20 @@ public class SQPOptimizerGM extends AbstractSQPOptimizer {
 
             RealVector s = calculateSvector(y,rho);
             RealVector se = null;
-            RealMatrix jacobi; // NOPMD - PMD detext a false positive here
             RealVector q = null;
             RealVector qe = null;
 
             //TEST CON SI SOLO PER INEQUALITY AND Q FOR ALL
             if (getEqConstraint() != null) {
                 se = new ArrayRealVector(me);
-                jacobi = constraintJacob.getSubMatrix(0, me - 1, 0, x.getDimension() - 1); // NOPMD - PMD detect a false positive here
                 qe = new ArrayRealVector(me);
             }
             if (getIqConstraint() != null) {
-                jacobi = constraintJacob.getSubMatrix(me, me + mi - 1, 0, x.getDimension() - 1);
+                final RealMatrix jacobi = constraintJacob.getSubMatrix(me, me + mi - 1, 0, x.getDimension() - 1);
                 q = jacobi.operate(p).add(inequalityEval.subtract(getIqConstraint().getLowerBound())).subtract(s);
             }
 
-
-
             //CALCULATE PENALTY GRADIENT
-            //
             double penaltyGradient = penaltyFunctionGrad(p, y, s, e, qe, q, rho);
             ArrayRealVector g = new ArrayRealVector(me + mi);
             if (me > 0) {

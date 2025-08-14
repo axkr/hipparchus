@@ -21,7 +21,6 @@ import org.hipparchus.linear.RealVector;
 import org.hipparchus.linear.RealMatrix;
 import org.hipparchus.optim.InitialGuess;
 import org.hipparchus.optim.nonlinear.scalar.ObjectiveFunction;
-import org.hipparchus.util.FastMath;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
@@ -79,7 +78,7 @@ public class HS299Test {
 
         InitialGuess guess = new InitialGuess(start);
         SQPOptimizerS2 optimizer = new SQPOptimizerS2();
-        optimizer.setDebugPrinter(System.out::println);
+        optimizer.setDebugPrinter(s -> {});
 
         double val = 0.0;
         LagrangeSolution sol = optimizer.optimize(sqpOption, guess, new ObjectiveFunction(new HS299Obj()));

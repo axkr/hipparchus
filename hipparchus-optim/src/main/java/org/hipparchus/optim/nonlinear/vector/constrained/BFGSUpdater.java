@@ -43,7 +43,7 @@ import org.hipparchus.util.Precision;
 public class BFGSUpdater {
 
     /** Damping factor. */
-    private final double GAMMA = 0.2;
+    private static final double GAMMA = 0.2;
 
     /** Regularization factor for diagonal of Hessian. */
     private final double regFactor;
@@ -51,10 +51,7 @@ public class BFGSUpdater {
     /** Tolerance for symmetric matrices decomposition.
      * @since 4.1
      */
-    private double decompositionEpsilon;
-
-    /** Maximum consecutive failures allowed before reset. */
-    private final int maxFail;
+    private final double decompositionEpsilon;
 
     /** Stored initial Hessian for resets. */
     private final RealMatrix initialH;
@@ -62,23 +59,16 @@ public class BFGSUpdater {
     /** Current Cholesky factor L such that H = L·Lᵀ. */
     private RealMatrix L;
 
-    /** Failure counter for damping/regularization. */
-    private int failCount;
-
     /**
      * Creates a new updater.
-     *
-     * @param initialHess initial positive‐definite Hessian matrix
-     * @param regFactor regularization factor to add on diagonal
+     * @param initialHess          initial positive‐definite Hessian matrix
+     * @param regFactor            regularization factor to add on diagonal
      * @param decompositionEpsilon tolerance for symmetric matrices decomposition
-     * @param maxFail maximum number of failures before Hessian reset
      */
-    public BFGSUpdater(final RealMatrix initialHess, final double regFactor,
-                       final double decompositionEpsilon, final int maxFail) {
+    public BFGSUpdater(final RealMatrix initialHess, final double regFactor, final double decompositionEpsilon) {
         this.initialH             = new Array2DRowRealMatrix(initialHess.getData());
         this.regFactor            = regFactor;
         this.decompositionEpsilon = decompositionEpsilon;
-        this.maxFail              = maxFail;
         resetHessian();
     }
 
@@ -116,49 +106,16 @@ public class BFGSUpdater {
         }
         // Attempt rank‐one BFGS update; regularize on failure
         rankOneUpdate(s, y);
-        failCount = 0;
-    }
-
-    /**
-     * Applies soft regularization by adding regFactor to diagonal of H.
-     */
-    public void regularize() {
-        double minDiagSqr = Double.POSITIVE_INFINITY;
-         for (int i = 0; i < L.getRowDimension(); i++) {
-           double lii = L.getEntry(i, i);
-           minDiagSqr = Math.min(minDiagSqr, lii * lii);
-        }
-        double lambda = FastMath.min(0.0,minDiagSqr);
-        RealMatrix A = L.multiplyTransposed(L);
-        
-        RealMatrix scaledI = MatrixUtils.createRealIdentityMatrix(A.getRowDimension()).scalarMultiply(regFactor-lambda);
-        A = A.add(scaledI);
-        RealMatrix Lp = new CholeskyDecomposition(A).getL();
-       
-        L.setSubMatrix(Lp.getData(), 0, 0);
     }
 
     /**
      * Resets the Hessian approximation to its initial value.
      */
     public void resetHessian() {
-        CholeskyDecomposition ch = new CholeskyDecomposition(initialH);
+        final CholeskyDecomposition ch = new CholeskyDecomposition(initialH, decompositionEpsilon, decompositionEpsilon);
         L = ch.getL();
-        failCount = 0;
     }
     
-    /**
-     * Resets the Hessian approximation to its initial value.
-     */
-    public void resetHessian(double gamma) {
-        final RealMatrix id = MatrixUtils.createRealIdentityMatrix(L.getRowDimension());
-        CholeskyDecomposition ch = new CholeskyDecomposition(id.scalarMultiply(gamma),
-                                                             decompositionEpsilon,
-                                                             decompositionEpsilon);
-        L = ch.getL();
-        failCount = 0;
-    }
-
     /**
      * Applies dynamic damping to y to satisfy curvature condition sᵀy ≥ γ sᵀHs.
      *
@@ -179,7 +136,6 @@ public class BFGSUpdater {
             y = y1.mapMultiply(1.0 - phi).add(Hs.mapMultiply(phi));
             sty = s.dotProduct(y);
             if (sty < GAMMA * sHs) {
-                failCount++;
                 return null;
             }
         }
@@ -218,19 +174,11 @@ public class BFGSUpdater {
         double theta = 1.0 / FastMath.sqrt(s.dotProduct(Hs));
         RealVector v = y.mapMultiply(rho);
         RealVector w = Hs.mapMultiply(theta);
-//        if (!cholupdateLower(L, v, +1)) {
-//            //regularize();
-//            return false;
-//        }
-             cholupdateLower(L, v, +1) ;
+        cholupdateLower(L, v, +1) ;
         
         if (!cholupdateLower(L, w, -1)) {
             //try to regularize
-            
-                
-                   L.setSubMatrix(Lcopy.getData(), 0, 0);
-            
-            
+            L.setSubMatrix(Lcopy.getData(), 0, 0);
         }
         return true;
     }

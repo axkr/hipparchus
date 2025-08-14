@@ -19,8 +19,6 @@ package org.hipparchus.optim.nonlinear.vector.constrained;
 import org.hipparchus.exception.LocalizedCoreFormats;
 import org.hipparchus.exception.MathIllegalArgumentException;
 import org.hipparchus.linear.EigenDecompositionSymmetric;
-import org.hipparchus.linear.RealMatrix;
-import org.hipparchus.linear.RealVector;
 import org.hipparchus.optim.LocalizedOptimFormats;
 import org.hipparchus.optim.OptimizationData;
 import org.hipparchus.optim.nonlinear.scalar.ObjectiveFunction;
@@ -169,46 +167,6 @@ public abstract class AbstractSQPOptimizer2 extends ConstraintOptimizer {
             MathUtils.checkDimension(nTest, n);
         }
 
-    }
-
-    /**
-     * Compute Lagrangian gradient for variable X
-     *
-     * @param currentGrad current gradient
-     * @param jacobConstraint Jacobian
-     * @param x value of x
-     * @param y value of y
-     * @return Lagrangian
-     */
-    public RealVector lagrangianGradX(final RealVector currentGrad, final RealMatrix jacobConstraint,
-                                         final RealVector x, final RealVector y) {
-
-        int me = 0;
-        int mi;
-        RealVector partial = currentGrad.copy();
-        if (getEqConstraint() != null) {
-            me = getEqConstraint().dimY();
-
-            RealVector ye = y.getSubVector(0, me);
-            RealMatrix jacobe = jacobConstraint.getSubMatrix(0, me - 1, 0, x.getDimension() - 1);
-
-            RealVector firstTerm = jacobe.transpose().operate(ye);
-
-            // partial = partial.subtract(firstTerm).add(jacobe.transpose().operate(ge).mapMultiply(rho));
-            partial = partial.subtract(firstTerm);
-        }
-
-        if (getIqConstraint() != null) {
-            mi = getIqConstraint().dimY();
-
-            RealVector yi = y.getSubVector(me, mi);
-            RealMatrix jacobi = jacobConstraint.getSubMatrix(me, me + mi - 1, 0, x.getDimension() - 1);
-
-            RealVector firstTerm = jacobi.transpose().operate(yi);
-
-            partial = partial.subtract(firstTerm);
-        }
-        return partial;
     }
 
 }

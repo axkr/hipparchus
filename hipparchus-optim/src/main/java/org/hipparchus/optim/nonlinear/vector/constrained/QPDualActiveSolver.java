@@ -55,13 +55,13 @@ public class QPDualActiveSolver extends QPOptimizer {
     /**
      * Machine epsilon for tolerance checks.
      */
-    private final double EPS = Math.ulp(1.0);
+    private static final double EPS = Math.ulp(1.0);
 
     /**
      * Maximum number of iterations allowed.Will be adjusted in base of problem
      * dimension
      */
-    private int MAX_ITER = 1000;
+    private int maxIter;
 
     /**
      * Quadratic function representing 1/2 x^T G x + g0^T x.
@@ -96,12 +96,13 @@ public class QPDualActiveSolver extends QPOptimizer {
     /**
      * Parses optimization data to extract the objective function and various
      * constraint sets.
-     * @param optData
+     * @param optData optimization data
      */
     @Override
     protected void parseOptimizationData(OptimizationData... optData) {
         super.parseOptimizationData(optData);
         //reset QP problem to reuse the same instance of the QP solver;
+        this.maxIter = 1000;
         this.function = null;
         this.eqConstraints = null;
         this.iqConstraints = null;
@@ -206,9 +207,8 @@ public class QPDualActiveSolver extends QPOptimizer {
             return v;
         }
        
-        RealVector res = u.add(r.mapMultiply(-alpha)).append(partial);
+        return u.add(r.mapMultiply(-alpha)).append(partial);
 
-        return res;
     }
 
     /**
@@ -307,11 +307,11 @@ public class QPDualActiveSolver extends QPOptimizer {
             ci0.setSubVector(m1 + b1, upper);
         }
         }
-        RealVector x = null;
-        RealMatrix L = null;
-        RealMatrix L1= null;
-        QRUpdater qrUpdater = null;
-        double tol = EPS;
+        RealVector x;
+        RealMatrix L;
+        RealMatrix L1;
+        QRUpdater qrUpdater;
+        double tol;
         if (this.inverseL == null) {
             try {
                 final double eps = matrixDecompositionTolerance.getEpsMatrixDecomposition();
@@ -342,7 +342,7 @@ public class QPDualActiveSolver extends QPOptimizer {
         }
         if(m+p==0) return new LagrangeSolution(x, new ArrayRealVector(0,0), 0.5 * x.dotProduct(G.operate(x)) + g0.dotProduct(x)+g);
         //max iteration adjusted in base of problem dimension
-        this.MAX_ITER = 40 * (n + m+ p);
+        this.maxIter = 40 * (n + m + p);
         
         //convergence theshold calculated in base at the matrix  conditioning
         
@@ -377,9 +377,9 @@ public class QPDualActiveSolver extends QPOptimizer {
         int iteration = 0;
         
         // Active-set loop for inequalities
-        while (m!=0 && iteration++ < MAX_ITER) {
+        while (m!=0 && iteration++ < maxIter) {
             
-            RealVector sv = null;
+            RealVector sv;
             //store solution in case constraint can't be added because dependent
             RealVector xOld = x;
             RealVector uOld = u;
@@ -394,7 +394,7 @@ public class QPDualActiveSolver extends QPOptimizer {
             if (FastMath.abs(sum) <= tol) break;// Optimal solution found
             
             // Evaluate most violated constraint, excluding dependent/active loop
-            while (iteration++ < MAX_ITER) {
+            while (iteration++ < maxIter) {
                 Pair<Integer, Double> mostViolated = mostViolatedConstraint(sv,blacklist,active,p);
                 if (mostViolated.getValue() >= 0) {
                     blacklist.clear();
@@ -402,17 +402,18 @@ public class QPDualActiveSolver extends QPOptimizer {
                 }
 
                 double t1, t2, t = 0, uPartial = 0;
-                int dropIndex = -1;
-                RealVector np = null;
-                RealMatrix J2 = null;
+                int dropIndex;
+                RealVector np;
+                RealMatrix J2;
                 // Dual step loop update multiplier and x(if step is also in primal) until primal step is not done
-                while (iteration++ < MAX_ITER) {
+                while (iteration++ < maxIter) {
                     np = CI.getColumnVector(mostViolated.getKey());
                     sv.setEntry(mostViolated.getKey(), np.dotProduct(x) + ci0.getEntry(mostViolated.getKey()));
                     d = qrUpdater.getJ().transpose().operate(np);
                     J2 = qrUpdater.getJ2();
-                    z = (n - active.size()>0)   ? J2.operate(d.getSubVector(active.size(), n - active.size()))
-                            : new ArrayRealVector(n);
+                    z = (n - active.size()>0) ?
+                        J2.operate(d.getSubVector(active.size(), n - active.size())) :
+                        new ArrayRealVector(n);
                              
                     if (!active.isEmpty())  r = qrUpdater.getRInv().operate(d.getSubVector(0, active.size()));
  
@@ -427,34 +428,25 @@ public class QPDualActiveSolver extends QPOptimizer {
                         break; // primal full step(exit from dual step loop)
                     } else {
                         //Manage dual step
-//                        System.out.println("QP:PARTIAL STEP:"+iteration+";"+";INDEX TO REMOVE:"+dropIndex);
-                        if (t1 < Double.POSITIVE_INFINITY)  x = x.add(z.mapMultiply(t));// step is also in primal 
+                        if (t1 < Double.POSITIVE_INFINITY)  x = x.add(z.mapMultiply(t));// step is also in primal
                         uPartial += t;
                         u = updateMultipliersOnRemoval(u, r, t, dropIndex);
                         qrUpdater.deleteConstraint(dropIndex);
                         
-                        active.remove(dropIndex)
-                                //da aggiustare con le liste ordinate
-;
+                        active.remove(dropIndex);
                         
                     }
                 }
                 // Manage full step
-//                System.out.println("QP:FULL STEP:"+iteration+";");
                 if (qrUpdater.addConstraint(d)&& active.size()<n) {
-//                    System.out.println("QP:activeset before"+active.toString());
-                    
+
                     active.add(p + mostViolated.getKey());
-//                    System.out.println("QP:activeset after"+active.toString());
                     x = x.add(z.mapMultiply(t));
                     uPartial += t;
-                    int index=p + mostViolated.getKey();
-//                    System.out.println("QP:activeset;index:"+index);
                     u = updateMultipliersOnAddition(u, r, t, uPartial);
                     blacklist.clear();
                     break;//revaluate convergence(exit from most violated constraint loop)
                 } else {
-//                    System.out.println("QP:FULL STEP FAILED:"+iteration);
                     // dependent constraint -> add in blacklist and revert state
                     // revaluate only violated constraint without recalculate them;
                     blacklist.add(p + mostViolated.getKey());
@@ -463,10 +455,9 @@ public class QPDualActiveSolver extends QPOptimizer {
                 }
             }
         }
-        if (iteration == MAX_ITER) {
+        if (iteration == maxIter) {
             return new LagrangeSolution(new ArrayRealVector(0,0), new ArrayRealVector(0,0), 0.0);//no optimal solution is found
         }
-//        System.out.println(p+";"+m+";"+active.size());
         return buildSolution(x, u, active, G, g0,g, p, m);
     }
 
@@ -487,15 +478,11 @@ public class QPDualActiveSolver extends QPOptimizer {
             int p,
             int m) {
         RealVector lambda = new ArrayRealVector(p + m);
-        if(!activeSet.isEmpty())
-        {
-        for (int i = 0; i < activeSet.size(); i++) {
-//            System.out.println("QP:solution assamble:"+activeSet.get(i)+";"+ u.getEntry(i));
-           
-            lambda.setEntry(activeSet.get(i),  u.getEntry(i));
+        if (!activeSet.isEmpty()) {
+            for (int i = 0; i < activeSet.size(); i++) {
+                lambda.setEntry(activeSet.get(i), u.getEntry(i));
+            }
         }
-        }
-//        System.out.println("QP:solution assamble:"+lambda);
         double value = 0.5 * x.dotProduct(G.operate(x)) + g0.dotProduct(x)+g;
         return new LagrangeSolution(x, lambda, value);
     }

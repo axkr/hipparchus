@@ -23,11 +23,6 @@ import org.hipparchus.linear.MatrixUtils;
 import org.hipparchus.linear.RealMatrix;
 import org.hipparchus.linear.RealVector;
 import org.hipparchus.optim.nonlinear.scalar.ObjectiveFunction;
-import org.hipparchus.optim.nonlinear.vector.constrained.LagrangeSolution;
-import org.hipparchus.optim.nonlinear.vector.constrained.LinearBoundedConstraint;
-import org.hipparchus.optim.nonlinear.vector.constrained.LinearEqualityConstraint;
-import org.hipparchus.optim.nonlinear.vector.constrained.LinearInequalityConstraint;
-import org.hipparchus.optim.nonlinear.vector.constrained.QuadraticFunction;
 import org.hipparchus.util.FastMath;
 import org.hipparchus.util.Precision;
 
@@ -52,10 +47,6 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
 
     
     SQPLogger formatter = new SQPLogger();
-    /**
-     * Jacobian of the constraints.
-     */
-    private RealMatrix constraintJacob;
 
     /**
      * Value of the equality constraints.
@@ -68,11 +59,6 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
     private RealVector ineqEval;
 
     /**
-     * Value of the bounded constraints.
-     */
-    private RealVector boundedEval;
-
-    /**
      * Gradient of the objective function.
      */
     private RealVector J;
@@ -82,10 +68,6 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
      */
     private RealMatrix H;
 
-    /**
-     * Linv inverse of Cholesky factorization.
-     */
-    private RealMatrix Linv;
     /**
      * Jacobian of the inequality constraints.
      */
@@ -97,8 +79,6 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
     private RealMatrix JE;
     private double functionEval;
     private RealVector x;
-    private RealVector y;
-    private int m;
 
     /**
      * {@inheritDoc}
@@ -109,7 +89,6 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
         formatter.logHeader();
         int me = 0;
         int mi = 0;
-        int box = 0;
 
         //EQUALITY CONSTRAINT
         if (this.getEqConstraint() != null) {
@@ -119,11 +98,7 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
         if (this.getIqConstraint() != null) {
             mi = getIqConstraint().dimY();
         }
-           m=me+mi;
-//        //BOX CONSTRAINT
-//        if (this.getBoxConstraint() != null) {
-//            box = getBoxConstraint().dimY();
-//        }
+        final int m = me + mi;
 
         double alpha;
         double rho = 100.0;
@@ -135,7 +110,7 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
             x = new ArrayRealVector(this.getObj().dim());
         }
 
-        y = new ArrayRealVector(me + mi, 0.0);
+        RealVector y = new ArrayRealVector(me + mi, 0.0);
 
        //all the function and constraint evaluation will be performed inside the penalty function
         MeritFunctionL2 penalty = new MeritFunctionL2(this.getObj(), this.getEqConstraint(), this.getIqConstraint(), x);
@@ -144,12 +119,10 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
                                                getSettings().getMaxLineSearchIteration(), 2);
         H = MatrixUtils.createRealIdentityMatrix(x.getDimension());
         
-        BFGSUpdater bfgs = new BFGSUpdater(H, 1.0e-11, getMatrixDecompositionTolerance().getEpsMatrixDecomposition(), 10);
-        Linv=bfgs.getInvL();
+        BFGSUpdater bfgs = new BFGSUpdater(H, 1.0e-11, getMatrixDecompositionTolerance().getEpsMatrixDecomposition());
         //INITIAL VALUES
 
         functionEval = penalty.getObjEval();
-        double functionEvalOld = Double.POSITIVE_INFINITY;
         if (this.getEqConstraint() != null) {
             eqEval = penalty.getEqEval();
         }
@@ -162,8 +135,6 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
                  case 1:forwardGradient(x);break;
                  case 2:centralGradient(x);break;
         }
-        //internalGradientCentered(x);
-        double maxGrad = J.getLInfNorm();
 
         RealVector dx = new ArrayRealVector(x.getDimension());
         RealVector u = new ArrayRealVector(y.getDimension());
@@ -188,7 +159,7 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
             //LOOP TO FIND SOLUTION WITH SIGMA<SIGMA THRESHOLD
 
             while ((sigma > getSettings().getSigmaMax() || sigma < - Precision.EPSILON) && qpLoop < getSettings().getQpMaxLoop()) {
-                sol1=augmented?solveAugmentedQP(x, y, rho):solveQP(x, y, rho);
+                sol1=augmented?solveAugmentedQP(x, y, rho):solveQP(x);
                 sigma=(sol1.getX().getDimension()==0)? getSettings().getSigmaMax() * 10.0: sol1.getValue();
                
                 
@@ -236,13 +207,13 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
                 RealMatrix JEOLD = JE;
 
                 //OLD LAGRANGIANE GRADIENT UPDATE WITH NEW MULTIPLIER
-                if(m>0)y = y.add(u.subtract(y).mapMultiply(alpha));
+                if (m > 0) {
+                    y = y.add(u.subtract(y).mapMultiply(alpha));
+                }
                 RealVector lagOld = lagrangianGradX(JOLD, JEOLD, JIOLD, x, u);
                 //UPDATE ALL VARIABLE FOR THE NEXT STEP
                 x = x.add(dx.mapMultiply(alpha));
                 //PENALTY STORE ALL VARIABLE CALCULATED WITH THE LAST STEP
-                //GRADIENTS UPDATE
-                functionEvalOld = functionEval;
                 //penalty function memorize last calculation done in the line search
                 functionEval = penalty.getObjEval();
                 eqEval = penalty.getEqEval();
@@ -278,15 +249,12 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
                 //HESSIAN UPDATE WITH THE LOGIC OF LINE SEARCH AND WITH THE INTERNAL LOGIC(DUMPING)
                 if (lineSearch.isBadStepFailed()) {
                     //reset hessain and inizialize for augmented QP solution with multiplier to zero
-                    double gamma=FastMath.max(1.0-8,FastMath.abs(J.dotProduct(dx))/(dx.getNorm()*dx.getNorm()));
-                   // bfgs.resetHessian(FastMath.min(gamma,10e6));
-                   bfgs.resetHessian();
+                    // bfgs.resetHessian(FastMath.min(gamma,10e6));
+                    bfgs.resetHessian();
                     
                     H = bfgs.getHessian();
-                    Linv=bfgs.getInvL();
                     augmented = true;
                     rho = 100.0;
-                    qpLoop = 0;
                     penalty.resetRj();
                     //y.set(0.0);
                     lineSearch.resetBadStepCount();
@@ -297,13 +265,11 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
                     //mantain the same Hessian
                     
                     H = bfgs.getHessian();
-                    Linv=bfgs.getInvL();
 
                 } else {
                     // good step detected procede with hessian update
                     bfgs.update(dx.mapMultiply(alpha), lagnew.subtract(lagOld));
                     H = bfgs.getHessian();
-                    Linv=bfgs.getInvL();
 
                 }
                
@@ -343,23 +309,24 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
    
 
     private double updateRho(RealVector dx, RealVector dy, RealMatrix H, RealMatrix JE,RealMatrix JI, double additionalVariable) {
-        int me=JE!=null?JE.getRowDimension():0;
-        int mi=JI!=null?JI.getRowDimension():0;
-        RealMatrix JAC=null;
-        if(me+mi>0)
-        {JAC = new Array2DRowRealMatrix(me + mi, x.getDimension());
+        int me = JE != null ? JE.getRowDimension() : 0;
+        int mi = JI != null ? JI.getRowDimension() : 0;
+        RealMatrix JAC;
+        if (me + mi > 0) {
+            JAC = new Array2DRowRealMatrix(me + mi, x.getDimension());
                 if (JE != null) {
                     JAC.setSubMatrix(JE.getData(), 0, 0);
                 }
                 if (JI != null) {
                     JAC.setSubMatrix(JI.getData(), me, 0);
                 }
-        
-        double num = 10.0 * FastMath.pow(dx.dotProduct(JAC.preMultiply(dy)), 2);
-        double den = (1.0 - additionalVariable) * (1.0 - additionalVariable) * dx.dotProduct(H.operate(dx));
-        //double den = (1.0 - additionalVariable) * dx.dotProduct(H.operate(dx));
 
-        return FastMath.max(10.0, num / den);
+            double num = 10.0 * FastMath.pow(dx.dotProduct(JAC.preMultiply(dy)), 2);
+            double den = (1.0 - additionalVariable) * (1.0 - additionalVariable) * dx.dotProduct(H.operate(dx));
+            //double den = (1.0 - additionalVariable) * dx.dotProduct(H.operate(dx));
+
+            return FastMath.max(10.0, num / den);
+
         }
         return 0;
     }
@@ -574,25 +541,8 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
 
             ArrayRealVector lb = new ArrayRealVector(1 + box, 0.0);
             ArrayRealVector ub = new ArrayRealVector(1 + box, 1.0);
-//            if (box > 0) {
-//               // System.out.println("box jac:" + getBoxConstraint().jacobian(x).getData().length);
-//                sigmaA.setSubMatrix(getBoxConstraint().jacobian(x).getData(), 1, 0);
-//                lb.setSubVector(1, getBoxConstraint().getLowerBound().subtract(x));
-//                ub.setSubVector(1, getBoxConstraint().getUpperBound().subtract(x));
-//            }
-           // System.out.println("SIGMA MATRIX:" + sigmaA);
             bc = new LinearBoundedConstraint(sigmaA, lb, ub);
 
-        } else {
-//            if (box > 0) {
-//                RealMatrix sigmaA = new Array2DRowRealMatrix(box, x.getDimension());
-//                ArrayRealVector lb = new ArrayRealVector(box, 0.0);
-//                ArrayRealVector ub = new ArrayRealVector(box, 1.0);
-//                sigmaA.setSubMatrix(getBoxConstraint().jacobian(x).getData(), 0, 0);
-//                lb.setSubVector(0, getBoxConstraint().getLowerBound().subtract(x));
-//                ub.setSubVector(0, getBoxConstraint().getUpperBound().subtract(x));
-//                bc = new LinearBoundedConstraint(sigmaA, lb, ub);
-//            }
         }
 
         QuadraticFunction q = new QuadraticFunction(H1, g1, 0);
@@ -611,23 +561,17 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
             sigma = 0;
         }
         //System.out.println("QP MULTIPLIER:" + sol.getLambda());
-        LagrangeSolution retValue=(me+mi==0)?new LagrangeSolution(sol.getX().getSubVector(0, x.getDimension()),
-                null,
-                sigma):new LagrangeSolution(sol.getX().getSubVector(0, x.getDimension()),
-                sol.getLambda().getSubVector(0, me + mi),
-                sigma);
-        return retValue;
+        return (me + mi == 0) ?
+               new LagrangeSolution(sol.getX().getSubVector(0, x.getDimension()), null, sigma) :
+               new LagrangeSolution(sol.getX().getSubVector(0, x.getDimension()), sol.getLambda().getSubVector(0, me + mi), sigma);
     }
 
     /**
- * Solves the Quadratic Programming (QP) subproblem in the current SQP iteration.
- *
- * @param x the current point in the primal space
- * @param y the current dual multipliers (used only for output packaging)
- * @param rho the penalty parameter (currently unused in this method)
- * @return a {@link LagrangeSolution} representing the QP solution, or {@code null} if the QP failed
- */
-private LagrangeSolution solveQP(RealVector x, RealVector y, double rho) {
+     * Solves the Quadratic Programming (QP) subproblem in the current SQP iteration.
+     * @param x the current point in the primal space
+     * @return a {@link LagrangeSolution} representing the QP solution, or {@code null} if the QP failed
+     */
+private LagrangeSolution solveQP(RealVector x) {
 
     QuadraticFunction q = new QuadraticFunction(this.H, this.J, 0);
     int n = x.getDimension();
@@ -697,12 +641,11 @@ private LagrangeSolution solveQP(RealVector x, RealVector y, double rho) {
  * @param y  the stacked Lagrange multipliers {@code [yₑ; yᵢ]}, length {@code me + mi}
  * @return the gradient of the Lagrangian with respect to {@code x}, length {@code n}
  */
-public RealVector lagrangianGradX(
-        RealVector J,
-        RealMatrix JE,
-        RealMatrix JI,
-        RealVector x,
-        RealVector y) {
+public RealVector lagrangianGradX(final RealVector J,
+                                  final RealMatrix JE,
+                                  final RealMatrix JI,
+                                  final RealVector x,
+                                  final RealVector y) {
 
     RealVector gradL =new ArrayRealVector(J);
     int offset = 0;

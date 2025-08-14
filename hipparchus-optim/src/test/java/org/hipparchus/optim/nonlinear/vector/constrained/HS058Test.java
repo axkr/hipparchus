@@ -22,17 +22,11 @@ import org.hipparchus.linear.RealVector;
 import org.hipparchus.linear.RealMatrix;
 import org.hipparchus.optim.InitialGuess;
 import org.hipparchus.optim.nonlinear.scalar.ObjectiveFunction;
-import org.hipparchus.optim.nonlinear.vector.constrained.LagrangeSolution;
-import org.hipparchus.optim.nonlinear.vector.constrained.EqualityConstraint;
-import org.hipparchus.optim.nonlinear.vector.constrained.InequalityConstraint;
-import org.hipparchus.optim.nonlinear.vector.constrained.SQPOption;
-import org.hipparchus.optim.nonlinear.vector.constrained.TwiceDifferentiableFunction;
 import org.hipparchus.util.FastMath;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 public class HS058Test {
-    private static final double pi = FastMath.PI;
 
     private static class HS058Obj extends TwiceDifferentiableFunction {
         @Override public int dim() { return 2; }
@@ -69,7 +63,7 @@ public class HS058Test {
         sqpOption.setEps(10e-10);
         InitialGuess guess = new InitialGuess(new double[]{-2.0, 1.0});
         SQPOptimizerS2 optimizer = new SQPOptimizerS2();
-        optimizer.setDebugPrinter(System.out::println);
+        optimizer.setDebugPrinter(s -> {});
         double val = 3.19033354957;
         LagrangeSolution sol = optimizer.optimize(sqpOption,guess, new ObjectiveFunction(new HS058Obj()), new HS058Ineq());
         System.out.println(sol.getX()+";"+sol.getLambda());

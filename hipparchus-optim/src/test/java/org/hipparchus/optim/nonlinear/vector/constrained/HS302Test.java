@@ -29,7 +29,6 @@ import org.junit.jupiter.api.Test;
 
 
 public class HS302Test {
-    private static final double pi = FastMath.PI;
 
     private static class HS302Obj extends TwiceDifferentiableFunction {
 
@@ -85,7 +84,7 @@ public class HS302Test {
         InitialGuess guess = new InitialGuess(new double[100]);
         
         SQPOptimizerS2 optimizer = new SQPOptimizerS2();
-        optimizer.setDebugPrinter(System.out::println);
+        optimizer.setDebugPrinter(s -> {});
         
         double val = -100.0;
         LagrangeSolution sol = optimizer.optimize(sqpOption,guess, new ObjectiveFunction(new HS302Obj()));
