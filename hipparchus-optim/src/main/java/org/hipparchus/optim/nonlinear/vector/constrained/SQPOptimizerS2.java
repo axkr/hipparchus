@@ -339,9 +339,10 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
         return 0;
     }
 
-    /** Solve augmented system.
+    /** Solve augmented problem.
      * @param y Lagrange multipliers
      * @param rho rho
+     * @return problem solution
      */
     private LagrangeSolution solveAugmentedQP(final RealVector y, final double rho) {
 
