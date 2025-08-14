@@ -205,7 +205,7 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
                 RealMatrix JIOLD = JI;
                 RealMatrix JEOLD = JE;
 
-                //OLD LAGRANGIANE GRADIENT UPDATE WITH NEW MULTIPLIER
+                //OLD LAGRANGIAN GRADIENT UPDATE WITH NEW MULTIPLIER
                 if (m > 0) {
                     y = y.add(u.subtract(y).mapMultiply(alpha));
                 }
@@ -272,10 +272,10 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
             }
         }
 
-         formatter.logRow(crit2, crit1, crit0, crit3);
-
+        formatter.logRow(crit2, crit1, crit0, crit3);
 
         return new LagrangeSolution(x, y, functionEval);
+
     }
 
     /** Compute gradients.

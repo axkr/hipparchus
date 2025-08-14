@@ -77,7 +77,7 @@ public class HS001Test {
         SQPOptimizerS2 optimizer = new SQPOptimizerS2();
         
         double val = 0.0;
-        LagrangeSolution sol = optimizer.optimize(sqpOption,guess, new ObjectiveFunction(new HS001Obj()));
+        LagrangeSolution sol = optimizer.optimize(sqpOption, guess, new ObjectiveFunction(new HS001Obj()));
         
         assertEquals(val, sol.getValue(), 1e-6);
     }

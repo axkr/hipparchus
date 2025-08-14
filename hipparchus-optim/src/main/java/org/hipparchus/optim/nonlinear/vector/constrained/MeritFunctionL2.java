@@ -252,7 +252,7 @@ public class MeritFunctionL2 {
      */
     private double gradient() {
         if (y.getDimension() > 0) {
-            return gradX().dotProduct(dx)+gradY().dotProduct(u.subtract(y));
+            return gradX().dotProduct(dx) + gradY().dotProduct(u.subtract(y));
         } else {
             return gradX().dotProduct(dx);
         }

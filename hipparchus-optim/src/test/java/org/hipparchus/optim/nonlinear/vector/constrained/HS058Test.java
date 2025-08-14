@@ -16,7 +16,6 @@
  */
 package org.hipparchus.optim.nonlinear.vector.constrained;
 
-
 import org.hipparchus.linear.ArrayRealVector;
 import org.hipparchus.linear.RealVector;
 import org.hipparchus.linear.RealMatrix;
@@ -36,8 +35,6 @@ public class HS058Test {
         @Override public RealVector gradient(RealVector x) { throw new UnsupportedOperationException(); }
         @Override public RealMatrix hessian(RealVector x) { throw new UnsupportedOperationException(); }
     }
-
-    
 
     private static class HS058Ineq extends InequalityConstraint {
         HS058Ineq() { super(new ArrayRealVector(new double[]{  0.0, 0.0,0.0,0.0,0.0  })); }

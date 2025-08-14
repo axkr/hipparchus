@@ -16,49 +16,75 @@
  */
 package org.hipparchus.optim.nonlinear.vector.constrained;
 
-
-
-
 import org.hipparchus.linear.ArrayRealVector;
+import org.hipparchus.linear.MatrixUtils;
 import org.hipparchus.linear.RealVector;
 import org.hipparchus.linear.RealMatrix;
 import org.hipparchus.optim.InitialGuess;
 import org.hipparchus.optim.nonlinear.scalar.ObjectiveFunction;
-import org.hipparchus.optim.nonlinear.vector.constrained.LagrangeSolution;
-import org.hipparchus.optim.nonlinear.vector.constrained.InequalityConstraint;
-import org.hipparchus.optim.nonlinear.vector.constrained.TwiceDifferentiableFunction;
-import org.hipparchus.util.FastMath;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 
 public class HS002Test {
-    private static final double pi = FastMath.PI;
 
     private static class HS002Obj extends TwiceDifferentiableFunction {
         @Override public int dim() { return 2; }
         @Override public double value(RealVector x) {
-            return ((100 * FastMath.pow((x.getEntry(1) - FastMath.pow(x.getEntry(0), 2)), 2)) + FastMath.pow((1 - x.getEntry(0)), 2));
+            final double x0     = x.getEntry(0);
+            final double x1     = x.getEntry(1);
+            final double x1Mx02 = x1 - x0  * x0;
+            final double oMx0   = 1 - x0;
+            return 100 * x1Mx02 * x1Mx02 + oMx0 * oMx0;
         }
-        @Override public RealVector gradient(RealVector x) { throw new UnsupportedOperationException(); }
+        @Override public RealVector gradient(RealVector x) {
+            final double x0     = x.getEntry(0);
+            final double x1     = x.getEntry(1);
+            final double x1Mx02 = x1 - x0  * x0;
+            final double a      = 200 * x1Mx02;
+            return MatrixUtils.createRealVector(new double[] {
+                    2 * (x0 * (1 - a) - 1),
+                    a
+            });
+        }
         @Override public RealMatrix hessian(RealVector x) { throw new UnsupportedOperationException(); }
     }
 
     private static class HS002Ineq extends InequalityConstraint {
-        HS002Ineq() { super(new ArrayRealVector(new double[]{ 0.0 })); }
+        HS002Ineq() { super(new ArrayRealVector(new double[] { 0.0 })); }
         @Override public RealVector value(RealVector x) {
             return new ArrayRealVector(new double[]{ (1.5) - (x.getEntry(1)) });
         }
-        @Override public RealMatrix jacobian(RealVector x) { throw new UnsupportedOperationException(); }
+        @Override public RealMatrix jacobian(RealVector x) {
+            return MatrixUtils.createRealMatrix(new double[][] {
+                    { 0, -1 }
+            });
+        }
         @Override public int dim() { return 2; }
     }
 
     @Test
-    public void testHS002() {
+    public void testHS002ExternalGradient() {
+        doTestHS002(GradientMode.EXTERNAL);
+    }
+
+    @Test
+    public void testHS002ForwardGradient() {
+        doTestHS002(GradientMode.FORWARD);
+    }
+
+    @Test
+    public void testHS002CentralGradient() {
+        doTestHS002(GradientMode.CENTRAL);
+    }
+
+    private void doTestHS002(final GradientMode gradientMode) {
+        SQPOption sqpOption = new SQPOption();
+        sqpOption.setGradientMode(gradientMode);
         InitialGuess guess = new InitialGuess(new double[]{-2.0, 1.0});
         SQPOptimizerS2 optimizer = new SQPOptimizerS2();
         double val = 0.0;
-        LagrangeSolution sol = optimizer.optimize(guess, new ObjectiveFunction(new HS002Obj()), new HS002Ineq());
+        LagrangeSolution sol = optimizer.optimize(sqpOption, guess, new ObjectiveFunction(new HS002Obj()), new HS002Ineq());
         assertEquals(val, sol.getValue(), 1e-3);
     }
 }
