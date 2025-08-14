@@ -82,15 +82,6 @@ public class BFGSUpdater {
     }
 
     /**
-     * Returns the inverse of the current L factor.
-     *
-     * @return inverse of lower‐triangular L
-     */
-    public RealMatrix getInvL() {
-        return inverseLowerTriangular();
-    }
-
-    /**
      * Updates the Hessian approximation using the BFGS formula.
      * <p>
      * If curvature condition fails, applies damping or regularization.

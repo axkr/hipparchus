@@ -16,22 +16,30 @@
  */
 package org.hipparchus.optim.nonlinear.vector.constrained;
 
+import org.hipparchus.linear.MatrixUtils;
 import org.hipparchus.linear.RealVector;
 import org.hipparchus.optim.nonlinear.scalar.ObjectiveFunction;
-import org.hipparchus.optim.nonlinear.vector.constrained.LagrangeSolution;
-import org.hipparchus.optim.nonlinear.vector.constrained.LinearEqualityConstraint;
-import org.hipparchus.optim.nonlinear.vector.constrained.LinearInequalityConstraint;
-import org.hipparchus.optim.nonlinear.vector.constrained.QuadraticFunction;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.hipparchus.util.FastMath;
 import org.junit.jupiter.api.Test;
 
 
 public class QPSolverTest {
 
     @Test
-    public void testGoldfarbIdnaniExample() {
-        
+    public void testGoldfarbIdnaniExampleNoInverseL() {
+        doTestGoldfarbIdnaniExample(false);
+    }
+
+    @Test
+    public void testGoldfarbIdnaniExampleInverseL() {
+        doTestGoldfarbIdnaniExample(true);
+    }
+
+    private void doTestGoldfarbIdnaniExample(final boolean inverseL) {
+
         QuadraticFunction q = new QuadraticFunction(new double[][] { { 4.0, -2.0 }, { -2.0, 4.0 } },
                                                     new double[] { 6.0, 0.0 },
                                                     0.0);
@@ -53,13 +61,19 @@ public class QPSolverTest {
         
         QPDualActiveSolver solver = new QPDualActiveSolver();
 
-        LagrangeSolution solution = solver.optimize(new ObjectiveFunction(q),eqc,ineqc);
+        final double s3 = FastMath.sqrt(3.0);
+        LagrangeSolution solution = inverseL ?
+                                    solver.optimize(new ObjectiveFunction(q), eqc, ineqc,
+                                                    new InverseCholesky(MatrixUtils.createRealMatrix(new double[][] {
+                                                            { 0.5, 0.0 }, { 0.5 / s3 , 1.0 / s3 }
+                                                    }))) :
+                                    solver.optimize(new ObjectiveFunction(q), eqc, ineqc);
 
         RealVector x = solution.getX();
 
-        double expectedObj =solution.getValue();
+        double expectedObj = solution.getValue();
 
-        assertArrayEquals(new double[]{1.0, 2.0}, x.toArray(), 1e-8);
+        assertArrayEquals(new double[]{ 1.0, 2.0 }, x.toArray(), 1e-8);
         assertEquals(12.0, expectedObj, 1e-8);
     }
 }

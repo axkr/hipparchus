@@ -46,7 +46,7 @@ import org.hipparchus.util.Precision;
 public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
 
 
-    private final SQPLogger formatter = new SQPLogger();
+    private final SQPLogger formatter = SQPLogger.defaultLogger();
 
     /**
      * Value of the equality constraints.
@@ -134,17 +134,7 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
             ineqEval = penalty.getIqEval();
         }
 
-        switch (getSettings().getGradientMode()) {
-            case 0:
-                externalGradient();
-                break;
-            case 1:
-                forwardGradient();
-                break;
-            case 2:
-                centralGradient();
-                break;
-        }
+        computeGradients();
 
         RealVector dx = new ArrayRealVector(x.getDimension());
         RealVector u = new ArrayRealVector(y.getDimension());
@@ -228,17 +218,7 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
                 eqEval = penalty.getEqEval();
                 ineqEval = penalty.getIqEval();
                 //calculate new Gradients
-                switch (getSettings().getGradientMode()) {
-                 case 0 :
-                     externalGradient();
-                     break;
-                 case 1 :
-                     forwardGradient();
-                     break;
-                 case 2 :
-                     centralGradient();
-                     break;
-                }
+                computeGradients();
                 //internalGradientCentered(x);
                 //NEW LAGRANGIAN GRADIENT UPDATE WITH NEW MULTIPLIER AND NEW VALUES
                 RealVector lagnew = lagrangianGradX(J, JE, JI, x, u);
@@ -267,7 +247,7 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
                     // bfgs.resetHessian(FastMath.min(gamma,10e6));
                     bfgs.resetHessian();
 
-                    H = bfgs.getHessian();
+                    H         = bfgs.getHessian();
                     augmented = true;
                     rho = 100.0;
                     penalty.resetRj();
@@ -295,6 +275,22 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
 
 
         return new LagrangeSolution(x, y, functionEval);
+    }
+
+    /** Compute gradients.
+     */
+    private void computeGradients() {
+        switch (getSettings().getGradientMode()) {
+            case EXTERNAL :
+                externalGradient();
+                break;
+            case FORWARD :
+                forwardGradient();
+                break;
+            case CENTRAL :
+                centralGradient();
+                break;
+        }
     }
 
     /** Compute constraints violations.
@@ -346,7 +342,6 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
      */
     private LagrangeSolution solveAugmentedQP(final RealVector y, final double rho) {
 
-        RealMatrix H = this.H;
         RealVector g = J;
 
         int me = 0;

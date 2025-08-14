@@ -51,7 +51,7 @@ public class SQPLogger {
      * Constructs a SQPLogger using {@link Precision#EPSILON} as default epsilon.
      */
     public SQPLogger() {
-        setEps(Precision.EPSILON);
+        this(Precision.EPSILON);
     }
 
     /**
@@ -154,28 +154,17 @@ public class SQPLogger {
         int index = 0;
         for (Object field : fields) {
             String cell;
+            final int w = index == 1 ? LS_WIDTH : width;
             if (field == null) {
-                if (index == 1) {
-                    cell = String.format(FIELD_START + LS_WIDTH + FIELD_CONTINUATION, "");
-                } else {
-                    cell = String.format(FIELD_START + width + FIELD_CONTINUATION, "");
-                }
+                cell = String.format(FIELD_START + w + FIELD_CONTINUATION, "");
             } else if (field instanceof Boolean) {
-                if (index == 1) {
-                    cell = String.format(FIELD_START + LS_WIDTH + FIELD_CONTINUATION, field);
-                } else {
-                    cell = String.format(FIELD_START + width + FIELD_CONTINUATION, field);
-                }
+                cell = String.format(FIELD_START + w + FIELD_CONTINUATION, field);
             } else if (index == 1 && field instanceof Number) { // LS column
-                cell = String.format(FIELD_START + LS_WIDTH + "d |", ((Number) field).intValue());
+                cell = String.format(FIELD_START + w + "d |", ((Number) field).intValue());
             } else if (field instanceof Number) {
                 cell = String.format(FIELD_START + width + "." + precision + "f |", ((Number) field).doubleValue());
             } else {
-                if (index == 1) {
-                    cell = String.format(FIELD_START + LS_WIDTH + FIELD_CONTINUATION, field);
-                } else {
-                    cell = String.format(FIELD_START + width + FIELD_CONTINUATION, field);
-                }
+               cell = String.format(FIELD_START + w + FIELD_CONTINUATION, field);
             }
             sb.append(cell);
             index++;
@@ -206,7 +195,7 @@ public class SQPLogger {
     /** Get default logger.
      * @return default logger
      */
-    public SQPLogger defaultLogger() {
+    public static SQPLogger defaultLogger() {
         return new SQPLogger(Precision.EPSILON);
     }
 

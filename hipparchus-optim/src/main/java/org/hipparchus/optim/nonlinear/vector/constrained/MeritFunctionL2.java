@@ -156,14 +156,6 @@ public class MeritFunctionL2 {
     }
 
     /**
-     * get numbers of evaluation of Obejctive and Constraints
-     * @return counter
-     */
-    int getCounter() {
-        return this.evalCounter;
-    }
-
-    /**
      * Penalty Gradient
      * @return penalty gradient
      */
