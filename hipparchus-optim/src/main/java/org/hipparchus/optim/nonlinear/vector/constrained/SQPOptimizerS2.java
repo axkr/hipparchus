@@ -195,7 +195,7 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
             //if penalty gradient is >= 0 skip line search and try again with augmented QP
             if (penalty.getGradient() < 0) {
 
-                rho = updateRho(dx, u, H, JE, JI, sigma);
+                rho = updateRho(dx, u, sigma);
 
                 //LINE SEARCH
                 alpha = lineSearch.search(penalty);
@@ -313,8 +313,7 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
         return crit;
     }
 
-    private double updateRho(final RealVector dx, final RealVector dy, final RealMatrix H,
-                             final RealMatrix JE, final RealMatrix JI, final double additionalVariable) {
+    private double updateRho(final RealVector dx, final RealVector dy, final double additionalVariable) {
         int me = JE != null ? JE.getRowDimension() : 0;
         int mi = JI != null ? JI.getRowDimension() : 0;
         RealMatrix JAC;
