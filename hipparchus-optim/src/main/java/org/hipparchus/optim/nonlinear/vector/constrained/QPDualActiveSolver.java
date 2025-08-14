@@ -466,7 +466,9 @@ public class QPDualActiveSolver extends QPOptimizer {
             }
         }
         if (iteration == maxIter) {
-            return new LagrangeSolution(new ArrayRealVector(0,0), new ArrayRealVector(0,0), 0.0); // no optimal solution is found
+            return new LagrangeSolution(new ArrayRealVector(0,0),
+                                        new ArrayRealVector(0,0),
+                                        0.0); // no optimal solution is found
         }
         return buildSolution(x, u, active, G, g0, g, p, m);
     }
@@ -491,7 +493,8 @@ public class QPDualActiveSolver extends QPOptimizer {
                 lambda.setEntry(activeSet.get(i), u.getEntry(i));
             }
         }
-        final double value = 0.5 * x.dotProduct(G.operate(x)) + g0.dotProduct(x) + g;
+        final double value = 0.5 * x.dotProduct(G.operate(x)) +
+                             g0.dotProduct(x) + g;
         return new LagrangeSolution(x, lambda, value);
     }
 

@@ -64,8 +64,11 @@ public class QRUpdater {
      */
     public QRUpdater(RealMatrix L,boolean isInverse) {
         this.n = L.getRowDimension();
-        if(isInverse)  this.J = L.transpose();
-        else           this.J = inverseLowerTriangular(L).transpose();
+        if (isInverse) {
+            this.J = L.transpose();
+        } else {
+            this.J = inverseLowerTriangular(L).transpose();
+        }
 
         this.R = MatrixUtils.createRealMatrix(n, n);
         this.iq = 0;

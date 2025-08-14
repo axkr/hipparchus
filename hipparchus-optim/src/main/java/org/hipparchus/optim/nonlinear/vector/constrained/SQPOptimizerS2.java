@@ -157,10 +157,10 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
             //log("SQP:hessian" + H);
             //LOOP TO FIND SOLUTION WITH SIGMA<SIGMA THRESHOLD
 
-            while ((sigma > getSettings().getSigmaMax() || sigma < - Precision.EPSILON) && qpLoop < getSettings().getQpMaxLoop()) {
+            while ((sigma > getSettings().getSigmaMax() || sigma < - Precision.EPSILON) &&
+                   qpLoop < getSettings().getQpMaxLoop()) {
                 sol1 = augmented ? solveAugmentedQP(y, rho) : solveQP();
                 sigma = (sol1.getX().getDimension() == 0) ? getSettings().getSigmaMax() * 10.0 : sol1.getValue();
-
 
                 if (sigma > getSettings().getSigmaMax() || sigma < - Precision.EPSILON) {
                     rho = getSettings().getRhoCons() * rho;
@@ -192,7 +192,7 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
 
             penalty.update(J, JE, JI, x, y, dx, u);
 
-            //if penalty gradient is >=0 skip line search and try again with augmented QP
+            //if penalty gradient is >= 0 skip line search and try again with augmented QP
             if (penalty.getGradient() < 0) {
 
                 rho = updateRho(dx, u, H, JE, JI, sigma);
@@ -233,7 +233,8 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
                 crit1 = step1 <= getSettings().getEps() * getSettings().getEps();
                 crit2 = step2 <= getSettings().getEps() * (1.0 + x.getNorm());
                 crit3 = violation <= FastMath.sqrt(getSettings().getEps());
-                formatter.logRow(iterations.getCount(), alpha, lineSearch.getIteration(),
+                formatter.logRow(iterations.getCount(),
+                                 alpha, lineSearch.getIteration(),
                                  step2, step1, kkt, violation, sigma,
                                  penalty.getPenaltyEval(), functionEval);
 
@@ -312,7 +313,8 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
         return crit;
     }
 
-    private double updateRho(RealVector dx, RealVector dy, RealMatrix H, RealMatrix JE, RealMatrix JI, double additionalVariable) {
+    private double updateRho(final RealVector dx, final RealVector dy, final RealMatrix H,
+                             final RealMatrix JE, final RealMatrix JI, final double additionalVariable) {
         int me = JE != null ? JE.getRowDimension() : 0;
         int mi = JI != null ? JI.getRowDimension() : 0;
         RealMatrix JAC;

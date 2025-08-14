@@ -120,8 +120,6 @@ public class MeritFunctionL2 {
         this.u = new ArrayRealVector(m);
         this.r = new ArrayRealVector(m,1.0);
         this.J = new ArrayRealVector(x.getDimension());
-//        this.JE = new Array2DRowRealMatrix(me,x.getDimension());
-//        this.JI = new Array2DRowRealMatrix(mi,x.getDimension());
         this.eqEval = new ArrayRealVector(me);
         this.iqEval = new ArrayRealVector(mi);
         //this evaluate objective function contraints function and penaly
@@ -140,7 +138,6 @@ public class MeritFunctionL2 {
     public void update(final RealVector newJ, final RealMatrix newJE, final RealMatrix newJI,
                        final RealVector newX, final RealVector newY,
                        final RealVector newDx, final RealVector newU) {
-
         this.J               = newJ;
         this.JE              = newJE;
         this.JI              = newJI;
@@ -200,8 +197,9 @@ public class MeritFunctionL2 {
     public double value(double alpha) {
         RealVector xAlpha = x.add(dx.mapMultiply(alpha));
         RealVector yAlpha = null;
-        if(y.getDimension()>0)yAlpha = y.add(u.subtract(y).mapMultiply(alpha));
-
+        if (y.getDimension() > 0) {
+            yAlpha = y.add(u.subtract(y).mapMultiply(alpha));
+        }
 
         objEval = this.objective.value(xAlpha);
         double penalty =objEval;
@@ -234,14 +232,10 @@ public class MeritFunctionL2 {
             RealVector mask = new ArrayRealVector(g.getDimension(), 1.0);
 
             for (int i = 0; i < gk.getDimension(); i++) {
-
                 if (gk.getEntry(i) > (yk.getEntry(i) / ri.getEntry(i))) {
-
                     mask.setEntry(i, 0.0);
-
                     penalty -= 0.5 * yi.getEntry(i) * yi.getEntry(i) / ri.getEntry(i);
                 }
-
             }
 
             RealVector g2 = g.ebeMultiply(g.ebeMultiply(mask));
@@ -259,8 +253,7 @@ public class MeritFunctionL2 {
     private double gradient() {
         if (y.getDimension() > 0) {
             return gradX().dotProduct(dx)+gradY().dotProduct(u.subtract(y));
-        }
-        else {
+        } else {
             return gradX().dotProduct(dx);
         }
     }
@@ -292,7 +285,9 @@ public class MeritFunctionL2 {
             RealVector mask = new ArrayRealVector(mi, 1.0);
 
             for (int i = 0; i < gi.getDimension(); i++) {
-                if (gi.getEntry(i) > yi.getEntry(i) / ri.getEntry(i)) mask.setEntry(i, 0.0);
+                if (gi.getEntry(i) > yi.getEntry(i) / ri.getEntry(i)) {
+                    mask.setEntry(i, 0.0);
+                }
             }
 
             RealVector term=jacob.preMultiply((yi.subtract(gi.ebeMultiply(ri))).ebeMultiply(mask));
@@ -322,7 +317,10 @@ public class MeritFunctionL2 {
             RealVector gi = this.iqEval.subtract(iqConstraint.getLowerBound());
             RealVector viri = new ArrayRealVector(mi, 0.0);
             for (int i = 0; i < gi.getDimension(); i++) {
-                viri.setEntry(i,gi.getEntry(i) > yi.getEntry(i) / ri.getEntry(i)?-yi.getEntry(i)/ri.getEntry(i):-gi.getEntry(i));
+                viri.setEntry(i,
+                              gi.getEntry(i) > yi.getEntry(i) / ri.getEntry(i) ?
+                              -yi.getEntry(i)/ri.getEntry(i) :
+                              -gi.getEntry(i));
             }
 
             partial.setSubVector(me, viri);
@@ -343,7 +341,9 @@ public class MeritFunctionL2 {
      */
      public void updateRj(RealMatrix H, RealVector newY, RealVector newDx, RealVector newU, double sigmaValue, int iterations) {
         //calculate sigma vector that depends on iterations
-        if (newY.getDimension() == 0)return;
+        if (newY.getDimension() == 0) {
+            return;
+        }
         RealVector sigma = new ArrayRealVector(r.getDimension());
         for (int i = 0; i < sigma.getDimension(); i++) {
             final double appoggio = iterations / FastMath.sqrt(r.getEntry(i));
@@ -367,12 +367,16 @@ public class MeritFunctionL2 {
         RealVector r1 = new ArrayRealVector(r);
         if (this.eqConstraint != null) {
             for (int i = 0; i < me; i++) {
-                r1.setEntry(i, FastMath.max(sigmar.getEntry(i), numerator.getEntry(i) / denominator));
+                r1.setEntry(i,
+                            FastMath.max(sigmar.getEntry(i),
+                                         numerator.getEntry(i) / denominator));
             }
         }
         if (this.iqConstraint != null) {
             for (int i = 0; i < mi; i++) {
-                r1.setEntry(me + i, FastMath.max(sigmar.getEntry(me + i), numerator.getEntry(me + i) / denominator));
+                r1.setEntry(me + i,
+                            FastMath.max(sigmar.getEntry(me + i),
+                                         numerator.getEntry(me + i) / denominator));
             }
         }
 

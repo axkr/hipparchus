@@ -66,12 +66,12 @@ public abstract class AbstractConstrainedOptimizerTest {
 
         // check result
         assertEquals(0.0,
-                            MatrixUtils.createRealVector(expectedSolution).subtract(solution.getX()).getL1Norm(),
-                            solutionTolerance);
+                     MatrixUtils.createRealVector(expectedSolution).subtract(solution.getX()).getL1Norm(),
+                     solutionTolerance);
         assertEquals(0.0,
-                            MatrixUtils.createRealVector(expectedMultipliers).subtract(solution.getLambda()).getL1Norm(),
-                            multipliersTolerance);
-        assertEquals(expectedValue, solution.getValue(),                                  valueTolerance);
+                     MatrixUtils.createRealVector(expectedMultipliers).subtract(solution.getLambda()).getL1Norm(),
+                     multipliersTolerance);
+        assertEquals(expectedValue, solution.getValue(), valueTolerance);
 
         // check neighboring points either violate constraints or have worst objective function
         for (int i = 0; i < expectedSolution.length; ++i) {
