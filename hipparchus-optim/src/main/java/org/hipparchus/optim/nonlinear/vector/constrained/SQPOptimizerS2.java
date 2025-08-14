@@ -46,7 +46,7 @@ import org.hipparchus.util.Precision;
 public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
 
 
-    SQPLogger formatter = new SQPLogger();
+    private final SQPLogger formatter = new SQPLogger();
 
     /**
      * Value of the equality constraints.
@@ -159,7 +159,6 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
         for (int i = 0; i < this.getMaxIterations(); i++) {
             iterations.increment();
 
-
             LagrangeSolution sol1 = null;
 
             int qpLoop = 0;
@@ -193,21 +192,20 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
                 dx = sol1.getX();
                 u = sol1.getLambda();
                 sigma = sol1.getValue();
-                penalty.updateRj(H,y, dx, u,sigma, iterations.getCount());
-                //switch to normal QP if additional variabile is small enough
+                penalty.updateRj(H, y, dx, u, sigma, iterations.getCount());
+                //switch to normal QP if additional variable is small enough
                 if (FastMath.abs(sigma) < getSettings().getEps()) {
                     augmented = false;
                 }
 
             }
 
-             penalty.update(J, JE, JI, x, y, dx, u);
+            penalty.update(J, JE, JI, x, y, dx, u);
 
-            //if penalty gradinet is >=0 skip line search and rty again with augmented QP
+            //if penalty gradient is >=0 skip line search and try again with augmented QP
             if (penalty.getGradient() < 0) {
 
-                rho = updateRho(dx, u, H,JE,JI, sigma);
-
+                rho = updateRho(dx, u, H, JE, JI, sigma);
 
                 //LINE SEARCH
                 alpha = lineSearch.search(penalty);
@@ -265,7 +263,7 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
 
                 //HESSIAN UPDATE WITH THE LOGIC OF LINE SEARCH AND WITH THE INTERNAL LOGIC(DUMPING)
                 if (lineSearch.isBadStepFailed()) {
-                    //reset hessain and inizialize for augmented QP solution with multiplier to zero
+                    //reset hessian and initialize for augmented QP solution with multiplier to zero
                     // bfgs.resetHessian(FastMath.min(gamma,10e6));
                     bfgs.resetHessian();
 
@@ -318,7 +316,7 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
         return crit;
     }
 
-    private double updateRho(RealVector dx, RealVector dy, RealMatrix H, RealMatrix JE,RealMatrix JI, double additionalVariable) {
+    private double updateRho(RealVector dx, RealVector dy, RealMatrix H, RealMatrix JE, RealMatrix JI, double additionalVariable) {
         int me = JE != null ? JE.getRowDimension() : 0;
         int mi = JI != null ? JI.getRowDimension() : 0;
         RealMatrix JAC;
@@ -341,6 +339,11 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
         return 0;
     }
 
+    /** Solve augmented system.
+     * @param x current point
+     * @param y Lagrange multipliers
+     * @param rho
+     */
     private LagrangeSolution solveAugmentedQP(final RealVector x, final RealVector y, final double rho) {
 
         RealMatrix H = this.H;
@@ -377,7 +380,6 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
         LinearEqualityConstraint eqc = null;
         RealVector conditioneq;
         if (getEqConstraint() != null) {
-            //RealMatrix eqJacob = constraintJacob.getSubMatrix(0, me - 1, 0, x.getDimension() - 1);
             RealMatrix eqJacob = JE;
             RealMatrix Ae = new Array2DRowRealMatrix(me, x.getDimension() + add);
             RealVector be = new ArrayRealVector(me);
@@ -393,7 +395,6 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
 
         if (getIqConstraint() != null) {
 
-            // RealMatrix iqJacob = constraintJacob.getSubMatrix(me, me + mi - 1, 0, x.getDimension() - 1);
             RealMatrix iqJacob = JI;
             RealMatrix Ai = new Array2DRowRealMatrix(mi, x.getDimension() + add);
             RealVector bi = new ArrayRealVector(mi);

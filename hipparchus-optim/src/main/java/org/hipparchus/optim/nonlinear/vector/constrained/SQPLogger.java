@@ -23,11 +23,22 @@ import org.hipparchus.util.Precision;
  */
 public class SQPLogger {
 
+    /** LS column fixed to 2 digits + 1 space for safety. */
+    private static final int LS_WIDTH = 3;
+
+    /** Precision. */
     private int precision;
+
+    /** Fields width. */
     private int width;
-    private final int lsWidth = 3; // LS column fixed to 2 digits + 1 space for safety
+
+    /** Format of header line. */
     private String headerFormat;
+
+    /** Format of row lines. */
     private String rowFormat;
+
+    /** Debug printer. */
     private DebugPrinter printer;
 
     /**
@@ -56,14 +67,14 @@ public class SQPLogger {
         this.width = precision + 7; // space for digits, sign, exponent, padding
 
         String col = String.format("%%-%ds", width);
-        String lsCol = String.format("%%-%ds", lsWidth);
+        String lsCol = String.format("%%-%ds", LS_WIDTH);
         this.headerFormat = String.format(
             "[SQP] ITER %%2s | %s | %s | %s | %s | %s | %s | %s | %s | %s |",
             col, lsCol, col, col, col, col, col, col, col
         );
 
         String fld = String.format("%%" + width + "." + precision + "f");
-        String intf = String.format("%%" + lsWidth + "d");
+        String intf = String.format("%%" + LS_WIDTH + "d");
         this.rowFormat = String.format(
             "[SQP] ITER %%2d | %s | %s | %s | %s | %s | %s | %s | %s | %s |",
             fld, intf, fld, fld, fld, fld, fld, fld, fld
@@ -139,23 +150,23 @@ public class SQPLogger {
             String cell;
             if (field == null) {
                 if (index == 1) {
-                    cell = String.format(" %" + lsWidth + "s |", "");
+                    cell = String.format(" %" + LS_WIDTH + "s |", "");
                 } else {
                     cell = String.format(" %" + width + "s |", "");
                 }
             } else if (field instanceof Boolean) {
                 if (index == 1) {
-                    cell = String.format(" %" + lsWidth + "s |", field);
+                    cell = String.format(" %" + LS_WIDTH + "s |", field);
                 } else {
                     cell = String.format(" %" + width + "s |", field);
                 }
             } else if (index == 1 && field instanceof Number) { // LS column
-                cell = String.format(" %" + lsWidth + "d |", ((Number) field).intValue());
+                cell = String.format(" %" + LS_WIDTH + "d |", ((Number) field).intValue());
             } else if (field instanceof Number) {
                 cell = String.format(" %" + width + "." + precision + "f |", ((Number) field).doubleValue());
             } else {
                 if (index == 1) {
-                    cell = String.format(" %" + lsWidth + "s |", field);
+                    cell = String.format(" %" + LS_WIDTH + "s |", field);
                 } else {
                     cell = String.format(" %" + width + "s |", field);
                 }

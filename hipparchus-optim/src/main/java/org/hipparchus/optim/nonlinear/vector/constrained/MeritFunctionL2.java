@@ -51,24 +51,46 @@ public class MeritFunctionL2 {
     /** Inequality constraints (may be null). */
     private final Constraint iqConstraint;
 
-    // Cached parameters
-//    private double currentF;
+    /** Current point. */
     private RealVector x;
+
+    /** Lagrange multipliers. */
     private RealVector y;
-    private RealVector dx;
+
+    /** Search direction. */
+    private RealVector       dx;
+
+    /** Multipliers for QP. */
     private RealVector u;
+
+    /** Unit vector. */
     private final RealVector r;
+
+    /** Gradient of the objective at current point. */
     private RealVector J;
+
+    /** penalty gradient. */
     private double penaltyGradient;
+
+    /** Objective function evaluation. */
     private double objEval;
+
+    /** Equality evaluation. */
     private RealVector eqEval;
+
+    /** Inequality evaluation. */
     private RealVector iqEval;
+
+    /** Penalty evaluation. */
     private double pEval;
+
+    /** Gradient of equality. */
     private RealMatrix JE;
+
+    /** Gradient of inequality. */
     private RealMatrix JI;
-    private int evalCounter = 0;
-//    private RealVector eqVal;
-//    private RealVector iqVal;
+
+    private int evalCounter;
 
     /**
      * Constructor.
@@ -104,14 +126,12 @@ public class MeritFunctionL2 {
 //        this.JI = new Array2DRowRealMatrix(mi,x.getDimension());
         this.eqEval = new ArrayRealVector(me);
         this.iqEval = new ArrayRealVector(mi);
+        this.evalCounter = 0;
         //this evaluate objective function contraints function and penaly
         this.value(0);
     }
 
-    /**
-     * Update internal parameters for next penalty computation.
-     *
-     *
+    /** Update internal parameters for next penalty computation.
      * @param J Gradient of objective at current x
      * @param JE Gradient of equality x
      * @param JI Gradient of inequality at current x
@@ -120,68 +140,66 @@ public class MeritFunctionL2 {
      * @param dx Search direction from QP
      * @param u multiplier from QP
      */
-    public void update(final RealVector J,
-                       final RealMatrix JE,
-                       final RealMatrix JI,
-                       final RealVector x,
-                       final RealVector y,
-                       final RealVector dx,
-                       final RealVector u)
-                       {
+    public void update(final RealVector J, final RealMatrix JE, final RealMatrix JI,
+                       final RealVector x, final RealVector y,
+                       final RealVector dx, final RealVector u) {
 
-        this.J =J;
-        this.JE = JE;
-        this.JI = JI;
-        this.x = x;
-        this.y = y;
-        this.dx = dx;
-        this.u =u;
-    this.penaltyGradient = gradient();
+        this.J               = J;
+        this.JE              = JE;
+        this.JI              = JI;
+        this.x               = x;
+        this.y               = y;
+        this.dx              = dx;
+        this.u               = u;
+        this.penaltyGradient = gradient();
     }
 
     /**
      * get numbers of evaluation of Obejctive and Constraints
      * @return counter
      */
-    int getCounter(){
-    return this.evalCounter;
+    int getCounter() {
+        return this.evalCounter;
     }
-
 
     /**
      * Penalty Gradient
      * @return penalty gradient
      */
-    double getGradient(){
-    return this.penaltyGradient;
+    double getGradient() {
+        return this.penaltyGradient;
     }
 
     /**
      * Get Last Objective Evaluation;
      * @return penalty gradient
      */
-    double getObjEval(){
-    return this.objEval;
+    double getObjEval() {
+        return this.objEval;
     }
 
     /**
      * Get Last Inequality Constraints Evaluation;
      * @return penalty gradient
      */
-    RealVector getIqEval(){
-    return this.iqEval;
+    RealVector getIqEval() {
+        return this.iqEval;
     }
 
      /**
      * Get Last Equality Constraints Evaluation;
      * @return penalty gradient
      */
-    RealVector getEqEval(){
-    return this.eqEval;
+    RealVector getEqEval() {
+        return this.eqEval;
     }
 
-    double getPenaltyEval(){
-    return this.pEval;
+    /**
+     * Get last penalty evaluation.
+     * @return lat penalty evaluation
+     */
+    double getPenaltyEval() {
+        return this.pEval;
     }
 
     /**
@@ -241,7 +259,7 @@ public class MeritFunctionL2 {
             penalty -= yi.dotProduct(g.ebeMultiply(mask)) - 0.5 * ri.dotProduct(g2);
         }
         pEval = penalty;
-        this.evalCounter++;
+        evalCounter++;
         return penalty;
     }
 
@@ -251,17 +269,17 @@ public class MeritFunctionL2 {
      * @return penalty gradient
      */
     private double gradient() {
-        if(y.getDimension()>0)
+        if (y.getDimension() > 0) {
             return gradX().dotProduct(dx)+gradY().dotProduct(u.subtract(y));
-        else
+        }
+        else {
             return gradX().dotProduct(dx);
+        }
     }
 
 
      public RealVector gradX() {
-        RealVector partial =J;
-//        RealVector x = this.x.copy();
-//        RealVector y=this.y.copy();
+        RealVector partial = J;
         int me = 0;
         int mi;
 
@@ -270,26 +288,20 @@ public class MeritFunctionL2 {
             RealVector re = r.getSubVector(0, me);
             RealVector ye = y.getSubVector(0, me);
 
-//            RealVector ge = eqVal.subtract(eqConstraint.getLowerBound());
-             RealVector ge = this.eqEval.subtract(eqConstraint.getLowerBound());
+            RealVector ge = this.eqEval.subtract(eqConstraint.getLowerBound());
             RealMatrix jacob = JE;
-            RealVector term=jacob.preMultiply(ye.subtract(ge.ebeMultiply(re)));
-            partial=partial.subtract(term);
+            RealVector term = jacob.preMultiply(ye.subtract(ge.ebeMultiply(re)));
+            partial = partial.subtract(term);
         }
 
         if (iqConstraint != null) {
             mi = iqConstraint.dimY();
 
             RealVector ri = r.getSubVector(me, mi);
-
             RealVector yi = y.getSubVector(me, mi);
-//            RealVector gi = iqVal.subtract(iqConstraint.getLowerBound());
-             RealVector gi = this.iqEval.subtract(iqConstraint.getLowerBound());
+            RealVector gi = this.iqEval.subtract(iqConstraint.getLowerBound());
             RealMatrix jacob = JI;
-
             RealVector mask = new ArrayRealVector(mi, 1.0);
-
-
 
             for (int i = 0; i < gi.getDimension(); i++) {
                 if (gi.getEntry(i) > yi.getEntry(i) / ri.getEntry(i)) mask.setEntry(i, 0.0);
@@ -310,7 +322,6 @@ public class MeritFunctionL2 {
         RealVector partial = new ArrayRealVector(y.getDimension());
         if (eqConstraint != null) {
             me = eqConstraint.dimY();
-//            RealVector g = eqVal.subtract(eqConstraint.getLowerBound());
              RealVector g = this.eqEval.subtract(eqConstraint.getLowerBound());
             partial.setSubVector(0, g.mapMultiply(-1.0));
         }
@@ -320,23 +331,20 @@ public class MeritFunctionL2 {
 
             RealVector ri = r.getSubVector(me, mi);
             RealVector yi = y.getSubVector(me, mi);
-//            RealVector gi = iqVal.subtract(iqConstraint.getLowerBound());
             RealVector gi = this.iqEval.subtract(iqConstraint.getLowerBound());
-
             RealVector viri = new ArrayRealVector(mi, 0.0);
             for (int i = 0; i < gi.getDimension(); i++) {
-
                 viri.setEntry(i,gi.getEntry(i) > yi.getEntry(i) / ri.getEntry(i)?-yi.getEntry(i)/ri.getEntry(i):-gi.getEntry(i));
             }
 
-            //partial.setSubVector(me, (gi.ebeMultiply(mask).add(viri)).mapMultiply(-1.0));
             partial.setSubVector(me, viri);
         }
 
         return partial;
     }
+
     /**
-     * Update Weight Vector Rj
+     * Update Weight Vector Rj.
      * called after QP solution before update the penalty function
      * @param H hessina Matrix(updated after line search)
      * @@param y last estimate of multiplier(updated after line search)
@@ -346,7 +354,7 @@ public class MeritFunctionL2 {
      * @param iterations current iteration
      */
      public void updateRj(RealMatrix H,RealVector y,RealVector dx, RealVector u,double sigmaValue,int iterations) { //r = updateRj(currentH,dx,y,u,r,sigm);
-        //calculate sigma vector that dipend by iterations
+        //calculate sigma vector that depends on iterations
         if (y.getDimension() == 0)return;
         RealVector sigma = new ArrayRealVector(r.getDimension());
         for (int i = 0; i < sigma.getDimension(); i++) {
@@ -383,10 +391,10 @@ public class MeritFunctionL2 {
         r.setSubVector(0,r1);
     }
 
-     public void resetRj()
-     {
-         if(y.getDimension()>0)
+    public void resetRj() {
+        if (y.getDimension() > 0) {
             this.r.set(1.0);
+        }
      }
 
     RealVector getDx() {

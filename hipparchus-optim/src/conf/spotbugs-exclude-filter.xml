@@ -144,6 +144,11 @@
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
   </Match>
+  <Match>
+    <Class name="org.hipparchus.optim.nonlinear.vector.constrained.InverseCholesky"/>
+    <Method name="getInverseL"/>
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
 
   <!--  the following equality tests are part of the reference algorithms -->
   <!--  which already know about limited precision of the double numbers -->

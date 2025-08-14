@@ -475,7 +475,7 @@ public class QPDualActiveSolver extends QPOptimizer {
         if (iteration == maxIter) {
             return new LagrangeSolution(new ArrayRealVector(0,0), new ArrayRealVector(0,0), 0.0);//no optimal solution is found
         }
-        return buildSolution(x, u, active, G, g0,g, p, m);
+        return buildSolution(x, u, active, G, g0, g, p, m);
     }
 
     /**
@@ -483,8 +483,11 @@ public class QPDualActiveSolver extends QPOptimizer {
      * @param x solution
      * @param u active set multipliers
      * @param activeSet active set constraints
-     * @param G matrix
-     * @param g vector
+     * @param G square matrix of weights for quadratic terms
+     * @param g0 vector of weights for linear terms
+     * @param g constant term
+     * @param p number of equalities
+     * @param m number of inequalities
      * @return the optimal solution
      */
     private LagrangeSolution buildSolution(final RealVector x, final RealVector u, final List<Integer> activeSet,
@@ -495,14 +498,14 @@ public class QPDualActiveSolver extends QPOptimizer {
                 lambda.setEntry(activeSet.get(i), u.getEntry(i));
             }
         }
-        final double value = 0.5 * x.dotProduct(G.operate(x)) + g0.dotProduct(x)+g;
+        final double value = 0.5 * x.dotProduct(G.operate(x)) + g0.dotProduct(x) + g;
         return new LagrangeSolution(x, lambda, value);
     }
 
     /**
      * Computes the inverse of a lower-triangular matrix via forward
      * substitution.
-     *
+     * @param L lower triangular matrix
      * @return inverse of Lower Triangular Matrix
      */
     private RealMatrix inverseLowerTriangular(final RealMatrix L) {
