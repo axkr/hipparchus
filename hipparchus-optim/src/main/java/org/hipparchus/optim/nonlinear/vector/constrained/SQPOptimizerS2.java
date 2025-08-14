@@ -45,7 +45,7 @@ import org.hipparchus.util.Precision;
  */
 public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
 
-
+    /** Logger. */
     private final SQPLogger formatter = SQPLogger.defaultLogger();
 
     /**
@@ -288,7 +288,7 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
             case FORWARD :
                 forwardGradient();
                 break;
-            case CENTRAL :
+            default :
                 centralGradient();
                 break;
         }
@@ -355,8 +355,8 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
         if (getIqConstraint() != null) {
 
             mi = getIqConstraint().dimY();
-            violated = ineqEval.subtract(getIqConstraint().getLowerBound()).getMinValue() <= getSettings().getEps()
-                    || y.getMaxValue() > 0;
+            violated = ineqEval.subtract(getIqConstraint().getLowerBound()).getMinValue() <= getSettings().getEps() ||
+                       y.getMaxValue() > 0;
 
         }
         // violated = true;
@@ -519,36 +519,33 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
      * <pre>
      *     ∇ₓ L(x, y) = ∇f(x) - JEᵗ·yₑ - JIᵗ·yᵢ
      * </pre>
-     * @param J  the gradient of the objective function {@code ∇f(x)}, length {@code n}
-     * @param JE the Jacobian of the equality constraints, shape {@code [me x n]} (nullable)
-     * @param JI the Jacobian of the inequality constraints, shape {@code [mi x n]} (nullable)
-     * @param x  the current point in the primal space (not used directly, included for API symmetry)
+     * @param otherJ  the gradient of the objective function {@code ∇f(x)}, length {@code n}
+     * @param otherJE the Jacobian of the equality constraints, shape {@code [me x n]} (nullable)
+     * @param otherJI the Jacobian of the inequality constraints, shape {@code [mi x n]} (nullable)
+     * @param ignoredX  the current point in the primal space (not used directly, included for API symmetry)
      * @param y  the stacked Lagrange multipliers {@code [yₑ; yᵢ]}, length {@code me + mi}
      * @return the gradient of the Lagrangian with respect to {@code x}, length {@code n}
      */
-    public RealVector lagrangianGradX(final RealVector J,
-                                      final RealMatrix JE,
-                                      final RealMatrix JI,
-                                      final RealVector x,
-                                      final RealVector y) {
+    public RealVector lagrangianGradX(final RealVector otherJ, final RealMatrix otherJE, final RealMatrix otherJI,
+                                      final RealVector ignoredX, final RealVector y) {
 
-        RealVector gradL  = new ArrayRealVector(J);
+        RealVector gradL  = new ArrayRealVector(otherJ);
         int        offset = 0;
 
         // Subtract JEᵗ · yₑ if equality constraints exist
-        if (JE != null) {
-            int        me     = JE.getRowDimension();
+        if (otherJE != null) {
+            int        me     = otherJE.getRowDimension();
             RealVector yEq    = y.getSubVector(0, me);
-            RealVector termEq = JE.preMultiply(yEq);
+            RealVector termEq = otherJE.preMultiply(yEq);
             gradL = gradL.subtract(termEq);
             offset += me;
         }
 
         // Subtract JIᵗ · yᵢ if inequality constraints exist
-        if (JI != null) {
-            int        mi     = JI.getRowDimension();
+        if (otherJI != null) {
+            int        mi     = otherJI.getRowDimension();
             RealVector yIq    = y.getSubVector(offset, mi);
-            RealVector termIq = JI.preMultiply(yIq);
+            RealVector termIq = otherJI.preMultiply(yIq);
             gradL = gradL.subtract(termIq);
         }
 
@@ -627,7 +624,8 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
         int    n     = x.getDimension();
         double hBase = FastMath.cbrt(Precision.EPSILON);
 
-        double     fPlus, fMinus;
+        double fPlus;
+        double fMinus;
         RealVector gradF  = new ArrayRealVector(n);
         RealMatrix gradEq = (getEqConstraint() != null) ? new Array2DRowRealMatrix(eqEval.getDimension(), n) : null;
         RealMatrix gradIq = (getIqConstraint() != null) ? new Array2DRowRealMatrix(ineqEval.getDimension(), n) : null;

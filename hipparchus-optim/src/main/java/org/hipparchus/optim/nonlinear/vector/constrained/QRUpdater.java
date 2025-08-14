@@ -86,7 +86,12 @@ public class QRUpdater {
         RealMatrix Jtemp = new Array2DRowRealMatrix(J.getData());
         RealVector tempD = new ArrayRealVector(d);
 
-        double cc, ss, h, t1, t2, xny;
+        double cc;
+        double ss;
+        double h;
+        double t1;
+        double t2;
+        double xny;
         for (int j = n - 1; j >= iq + 1; j--) {
             cc = tempD.getEntry(j - 1);
             ss = tempD.getEntry(j);
@@ -132,9 +137,9 @@ public class QRUpdater {
      *
      * @param constraintIndex index of the constraint to delete
      */
-    public boolean deleteConstraint(int constraintIndex) {
+    public void deleteConstraint(int constraintIndex) {
         if (constraintIndex < 0 || constraintIndex >= iq) {
-            return false; //index not found
+            return; //index not found
         }
         for (int i = constraintIndex; i < iq - 1; i++) {
             for (int j = 0; j < n; j++) {
@@ -146,7 +151,7 @@ public class QRUpdater {
         }
         iq--;
         if (iq == 0) {
-            return true;
+            return;
         }
         for (int j = constraintIndex; j < iq; j++) {
             double cc = R.getEntry(j, j);
@@ -173,7 +178,6 @@ public class QRUpdater {
                 J.setEntry(k, j + 1, xny * (t1 + J.getEntry(k, j)) - t2);
             }
         }
-        return true;
     }
 
     /**
@@ -183,10 +187,10 @@ public class QRUpdater {
      * @return inverse of the lower triangular matrix
      */
     private RealMatrix inverseLowerTriangular(RealMatrix L) {
-        int n = L.getRowDimension();
-        RealMatrix Linv = MatrixUtils.createRealMatrix(n, n);
-        for (int i = 0; i < n; i++) {
-            RealVector e = MatrixUtils.createRealVector(new double[n]);
+        int p = L.getRowDimension();
+        RealMatrix Linv = MatrixUtils.createRealMatrix(p, p);
+        for (int i = 0; i < p; i++) {
+            RealVector e = MatrixUtils.createRealVector(new double[p]);
             e.setEntry(i, 1.0);
             MatrixUtils.solveLowerTriangularSystem(L, e);
             Linv.setColumnVector(i, e);
@@ -226,9 +230,9 @@ public class QRUpdater {
      * @return inverse of U
      */
     private RealMatrix inverseUpperTriangular(RealMatrix U) {
-        int n = U.getRowDimension();
-        RealMatrix Uinv = MatrixUtils.createRealMatrix(n, n);
-        for (int i = n - 1; i >= 0; i--) {
+        int p = U.getRowDimension();
+        RealMatrix Uinv = MatrixUtils.createRealMatrix(p, p);
+        for (int i = p - 1; i >= 0; i--) {
             Uinv.setEntry(i, i, 1.0 / U.getEntry(i, i));
             for (int j = i - 1; j >= 0; j--) {
                 double sum = 0.0;

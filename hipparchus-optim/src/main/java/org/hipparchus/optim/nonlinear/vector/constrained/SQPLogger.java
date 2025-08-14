@@ -62,15 +62,17 @@ public class SQPLogger {
         final int precision = (int) Math.ceil(-Math.log10(epsilon)) + 2;
         this.width = precision + 7; // space for digits, sign, exponent, padding
 
-        String col = String.format("%%-%ds", width);
-        String lsCol = String.format("%%-%ds", LS_WIDTH);
+        final String f = "%%-%ds";
+        String col = String.format(f, width);
+        String lsCol = String.format(f, LS_WIDTH);
         this.headerFormat = String.format(
             "[SQP] ITER %%2s | %s | %s | %s | %s | %s | %s | %s | %s | %s |",
             col, lsCol, col, col, col, col, col, col, col
         );
 
-        String fld = String.format("%%" + width + "." + precision + "f");
-        String intf = String.format("%%" + LS_WIDTH + "d");
+        final String percent = "%%";
+        String fld = String.format(percent + width + "." + precision + "f");
+        String intf = String.format(percent + LS_WIDTH + "d");
         this.rowFormat = String.format(
             "[SQP] ITER %%2d | %s | %s | %s | %s | %s | %s | %s | %s | %s |",
             fld, intf, fld, fld, fld, fld, fld, fld, fld
@@ -78,10 +80,10 @@ public class SQPLogger {
     }
 
     /** Set debug printer.
-     * @param printer debug printer
+     * @param debugPrinter debug printer
      */
-    public void setDebugPrinter(DebugPrinter printer) {
-        this.printer = printer;
+    public void setDebugPrinter(DebugPrinter debugPrinter) {
+        this.printer = debugPrinter;
     }
 
     /** Get header line.
