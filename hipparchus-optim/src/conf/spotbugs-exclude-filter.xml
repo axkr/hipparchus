@@ -83,6 +83,7 @@
       <Class name="org.hipparchus.optim.nonlinear.vector.constrained.LinearBoundedConstraint"/>
       <Class name="org.hipparchus.optim.nonlinear.vector.constrained.LinearEqualityConstraint"/>
       <Class name="org.hipparchus.optim.nonlinear.vector.constrained.LinearInequalityConstraint"/>
+      <Class name="org.hipparchus.optim.nonlinear.vector.constrained.InverseCholesky"/>
       <Class name="org.hipparchus.optim.univariate.MultiStartUnivariateOptimizer"/>
     </Or>
     <Method name="&lt;init>"/>
@@ -102,7 +103,10 @@
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
   <Match>
-    <Class name="org.hipparchus.optim.nonlinear.vector.constrained.AbstractSQPOptimizer"/>
+    <Or>
+      <Class name="org.hipparchus.optim.nonlinear.vector.constrained.AbstractSQPOptimizer"/>
+      <Class name="org.hipparchus.optim.nonlinear.vector.constrained.AbstractSQPOptimizer2"/>
+    </Or>
     <Method name="getSettings"/>
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
@@ -134,6 +138,11 @@
       <Method name="getQ"/>
     </Or>
     <Bug pattern="EI_EXPOSE_REP" />
+  <Match>
+    <Class name="org.hipparchus.optim.nonlinear.vector.constrained.InverseCholesky"/>
+    <Method name="getInverseL"/>
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
   </Match>
 
   <!--  the following equality tests are part of the reference algorithms -->

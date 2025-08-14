@@ -16,7 +16,6 @@
  */
 package org.hipparchus.optim.nonlinear.vector.constrained;
 
-
 import org.hipparchus.util.Precision;
 
 /**
@@ -26,7 +25,7 @@ public class SQPLogger {
 
     private int precision;
     private int width;
-    private int lsWidth = 3; // LS column fixed to 2 digits + 1 space for safety
+    private final int lsWidth = 3; // LS column fixed to 2 digits + 1 space for safety
     private String headerFormat;
     private String rowFormat;
     private DebugPrinter printer;
@@ -71,32 +70,67 @@ public class SQPLogger {
         );
     }
 
+    /** Set debug printer.
+     * @param printer debug printer
+     */
     public void setDebugPrinter(DebugPrinter printer) {
         this.printer = printer;
     }
 
+    /** Get header line.
+     * @return header line
+     */
     public String header() {
         return String.format(headerFormat,
             "", "alpha", "LS", "dxNorm", "dx'Hdx", "KKT", "viol", "sigma", "penalty", "f(x)");
     }
 
-    public String formatRow(int iter, double alpha, int lsCount,
-                            double dxNorm, double dxHdx, double kkt,
-                            double viol, double sigma, double penalty, double fx) {
+    /** Format one row.
+     * @param iter     iteration number
+     * @param alpha    step length
+     * @param lsCount  line search iteration
+     * @param dxNorm
+     * @param dxHdx
+     * @param kkt      Lagrangian norm
+     * @param viol     constraints violations
+     * @param sigma
+     * @param penalty  penalty
+     * @param fx       objective function evaluation
+     * @return formatted row
+     */
+    public String formatRow(final int iter, final double alpha, final int lsCount,
+                            final double dxNorm, final double dxHdx, final double kkt,
+                            final double viol, final double sigma, final double penalty, final double fx) {
         return String.format(rowFormat,
-            iter, alpha, lsCount, dxNorm, dxHdx, kkt, viol, sigma, penalty, fx);
+                             iter, alpha, lsCount, dxNorm, dxHdx, kkt, viol, sigma, penalty, fx);
     }
 
+    /** Log header.
+     */
     public void logHeader() {
         if (printer != null) {
             printer.print(header());
         }
     }
 
-    public void logRow(int iter, Object alpha, Object lsCount,
-                       Object dxNorm, Object dxHdx, Object kkt,
-                       Object viol, Object sigma, Object penalty, Object fx) {
-        if (printer == null) return;
+    /** Log one row.
+     * @param iter     iteration number
+     * @param alpha    step length
+     * @param lsCount  line search iteration
+     * @param dxNorm
+     * @param dxHdx
+     * @param kkt      Lagrangian norm
+     * @param viol     constraints violations
+     * @param sigma
+     * @param penalty  penalty
+     * @param fx       objective function evaluation
+     */
+    public void logRow(final int iter, final Object alpha, final Object lsCount,
+                       final Object dxNorm, final Object dxHdx, final Object kkt,
+                       final Object viol, final Object sigma, final Object penalty, final Object fx) {
+        if (printer == null) {
+            return;
+        }
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("[SQP] ITER %2d |", iter));
         Object[] fields = { alpha, lsCount, dxNorm, dxHdx, kkt, viol, sigma, penalty, fx };
@@ -111,9 +145,9 @@ public class SQPLogger {
                 }
             } else if (field instanceof Boolean) {
                 if (index == 1) {
-                    cell = String.format(" %" + lsWidth + "s |", field.toString());
+                    cell = String.format(" %" + lsWidth + "s |", field);
                 } else {
-                    cell = String.format(" %" + width + "s |", field.toString());
+                    cell = String.format(" %" + width + "s |", field);
                 }
             } else if (index == 1 && field instanceof Number) { // LS column
                 cell = String.format(" %" + lsWidth + "d |", ((Number) field).intValue());
@@ -121,9 +155,9 @@ public class SQPLogger {
                 cell = String.format(" %" + width + "." + precision + "f |", ((Number) field).doubleValue());
             } else {
                 if (index == 1) {
-                    cell = String.format(" %" + lsWidth + "s |", field.toString());
+                    cell = String.format(" %" + lsWidth + "s |", field);
                 } else {
-                    cell = String.format(" %" + width + "s |", field.toString());
+                    cell = String.format(" %" + width + "s |", field);
                 }
             }
             sb.append(cell);
@@ -132,6 +166,18 @@ public class SQPLogger {
         printer.print(sb.toString());
     }
 
+    /** Log one row.
+     * @param iter     iteration number
+     * @param alpha    step length
+     * @param lsCount  line search iteration
+     * @param dxNorm
+     * @param dxHdx
+     * @param kkt      Lagrangian norm
+     * @param viol     constraints violations
+     * @param sigma
+     * @param penalty  penalty
+     * @param fx       objective function evaluation
+     */
     public void logRow(int iter, double alpha, int lsCount,
                        double dxNorm, double dxHdx, double kkt,
                        double viol, double sigma, double penalty, double fx) {
@@ -140,7 +186,11 @@ public class SQPLogger {
         }
     }
 
+    /** Get default logger.
+     * @return default logger
+     */
     public SQPLogger defaultLogger() {
         return new SQPLogger(Precision.EPSILON);
     }
-} 
+
+}

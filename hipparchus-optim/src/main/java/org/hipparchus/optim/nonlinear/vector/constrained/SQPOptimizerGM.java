@@ -30,7 +30,7 @@ import org.hipparchus.util.FastMath;
  * <br/>
  * min f(x)
  * <br/>
- * q(x)=b1
+ * q(x) = b1
  * <br/>
  * h(x)>=b2
  * <br/>

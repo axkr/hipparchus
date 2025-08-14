@@ -16,86 +16,128 @@
  */
 package org.hipparchus.optim.nonlinear.vector.constrained;
 
+import org.hipparchus.util.FastMath;
+
 import java.util.LinkedList;
 import java.util.Queue;
-import org.hipparchus.util.FastMath;
-import org.hipparchus.util.Precision;
 
-/**
- * Robust Line Search strategy
- *
+/** Robust Line Search strategy.
+ * <p>
  * This class manages monotone and non-monotone line search. Switching is
  * automatic after repeated failures of the monotone search.
+ * </p>
  *
+ * <p>
  * Typical parameter values used in Schittkowski's algorithms:
+ * </p>
  * <ul>
  * <li>maxHistory = 5 to 10 (memory for non-monotone search)</li>
  * <li>sigma = 1e-4 or 1e-5 (Armijo sufficient decrease parameter)</li>
  * <li>beta = 0.5 (step reduction factor)</li>
  * <li>alphaMin (minimum allowed step length)</li>
  * <li>alphaMax = 1.0 (maximum allowed step length)</li>
- * <li>maxMonotoneFailures = 20 to 50 (failures before switching to
- * non-monotone)</li>
- * <li>maxBadSteps = 3 to 5 (allowed consecutive bad steps before Hessian
- * reset)</li>
+ * <li>maxMonotoneFailures = 20 to 50 (failures before switching to non-monotone)</li>
+ * <li>maxBadSteps = 3 to 5 (allowed consecutive bad steps before Hessian reset)</li>
  * </ul>
+ * @since 4.1
  */
 public class LineSearch {
 
+    /** Maximum penalty history size. */
     private final int maxHistory;
+
+    /** Parameter for evaluation of Armijo condition for descend direction. */
     private final double sigma;
+
+    /** Step reduction factor. */
     private final double beta;
+
+    /** Minimum step length. */
     private  double alphaMin;
-    private final double alphaMax;
+
+    /** Failures before switching to non-monotone. */
     private final int maxMonotoneFailures;
+
+    /** Allowed consecutive bad steps before Hessian reset. */
     private final int maxBadSteps;
 
+    /** Penalty history. */
     private final Queue<Double> history;
+
+    /** Number of iterations in line search. */
     private int searchCount;
+
+    /** Last penalty. */
     private double lastPenalty;
+
     private int monotoneFailures;
+
+    /** Number of consecutive bad steps. */
     private int badStepCount;
+
+    /** Indicator for non-monotone search. */
     private boolean nonMonotoneEnabled;
+
+    /** Indicator for detected bad step. */
     private boolean badStepDetected;
+
+    /** Indicator for too many consecutive bad steps. */
     private boolean badStepFailed;
 
-    public LineSearch(double eps, int maxHistory, double mu, double beta,
-            int maxMonotoneFailures, int maxBadSteps) {
-        this.maxHistory = maxHistory;
-        this.sigma = mu;
-        this.beta = beta;
-        this.alphaMin = eps>1.0e-12?1.0e-12:eps;
-        this.alphaMax = 1.0;
+    /** Simple constructor.
+     * @param eps tolerance for convergence and active constraint evaluation
+     * @param maxHistory maximum penalty history size
+     * @param mu parameter for evaluation of Armijo condition for descend direction
+     * @param beta step reduction factor
+     * @param maxMonotoneFailures failures before switching to non-monotone
+     * @param maxBadSteps allowed consecutive bad steps before Hessian reset
+     */
+    public LineSearch(final double eps, final int maxHistory, final double mu, final double beta,
+                      final int maxMonotoneFailures, final int maxBadSteps) {
+        this.maxHistory          = maxHistory;
+        this.sigma               = mu;
+        this.beta                = beta;
+        this.alphaMin            = FastMath.min(1.0e-12, eps);
         this.maxMonotoneFailures = maxMonotoneFailures;
-        this.maxBadSteps = maxBadSteps;
-        this.history = new LinkedList<>();
-        this.nonMonotoneEnabled = false;
-        this.monotoneFailures = 0;
-        this.badStepCount = 0;
-        this.badStepDetected = false;
-        this.badStepFailed = false;
+        this.maxBadSteps         = maxBadSteps;
+        this.history             = new LinkedList<>();
+        this.nonMonotoneEnabled  = false;
+        this.monotoneFailures    = 0;
+        this.badStepCount        = 0;
+        this.badStepDetected     = false;
+        this.badStepFailed       = false;
     }
 
+    /** Check if bad step has been detected.
+     * @return true if bad step has been detected
+     */
     public boolean isBadStepDetected() {
         return badStepDetected;
     }
 
+    /** Check if too many conscutive bad step have been detected.
+     * @return true if too many conscutive bad step have been detected
+     */
     public boolean isBadStepFailed() {
         return badStepFailed;
     }
 
-    public int getBadStepCount() {
-        return badStepCount;
-    }
-
+    /** Get number of iterations in line search.
+     * @return number of iterations in line search
+     */
     public int getIteration() {
         return searchCount;
     }
 
+    /** Get last penalty.
+     * @return mast penalty
+     */
     public double getPenalty() {
         return lastPenalty;
     }
 
+    /** Reset bad steps count and indicators.
+     */
     public void resetBadStepCount() {
         badStepCount = 0;
         monotoneFailures = 0;
@@ -103,11 +145,11 @@ public class LineSearch {
         badStepDetected = false;
         badStepFailed = false;
     }
-    /**
-     * Save penalty value when step is accepted for resusing in case of non monotone research
-     * @param fx
+
+    /** Save penalty value when step is accepted for reusing in case of non-monotone research.
+     * @param fx penalty
      */
-    public void updateHistory(double fx) {
+    public void updateHistory(final double fx) {
         if (nonMonotoneEnabled) {
             history.add(fx);
             if (history.size() > maxHistory) {
@@ -115,27 +157,26 @@ public class LineSearch {
             }
         }
     }
-   
-    /**
-     * Verify Armjo condition for accept step
-     * @param fxNew
-     * @param alpha
-     * @param fxCurrent
-     * @param directionalDeriv
+
+    /** Verify Armjo condition for accept step.
+     * @param fxNew penalty at candidate point x+dx*alpha
+     * @param fxCurrent penalty at the current point
+     * @param alpha step length
+     * @param directionalDeriv penalty gradient
      * @return true o false
      */
     public boolean acceptStep(double fxNew, double fxCurrent, double alpha, double directionalDeriv) {
         double ref = fxCurrent;
         if (nonMonotoneEnabled) {
             for (double v : history) {
-                ref = Math.max(ref, v);
+                ref = FastMath.max(ref, v);
             }
         }
-        // alfaPenalty - currentPenalty) > getSettings().getMu() * alpha * currentPenaltyGrad 
+        // alfaPenalty - currentPenalty) > getSettings().getMu() * alpha * currentPenaltyGrad
         return fxNew < ref + sigma * alpha * directionalDeriv;
     }
-    /**
-     * Mark Good Step if line search worked
+
+    /** Mark Good Step if line search worked.
      */
     public void markGoodStep() {
         nonMonotoneEnabled = false;
@@ -144,9 +185,8 @@ public class LineSearch {
         badStepDetected = false;
         badStepFailed = false;
     }
-    
-    /**
-     * Mark Bad Step if line search fail
+
+    /** Mark Bad Step if line search failed.
      */
     private void markBadStep() {
         nonMonotoneEnabled = false;
@@ -157,26 +197,24 @@ public class LineSearch {
             badStepFailed = true;
         }
     }
-    /**
-     * Update alpha qith quadratic curvature
-     * @param alpha 
-     * @param alpha penalty at current point 
-     * @param fxNew penaly at candidate point x+dx*alpha 
-     * @param directionalDeriv penalty gradinet
+
+    /** Update alpha qith quadratic curvature.
+     * @param alpha step length
+     * @param fxCurrent penalty at the current point
+     * @param fxNew penalty at candidate point x+dx*alpha
+     * @param directionalDeriv penalty gradient
      * @return alpha
      */
-    private double updateStepLength(double alpha, double fxCurrent, double fxNew, double directionalDeriv) {
-        double numerator = 0.5 * alpha * alpha * directionalDeriv;
-        double denominator = alpha * directionalDeriv - fxNew + fxCurrent;
-        double alphaNew = alpha;
+    private double updateStepLength(final double alpha, final double fxCurrent, final double fxNew,
+                                    final double directionalDeriv) {
+        final double numerator   = 0.5 * alpha * alpha * directionalDeriv;
+        final double denominator = alpha * directionalDeriv - fxNew + fxCurrent;
         if (Math.abs(denominator) > 1e-12) {
             double alphaStar = numerator / denominator;
-            alphaNew = Math.max(alphaStar, alpha * beta);
+            return FastMath.max(alphaStar, alpha * beta);
         } else {
-            alphaNew = alpha * beta;
+            return alpha * beta;
         }
-
-        return alphaNew;
     }
 
     /**
@@ -185,23 +223,23 @@ public class LineSearch {
      * @param f penalty function
      * @return alpha
      */
-    public double search(MeritFunctionL2 f) {
-        searchCount=0;
+    public double search(final MeritFunctionL2 f) {
+        searchCount = 0;
         double fxCurrent = f.getPenaltyEval();
-        alphaMin = Math.max(1e-12, 1e-6 / Math.max(1.0, f.getDx().getNorm()));
-        //double fxCurrent=f.value(0);
+        alphaMin = FastMath.max(1e-12, 1e-6 / FastMath.max(1.0, f.getDx().getNorm()));
+        //double fxCurrent = f.value(0);
         double alpha = 1.0;
         double fxNew;
         double directionalDeriv = f.getGradient();
         // Monotone Search
-        while (alpha >=alphaMin) {
-           
+        while (alpha >= alphaMin) {
+
             fxNew = f.value(alpha);
             if (acceptStep(fxNew, fxCurrent, alpha, directionalDeriv)) {
                 lastPenalty = fxNew;
                 markGoodStep();
                 updateHistory(fxNew);
-                
+
                 return alpha;
             }
             alpha = updateStepLength(alpha, fxCurrent, fxNew, directionalDeriv);
@@ -212,13 +250,13 @@ public class LineSearch {
             }
              searchCount++;
         }
-        
+
         // Non-Monotone Search
         monotoneFailures = 0;
         alpha = 1.0;
 
         while (alpha >=alphaMin) {
-            
+
             fxNew = f.value(alpha);
             if (acceptStep(fxNew, fxCurrent, alpha, directionalDeriv)) {
                 lastPenalty = fxNew;
@@ -234,16 +272,17 @@ public class LineSearch {
             }
             searchCount++;
         }
-        //last trial before declare bad step
+
+        // last trial before we declare bad step
         fxNew = f.value(alphaMin);
         searchCount++;
-        if (acceptStep(fxNew, fxCurrent, alphaMin, directionalDeriv))
-        {
+        if (acceptStep(fxNew, fxCurrent, alphaMin, directionalDeriv)) {
                 lastPenalty = fxNew;
                 markGoodStep();
                 updateHistory(fxNew);
                 return alpha;
         }
+
         // Both searches failed
         markBadStep();
         lastPenalty = fxNew;

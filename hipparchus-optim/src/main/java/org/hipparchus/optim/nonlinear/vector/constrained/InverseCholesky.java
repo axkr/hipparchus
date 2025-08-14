@@ -19,19 +19,26 @@ package org.hipparchus.optim.nonlinear.vector.constrained;
 import org.hipparchus.linear.RealMatrix;
 import org.hipparchus.optim.OptimizationData;
 
-/**
- *
- * @author rocca
+/** Inverse of Cholesky factorization.
+ * @since 4.1
  */
-public class InverseCholesky implements OptimizationData{
+public class InverseCholesky implements OptimizationData {
+
+    /** Inverse of Cholesku factorization. */
     private final RealMatrix invL;
-   
-    public InverseCholesky(RealMatrix inverseL)
-    {
-       this.invL=inverseL; 
+
+    /** Simple constructor.
+     * @param inverseL inverse of Cholesku factorization
+     */
+    public InverseCholesky(final RealMatrix inverseL) {
+       this.invL = inverseL;
     }
-    public RealMatrix get()
-    {
+
+    /** Get inverse of Cholesku factorization.
+     * @return inverse of Cholesku factorization
+     */
+    public RealMatrix getInverseL() {
         return this.invL;
     }
+
 }

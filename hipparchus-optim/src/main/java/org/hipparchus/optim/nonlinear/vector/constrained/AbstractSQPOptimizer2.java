@@ -46,12 +46,12 @@ public abstract class AbstractSQPOptimizer2 extends ConstraintOptimizer {
 
     /** Inequality constraint (may be null). */
     private InequalityConstraint iqConstraint;
-    
+
     /** Inequality constraint (may be null). */
     private BoundedConstraint boxConstraint;
-    
+
     /** Default QPSolver. */
-    private QPOptimizer QPSolver=new QPDualActiveSolver();
+    private QPOptimizer QPSolver = new QPDualActiveSolver();
 
     /** Simple constructor.
      */
@@ -95,14 +95,14 @@ public abstract class AbstractSQPOptimizer2 extends ConstraintOptimizer {
     public InequalityConstraint getIqConstraint() {
         return iqConstraint;
     }
-    
+
      /** Getter for box constraint.
      * @return inequality constraint
      */
     public BoundedConstraint getBoxConstraint() {
         return boxConstraint;
     }
-    
+
     /** Getter for QP Solver.
      * @return QP Solver
      */
@@ -133,7 +133,7 @@ public abstract class AbstractSQPOptimizer2 extends ConstraintOptimizer {
                 iqConstraint = (InequalityConstraint) data;
                 continue;
             }
-            
+
             if (data instanceof BoundedConstraint) {
                 boxConstraint = (BoundedConstraint) data;
                 continue;
@@ -142,7 +142,7 @@ public abstract class AbstractSQPOptimizer2 extends ConstraintOptimizer {
             if (data instanceof SQPOption) {
                 settings = (SQPOption) data;
             }
-            
+
             if (data instanceof QPOptimizer) {
                 QPSolver = (QPOptimizer) data;
             }
