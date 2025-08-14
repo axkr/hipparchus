@@ -90,6 +90,7 @@ public class MeritFunctionL2 {
     /** Gradient of inequality. */
     private RealMatrix JI;
 
+    /** Evaluations counter. */
     private int evalCounter;
 
     /**
@@ -132,25 +133,25 @@ public class MeritFunctionL2 {
     }
 
     /** Update internal parameters for next penalty computation.
-     * @param J Gradient of objective at current x
-     * @param JE Gradient of equality x
-     * @param JI Gradient of inequality at current x
-     * @param x Current iterate
-     * @param y Lagrange multipliers
-     * @param dx Search direction from QP
-     * @param u multiplier from QP
+     * @param newJ Gradient of objective at current x
+     * @param newJE Gradient of equality x
+     * @param newJI Gradient of inequality at current x
+     * @param newX Current iterate
+     * @param newY Lagrange multipliers
+     * @param newDx Search direction from QP
+     * @param newU multiplier from QP
      */
-    public void update(final RealVector J, final RealMatrix JE, final RealMatrix JI,
-                       final RealVector x, final RealVector y,
-                       final RealVector dx, final RealVector u) {
+    public void update(final RealVector newJ, final RealMatrix newJE, final RealMatrix newJI,
+                       final RealVector newX, final RealVector newY,
+                       final RealVector newDx, final RealVector newU) {
 
-        this.J               = J;
-        this.JE              = JE;
-        this.JI              = JI;
-        this.x               = x;
-        this.y               = y;
-        this.dx              = dx;
-        this.u               = u;
+        this.J               = newJ;
+        this.JE              = newJE;
+        this.JI              = newJI;
+        this.x               = newX;
+        this.y               = newY;
+        this.dx              = newDx;
+        this.u               = newU;
         this.penaltyGradient = gradient();
     }
 

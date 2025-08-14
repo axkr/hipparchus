@@ -26,6 +26,12 @@ public class SQPLogger {
     /** LS column fixed to 2 digits + 1 space for safety. */
     private static final int LS_WIDTH = 3;
 
+    /** Field start. */
+    private static final String FIELD_START = " %";
+
+    /** Field continuation. */
+    private static final String FIELD_CONTINUATION = "s |";
+
     /** Precision. */
     private int precision;
 
@@ -150,25 +156,25 @@ public class SQPLogger {
             String cell;
             if (field == null) {
                 if (index == 1) {
-                    cell = String.format(" %" + LS_WIDTH + "s |", "");
+                    cell = String.format(FIELD_START + LS_WIDTH + FIELD_CONTINUATION, "");
                 } else {
-                    cell = String.format(" %" + width + "s |", "");
+                    cell = String.format(FIELD_START + width + FIELD_CONTINUATION, "");
                 }
             } else if (field instanceof Boolean) {
                 if (index == 1) {
-                    cell = String.format(" %" + LS_WIDTH + "s |", field);
+                    cell = String.format(FIELD_START + LS_WIDTH + FIELD_CONTINUATION, field);
                 } else {
-                    cell = String.format(" %" + width + "s |", field);
+                    cell = String.format(FIELD_START + width + FIELD_CONTINUATION, field);
                 }
             } else if (index == 1 && field instanceof Number) { // LS column
-                cell = String.format(" %" + LS_WIDTH + "d |", ((Number) field).intValue());
+                cell = String.format(FIELD_START + LS_WIDTH + "d |", ((Number) field).intValue());
             } else if (field instanceof Number) {
-                cell = String.format(" %" + width + "." + precision + "f |", ((Number) field).doubleValue());
+                cell = String.format(FIELD_START + width + "." + precision + "f |", ((Number) field).doubleValue());
             } else {
                 if (index == 1) {
-                    cell = String.format(" %" + LS_WIDTH + "s |", field);
+                    cell = String.format(FIELD_START + LS_WIDTH + FIELD_CONTINUATION, field);
                 } else {
-                    cell = String.format(" %" + width + "s |", field);
+                    cell = String.format(FIELD_START + width + FIELD_CONTINUATION, field);
                 }
             }
             sb.append(cell);

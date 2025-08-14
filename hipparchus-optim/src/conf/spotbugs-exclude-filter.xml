@@ -138,11 +138,6 @@
       <Method name="getQ"/>
     </Or>
     <Bug pattern="EI_EXPOSE_REP" />
-  <Match>
-    <Class name="org.hipparchus.optim.nonlinear.vector.constrained.InverseCholesky"/>
-    <Method name="getInverseL"/>
-    <Bug pattern="EI_EXPOSE_REP" />
-  </Match>
   </Match>
   <Match>
     <Class name="org.hipparchus.optim.nonlinear.vector.constrained.InverseCholesky"/>

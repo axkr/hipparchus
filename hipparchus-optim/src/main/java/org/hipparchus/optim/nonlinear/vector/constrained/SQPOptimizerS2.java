@@ -136,13 +136,13 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
 
         switch (getSettings().getGradientMode()) {
             case 0:
-                externalGradient(x);
+                externalGradient();
                 break;
             case 1:
-                forwardGradient(x);
+                forwardGradient();
                 break;
             case 2:
-                centralGradient(x);
+                centralGradient();
                 break;
         }
 
@@ -168,7 +168,7 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
             //LOOP TO FIND SOLUTION WITH SIGMA<SIGMA THRESHOLD
 
             while ((sigma > getSettings().getSigmaMax() || sigma < - Precision.EPSILON) && qpLoop < getSettings().getQpMaxLoop()) {
-                sol1 = augmented ? solveAugmentedQP(x, y, rho) : solveQP(x);
+                sol1 = augmented ? solveAugmentedQP(y, rho) : solveQP();
                 sigma = (sol1.getX().getDimension() == 0) ? getSettings().getSigmaMax() * 10.0 : sol1.getValue();
 
 
@@ -230,13 +230,13 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
                 //calculate new Gradients
                 switch (getSettings().getGradientMode()) {
                  case 0 :
-                     externalGradient(x);
+                     externalGradient();
                      break;
                  case 1 :
-                     forwardGradient(x);
+                     forwardGradient();
                      break;
                  case 2 :
-                     centralGradient(x);
+                     centralGradient();
                      break;
                 }
                 //internalGradientCentered(x);
@@ -340,11 +340,10 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
     }
 
     /** Solve augmented system.
-     * @param x current point
      * @param y Lagrange multipliers
-     * @param rho
+     * @param rho rho
      */
-    private LagrangeSolution solveAugmentedQP(final RealVector x, final RealVector y, final double rho) {
+    private LagrangeSolution solveAugmentedQP(final RealVector y, final double rho) {
 
         RealMatrix H = this.H;
         RealVector g = J;
@@ -459,10 +458,9 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
 
     /**
      * Solves the Quadratic Programming (QP) subproblem in the current SQP iteration.
-     * @param x the current point in the primal space
      * @return a {@link LagrangeSolution} representing the QP solution, or {@code null} if the QP failed
      */
-    private LagrangeSolution solveQP(final RealVector x) {
+    private LagrangeSolution solveQP() {
 
         final QuadraticFunction q  = new QuadraticFunction(this.H, this.J, 0);
         int                     n  = x.getDimension();
@@ -561,9 +559,8 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
     }
 
     /** Compute gradient directly.
-     * @param x current point
      */
-    private void externalGradient(final RealVector x)
+    private void externalGradient()
     {
         J = this.getObj().gradient(x);
         if (this.getEqConstraint() != null) {
@@ -582,12 +579,10 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
      * the square root of machine precision, and partial derivatives are approximated
      * using forward differencing.
      * </p>
-     * @param point the current point at which to evaluate gradients (must correspond to
-     *              the values stored in {@code functionEval}, {@code eqEval}, and {@code ineqEval})
      */
-    private void forwardGradient(RealVector point) {
+    private void forwardGradient() {
 
-        int    n       = point.getDimension();
+        int    n       = x.getDimension();
         double sqrtEps = FastMath.sqrt(Precision.EPSILON);
 
         double     fRef  = this.functionEval;
@@ -599,10 +594,10 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
         RealMatrix gradIq = (getIqConstraint() != null) ? new Array2DRowRealMatrix(iqRef.getDimension(), n) : null;
 
         for (int i = 0; i < n; i++) {
-            double xi = point.getEntry(i);
+            double xi = x.getEntry(i);
             double h  = sqrtEps * FastMath.max(1.0, FastMath.abs(xi));
 
-            RealVector xPerturbed = new ArrayRealVector(point);
+            RealVector xPerturbed = new ArrayRealVector(x);
             xPerturbed.setEntry(i, xi + h);
 
             double fPerturbed = getObj().value(xPerturbed);
@@ -629,10 +624,8 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
     /**
      * Computes the gradient of the objective function and the Jacobians of the constraints
      * using centered finite differences (second-order accurate).
-     * @param x the current point at which to evaluate gradients (must correspond to
-     *          the values stored in {@code functionEval}, {@code eqEval}, and {@code ineqEval})
      */
-    private void centralGradient(RealVector x) {
+    private void centralGradient() {
 
         int    n     = x.getDimension();
         double hBase = FastMath.cbrt(Precision.EPSILON);
