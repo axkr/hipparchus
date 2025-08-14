@@ -32,9 +32,6 @@ public class SQPLogger {
     /** Field continuation. */
     private static final String FIELD_CONTINUATION = "s |";
 
-    /** Precision. */
-    private int precision;
-
     /** Fields width. */
     private int width;
 
@@ -46,13 +43,6 @@ public class SQPLogger {
 
     /** Debug printer. */
     private DebugPrinter printer;
-
-    /**
-     * Constructs a SQPLogger using {@link Precision#EPSILON} as default epsilon.
-     */
-    public SQPLogger() {
-        this(Precision.EPSILON);
-    }
 
     /**
      * Constructs a LogFormatter with custom epsilon.
@@ -69,7 +59,7 @@ public class SQPLogger {
      * @param epsilon convergence threshold
      */
     public void setEps(double epsilon) {
-        this.precision = (int) Math.ceil(-Math.log10(epsilon)) + 2;
+        final int precision = (int) Math.ceil(-Math.log10(epsilon)) + 2;
         this.width = precision + 7; // space for digits, sign, exponent, padding
 
         String col = String.format("%%-%ds", width);
@@ -130,45 +120,28 @@ public class SQPLogger {
         }
     }
 
-    /** Log one row.
-     * @param iter     iteration number
-     * @param alpha    step length
-     * @param lsCount  line search iteration
-     * @param dxNorm
-     * @param dxHdx
-     * @param kkt      Lagrangian norm
-     * @param viol     constraints violations
-     * @param sigma
-     * @param penalty  penalty
-     * @param fx       objective function evaluation
+    /**
+     * Log one row.
+     * @param crit2 norm criterion
+     * @param crit1 gradient criterion?
+     * @param crit0 Lagrangian norm criterion
+     * @param crit3 constraints violations criterion
      */
-    public void logRow(final int iter, final Object alpha, final Object lsCount,
-                       final Object dxNorm, final Object dxHdx, final Object kkt,
-                       final Object viol, final Object sigma, final Object penalty, final Object fx) {
+    public void logRow(final boolean crit2, final boolean crit1, final boolean crit0, final boolean crit3) {
         if (printer == null) {
             return;
         }
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format("[SQP] ITER %2d |", iter));
-        Object[] fields = { alpha, lsCount, dxNorm, dxHdx, kkt, viol, sigma, penalty, fx };
-        int index = 0;
-        for (Object field : fields) {
-            String cell;
-            final int w = index == 1 ? LS_WIDTH : width;
-            if (field == null) {
-                cell = String.format(FIELD_START + w + FIELD_CONTINUATION, "");
-            } else if (field instanceof Boolean) {
-                cell = String.format(FIELD_START + w + FIELD_CONTINUATION, field);
-            } else if (index == 1 && field instanceof Number) { // LS column
-                cell = String.format(FIELD_START + w + "d |", ((Number) field).intValue());
-            } else if (field instanceof Number) {
-                cell = String.format(FIELD_START + width + "." + precision + "f |", ((Number) field).doubleValue());
-            } else {
-               cell = String.format(FIELD_START + w + FIELD_CONTINUATION, field);
-            }
-            sb.append(cell);
-            index++;
-        }
+        sb.append(String.format("[SQP] ITER %2d |", -1)).
+           append(String.format(FIELD_START + width + FIELD_CONTINUATION, "")).
+           append(String.format(FIELD_START + LS_WIDTH + FIELD_CONTINUATION, "")).
+           append(String.format(FIELD_START + width + FIELD_CONTINUATION, crit2)).
+           append(String.format(FIELD_START + width + FIELD_CONTINUATION, crit1)).
+           append(String.format(FIELD_START + width + FIELD_CONTINUATION, crit0)).
+           append(String.format(FIELD_START + width + FIELD_CONTINUATION, crit3)).
+           append(String.format(FIELD_START + width + FIELD_CONTINUATION, "")).
+           append(String.format(FIELD_START + width + FIELD_CONTINUATION, "")).
+           append(String.format(FIELD_START + width + FIELD_CONTINUATION, ""));
         printer.print(sb.toString());
     }
 

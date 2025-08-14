@@ -63,7 +63,7 @@ public class MeritFunctionL2 {
     /** Multipliers for QP. */
     private RealVector u;
 
-    /** Unit vector. */
+    /** R vector. */
     private final RealVector r;
 
     /** Gradient of the objective at current point. */
@@ -90,16 +90,13 @@ public class MeritFunctionL2 {
     /** Gradient of inequality. */
     private RealMatrix JI;
 
-    /** Evaluations counter. */
-    private int evalCounter;
-
     /**
      * Constructor.
      *
      * @param objective Objective function
      * @param eqConstraint Equality constraint (may be null)
      * @param iqConstraint Inequality constraint (may be null)
-     * @param x
+     * @param x current point
      */
     public MeritFunctionL2(final TwiceDifferentiableFunction objective,
                            final Constraint eqConstraint,
@@ -127,7 +124,6 @@ public class MeritFunctionL2 {
 //        this.JI = new Array2DRowRealMatrix(mi,x.getDimension());
         this.eqEval = new ArrayRealVector(me);
         this.iqEval = new ArrayRealVector(mi);
-        this.evalCounter = 0;
         //this evaluate objective function contraints function and penaly
         this.value(0);
     }
@@ -211,7 +207,6 @@ public class MeritFunctionL2 {
         double penalty =objEval;
 
         int me = 0;
-        int mi = 0;
         if (eqConstraint != null) {
             me = eqConstraint.dimY();
             RealVector re = r.getSubVector(0, me);
@@ -223,8 +218,9 @@ public class MeritFunctionL2 {
             penalty -= ye.dotProduct(g) - 0.5 * re.dotProduct(g2);
         }
 
+        int mi = 0;
         if (iqConstraint != null) {
-             mi = iqConstraint.dimY();
+            mi = iqConstraint.dimY();
             RealVector ri = r.getSubVector(me, mi);
             RealVector yi = yAlpha.getSubVector(me, mi);
 
@@ -252,7 +248,6 @@ public class MeritFunctionL2 {
             penalty -= yi.dotProduct(g.ebeMultiply(mask)) - 0.5 * ri.dotProduct(g2);
         }
         pEval = penalty;
-        evalCounter++;
         return penalty;
     }
 
@@ -339,14 +334,14 @@ public class MeritFunctionL2 {
     /**
      * Update Weight Vector Rj.
      * called after QP solution before update the penalty function
-     * @param H hessina Matrix(updated after line search)
-     * @@param y last estimate of multiplier(updated after line search)
+     * @param H hessina Matrix (updated after line search)
+     * @param y last estimate of multiplier (updated after line search)
      * @param dx direction of x provided by QP solution
      * @param u direction of y provided by QP solution
-     * @param sigmaValue value of the additional variabile of QP solution
+     * @param sigmaValue value of the additional variable of QP solution
      * @param iterations current iteration
      */
-     public void updateRj(RealMatrix H,RealVector y,RealVector dx, RealVector u,double sigmaValue,int iterations) { //r = updateRj(currentH,dx,y,u,r,sigm);
+     public void updateRj(RealMatrix H,RealVector y,RealVector dx, RealVector u,double sigmaValue,int iterations) {
         //calculate sigma vector that depends on iterations
         if (y.getDimension() == 0)return;
         RealVector sigma = new ArrayRealVector(r.getDimension());
@@ -381,16 +376,22 @@ public class MeritFunctionL2 {
             }
         }
 
-        r.setSubVector(0,r1);
+        r.setSubVector(0, r1);
     }
 
+    /** Reset R vector to unity.
+     */
     public void resetRj() {
         if (y.getDimension() > 0) {
             this.r.set(1.0);
         }
      }
 
+    /** Get search direction.
+     * @return search direction
+     */
     RealVector getDx() {
        return  this.dx;
     }
+
 }

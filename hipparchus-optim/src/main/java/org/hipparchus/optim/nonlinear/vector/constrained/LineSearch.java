@@ -67,9 +67,7 @@ public class LineSearch {
     /** Number of iterations in line search. */
     private int searchCount;
 
-    /** Last penalty. */
-    private double lastPenalty;
-
+    /** Number of monotone search failures. */
     private int monotoneFailures;
 
     /** Number of consecutive bad steps. */
@@ -127,13 +125,6 @@ public class LineSearch {
      */
     public int getIteration() {
         return searchCount;
-    }
-
-    /** Get last penalty.
-     * @return mast penalty
-     */
-    public double getPenalty() {
-        return lastPenalty;
     }
 
     /** Reset bad steps count and indicators.
@@ -236,10 +227,8 @@ public class LineSearch {
 
             fxNew = f.value(alpha);
             if (acceptStep(fxNew, fxCurrent, alpha, directionalDeriv)) {
-                lastPenalty = fxNew;
                 markGoodStep();
                 updateHistory(fxNew);
-
                 return alpha;
             }
             alpha = updateStepLength(alpha, fxCurrent, fxNew, directionalDeriv);
@@ -255,11 +244,10 @@ public class LineSearch {
         monotoneFailures = 0;
         alpha = 1.0;
 
-        while (alpha >=alphaMin) {
+        while (alpha >= alphaMin) {
 
             fxNew = f.value(alpha);
             if (acceptStep(fxNew, fxCurrent, alpha, directionalDeriv)) {
-                lastPenalty = fxNew;
                 markGoodStep();
                 updateHistory(fxNew);
                 return alpha;
@@ -277,7 +265,6 @@ public class LineSearch {
         fxNew = f.value(alphaMin);
         searchCount++;
         if (acceptStep(fxNew, fxCurrent, alphaMin, directionalDeriv)) {
-                lastPenalty = fxNew;
                 markGoodStep();
                 updateHistory(fxNew);
                 return alpha;
@@ -285,7 +272,6 @@ public class LineSearch {
 
         // Both searches failed
         markBadStep();
-        lastPenalty = fxNew;
         return alphaMin;
 
     }

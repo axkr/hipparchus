@@ -21,12 +21,10 @@ import org.hipparchus.linear.RealVector;
 import org.hipparchus.linear.RealMatrix;
 import org.hipparchus.optim.InitialGuess;
 import org.hipparchus.optim.nonlinear.scalar.ObjectiveFunction;
-import org.hipparchus.util.FastMath;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 public class HS001Test {
-    private static final double pi = FastMath.PI;
 
     private static class HS001Obj extends TwiceDifferentiableFunction {
         @Override public int dim() { return 2; }
@@ -70,7 +68,7 @@ public class HS001Test {
 
     private void doTestHS001(final GradientMode gradientMode) {
         SQPOption sqpOption=new SQPOption();
-        sqpOption.setMaxLineSearchIteration(20);
+        sqpOption.setMaxLineSearchIteration(10);
         sqpOption.setB(0.5);
         sqpOption.setMu(1.0e-4);
         sqpOption.setEps(10e-7);

@@ -66,7 +66,8 @@ public class QPSolverTest {
                                     solver.optimize(new ObjectiveFunction(q), eqc, ineqc,
                                                     new InverseCholesky(MatrixUtils.createRealMatrix(new double[][] {
                                                             { 0.5, 0.0 }, { 0.5 / s3 , 1.0 / s3 }
-                                                    }))) :
+                                                    })),
+                                                    new MatrixDecompositionTolerance(1.0e-13)) :
                                     solver.optimize(new ObjectiveFunction(q), eqc, ineqc);
 
         RealVector x = solution.getX();

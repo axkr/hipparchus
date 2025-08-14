@@ -232,7 +232,7 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
                 crit0 = kkt <= FastMath.sqrt(getSettings().getEps());
                 crit1 = step1 <= getSettings().getEps() * getSettings().getEps();
                 crit2 = step2 <= getSettings().getEps() * (1.0 + x.getNorm());
-                crit3= violation <= FastMath.sqrt(getSettings().getEps());
+                crit3 = violation <= FastMath.sqrt(getSettings().getEps());
                 formatter.logRow(iterations.getCount(), alpha, lineSearch.getIteration(),
                                  step2, step1, kkt, violation, sigma,
                                  penalty.getPenaltyEval(), functionEval);
@@ -271,7 +271,7 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
             }
         }
 
-         formatter.logRow(-1, null, null, crit2, crit1, crit0, crit3, null, null, null);
+         formatter.logRow(crit2, crit1, crit0, crit3);
 
 
         return new LagrangeSolution(x, y, functionEval);
