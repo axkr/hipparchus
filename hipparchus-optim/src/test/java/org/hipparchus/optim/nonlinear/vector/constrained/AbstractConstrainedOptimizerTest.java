@@ -55,9 +55,10 @@ public abstract class AbstractConstrainedOptimizerTest {
 
         // find optimum solution
         final ConstraintOptimizer optimizer = buildOptimizer();
-        final OptimizationData[] data = new OptimizationData[constraints.length + (initialGuess == null ? 1 : 2)];
+        final OptimizationData[] data = new OptimizationData[constraints.length + (initialGuess == null ? 2 : 3)];
         data[0] = objectiveFunction;
-        System.arraycopy(constraints, 0, data, 1, constraints.length);
+        data[1] = new MatrixDecompositionTolerance(2.0e-11);
+        System.arraycopy(constraints, 0, data, 2, constraints.length);
         if (initialGuess != null) {
             data[data.length - 1] = new InitialGuess(initialGuess);
         }

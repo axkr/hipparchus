@@ -38,7 +38,7 @@ import org.hipparchus.util.Precision;
  * </ul>
  * </p>
  *
- * @since 3.1
+ * @since 4.1
  */
 public class BFGSUpdater {
 
@@ -47,6 +47,11 @@ public class BFGSUpdater {
 
     /** Regularization factor for diagonal of Hessian. */
     private final double regFactor;
+
+    /** Tolerance for symmetric matrices decomposition.
+     * @since 4.1
+     */
+    private double decompositionEpsilon;
 
     /** Maximum consecutive failures allowed before reset. */
     private final int maxFail;
@@ -65,13 +70,15 @@ public class BFGSUpdater {
      *
      * @param initialHess initial positive‐definite Hessian matrix
      * @param regFactor regularization factor to add on diagonal
+     * @param decompositionEpsilon tolerance for symmetric matrices decomposition
      * @param maxFail maximum number of failures before Hessian reset
      */
-    public BFGSUpdater(RealMatrix initialHess, double regFactor, int maxFail) {
-        this.initialH = new Array2DRowRealMatrix(initialHess.getData());
-        //this.regFactor = regFactor;
-        this.regFactor = Precision.EPSILON;
-        this.maxFail = maxFail;
+    public BFGSUpdater(final RealMatrix initialHess, final double regFactor,
+                       final double decompositionEpsilon, final int maxFail) {
+        this.initialH             = new Array2DRowRealMatrix(initialHess.getData());
+        this.regFactor            = regFactor;
+        this.decompositionEpsilon = decompositionEpsilon;
+        this.maxFail              = maxFail;
         resetHessian();
     }
 
@@ -144,7 +151,10 @@ public class BFGSUpdater {
      * Resets the Hessian approximation to its initial value.
      */
     public void resetHessian(double gamma) {
-        CholeskyDecomposition ch = new CholeskyDecomposition(MatrixUtils.createRealIdentityMatrix(L.getRowDimension()).scalarMultiply(gamma));
+        final RealMatrix id = MatrixUtils.createRealIdentityMatrix(L.getRowDimension());
+        CholeskyDecomposition ch = new CholeskyDecomposition(id.scalarMultiply(gamma),
+                                                             decompositionEpsilon,
+                                                             decompositionEpsilon);
         L = ch.getL();
         failCount = 0;
     }
@@ -161,7 +171,7 @@ public class BFGSUpdater {
         double sty = s.dotProduct(y1);
         RealVector Hs = getHessian().operate(s);
         double sHs = s.dotProduct(Hs);
-        if(sty<=Precision.EPSILON) return null;
+        if (sty <= Precision.EPSILON) return null;
         if (sty < GAMMA * sHs) {
             double phi = (1.0 - GAMMA) * sHs / (sHs - sty);
             // clamp phi to [0,1]
@@ -261,59 +271,5 @@ public class BFGSUpdater {
         }
         return true;
     }
-    
-    /**
- * Performs the rank-one update on the LDL decomposition.
- * If the diagonal elements of D become too small, returns false.
- * 
- * @param L the lower triangular matrix
- * @param D the diagonal matrix
- * @param u the update vector
- * @param sigma +1 for update, -1 for downdate
- * @return true if the matrix remains positive definite, false otherwise
- */
-private boolean ldlUpdateRankOne(RealMatrix L, RealMatrix D, RealVector u, int sigma) {
-    int n = u.getDimension();
-    RealVector temp = new ArrayRealVector(u);  // Copy of u to avoid in-place modifications
-
-    // Loop for updating the matrix L and the diagonal of D
-    for (int i = 0; i < n; i++) {
-        double lii = L.getEntry(i, i);  // Diagonal element of L
-        double ui = temp.getEntry(i);   // Corresponding element of u
-        double r2 = lii * lii + sigma * ui * ui;  // Calculation of r^2
-
-        double r = Math.sqrt(r2);  // Calculate the square root of r^2
-        double c = r / lii;        // Calculate the coefficient c
-        double s = ui / lii;       // Calculate the coefficient s
-
-        // Update the diagonal element of L
-        L.setEntry(i, i, r);
-
-        // Update the diagonal of D
-        double dii = D.getEntry(i, i);
-        double updatedDii = dii + sigma * r * s * s; // Update of D
-
-        // Check if the diagonal element of D becomes too small
-        if (updatedDii < regFactor) {
-            return false;  // If the value is too small, return false
-        }
-
-        // Update the diagonal of D
-        D.setEntry(i, i, updatedDii);
-
-        // Update the elements below the diagonal of L
-        for (int j = i + 1; j < n; j++) {
-            double lij = L.getEntry(j, i);  // Element L_{ji}
-            double uj = temp.getEntry(j);   // Corresponding element of u
-            double newLji = (lij + sigma * s * uj) / c;  // Calculate the new value of L_{ji}
-            double newUj = c * uj - s * newLji;  // Calculate the new value of u_j
-            L.setEntry(j, i, newLji);    // Update L_{ji}
-            temp.setEntry(j, newUj);     // Update u_j
-        }
-    }
-
-    return true;  // Returns true if the update was executed correctly
-}
-
     
 }

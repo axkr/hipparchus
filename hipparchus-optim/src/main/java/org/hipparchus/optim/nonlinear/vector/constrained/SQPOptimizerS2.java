@@ -141,10 +141,10 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
         MeritFunctionL2 penalty = new MeritFunctionL2(this.getObj(), this.getEqConstraint(), this.getIqConstraint(), x);
 
         LineSearch lineSearch = new LineSearch(getSettings().getEps(), 5, getSettings().getMu(), getSettings().getB(),
-                getSettings().getMaxLineSearchIteration(), 2);
+                                               getSettings().getMaxLineSearchIteration(), 2);
         H = MatrixUtils.createRealIdentityMatrix(x.getDimension());
         
-        BFGSUpdater bfgs = new BFGSUpdater(H, 1.0e-12, 10);
+        BFGSUpdater bfgs = new BFGSUpdater(H, 1.0e-11, getMatrixDecompositionTolerance().getEpsMatrixDecomposition(), 10);
         Linv=bfgs.getInvL();
         //INITIAL VALUES
 

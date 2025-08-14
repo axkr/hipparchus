@@ -16,20 +16,22 @@
  */
 package org.hipparchus.optim.nonlinear.vector.constrained;
 
-import java.util.*;
 import org.hipparchus.exception.MathIllegalArgumentException;
-import org.hipparchus.linear.*;
+import org.hipparchus.linear.ArrayRealVector;
+import org.hipparchus.linear.CholeskyDecomposition;
+import org.hipparchus.linear.DecompositionSolver;
+import org.hipparchus.linear.MatrixUtils;
+import org.hipparchus.linear.RealMatrix;
+import org.hipparchus.linear.RealVector;
 import org.hipparchus.optim.OptimizationData;
 import org.hipparchus.optim.nonlinear.scalar.ObjectiveFunction;
-import org.hipparchus.optim.nonlinear.vector.constrained.LagrangeSolution;
-import org.hipparchus.optim.nonlinear.vector.constrained.LinearBoundedConstraint;
-import org.hipparchus.optim.nonlinear.vector.constrained.LinearEqualityConstraint;
-import org.hipparchus.optim.nonlinear.vector.constrained.LinearInequalityConstraint;
-import org.hipparchus.optim.nonlinear.vector.constrained.QPOptimizer;
-import org.hipparchus.optim.nonlinear.vector.constrained.QuadraticFunction;
 import org.hipparchus.util.FastMath;
 import org.hipparchus.util.Pair;
 import org.hipparchus.util.Precision;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 
 /**
@@ -81,6 +83,11 @@ public class QPDualActiveSolver extends QPOptimizer {
      */
     private LinearBoundedConstraint bConstraints;
 
+    /** Tolerance for symmetric matrix decomposition.
+     * @since 4.1
+     */
+    private MatrixDecompositionTolerance matrixDecompositionTolerance;
+
      /**
      * Inverse of Cholesky factorization if passed from external.
      */
@@ -99,6 +106,7 @@ public class QPDualActiveSolver extends QPOptimizer {
         this.eqConstraints = null;
         this.iqConstraints = null;
         this.bConstraints = null;
+        this.matrixDecompositionTolerance = new MatrixDecompositionTolerance(EPS);
         this.inverseL=null;
         for (OptimizationData data : optData) {
             if (data instanceof ObjectiveFunction) {
@@ -111,9 +119,9 @@ public class QPDualActiveSolver extends QPOptimizer {
                 bConstraints = (LinearBoundedConstraint) data;
             } else if (data instanceof InverseCholesky) {
                 inverseL = ((InverseCholesky) data).get();
+            } else if (data instanceof MatrixDecompositionTolerance) {
+                matrixDecompositionTolerance = (MatrixDecompositionTolerance) data;
             }
-           
-
         }
     }
 
@@ -126,10 +134,10 @@ public class QPDualActiveSolver extends QPOptimizer {
      * @param equality true if constraint is equality
      * @return the primal step size
      */
-    private double findPrimalStep(RealVector z,
-            RealVector ai,
-            double sv,
-            boolean equality) {
+    private double findPrimalStep(final RealVector z,
+                                  final RealVector ai,
+                                  final double sv,
+                                  final boolean equality) {
         double norm2 = z.dotProduct(z);
         if (FastMath.abs(norm2) < Precision.EPSILON) return Double.POSITIVE_INFINITY;
  
@@ -150,10 +158,10 @@ public class QPDualActiveSolver extends QPOptimizer {
      * @param me threshold index for equality
      * @return the blocking step and index
      */
-    private Pair<Integer, Double> findDualBlockingConstraint(RealVector u,
-            RealVector r,
-            ArrayList<Integer> activeSet,
-            int me) {
+    private Pair<Integer, Double> findDualBlockingConstraint(final RealVector u,
+                                                             final RealVector r,
+                                                             final ArrayList<Integer> activeSet,
+                                                             final int me) {
          if (activeSet.isEmpty()) {
             return new Pair<>(-1, Double.POSITIVE_INFINITY);
         }
@@ -187,12 +195,12 @@ public class QPDualActiveSolver extends QPOptimizer {
      * @param partial new partial multiplier
      * @return updated multipliers
      */
-    private RealVector updateMultipliersOnAddition(RealVector u,
-            RealVector r,
-            double alpha,
-            double partial) {
+    private RealVector updateMultipliersOnAddition(final RealVector u,
+                                                   final RealVector r,
+                                                   final double alpha,
+                                                   final double partial) {
         if (u.getDimension()==0) {
-            RealVector v=new ArrayRealVector(1);
+            RealVector v = new ArrayRealVector(1);
             v.set(partial);
 
             return v;
@@ -212,10 +220,10 @@ public class QPDualActiveSolver extends QPOptimizer {
      * @param dropIndex index to remove
      * @return updated multipliers
      */
-    private RealVector updateMultipliersOnRemoval(RealVector u,
-            RealVector r,
-            double alpha,
-            int dropIndex) {
+    private RealVector updateMultipliersOnRemoval(final RealVector u,
+                                                  final RealVector r,
+                                                  final double alpha,
+                                                  final int dropIndex) {
         if (u.getDimension()==1) return new ArrayRealVector(0,0);
         RealVector tmp = u.add(r.mapMultiply(-alpha));
         int size = tmp.getDimension();
@@ -237,8 +245,7 @@ public class QPDualActiveSolver extends QPOptimizer {
      * @param me equality constraint numbers
      * @return the violation value and index
      */  
-    private Pair<Integer, Double> mostViolatedConstraint(RealVector sv,Set<Integer> blackList,ArrayList<Integer> activeSet,int me)
-    {
+    private Pair<Integer, Double> mostViolatedConstraint(RealVector sv, Set<Integer> blackList, ArrayList<Integer> activeSet, int me) {
         double maxViolation = 0;
         int mostViolated = -1;
                 for (int i = 0; i < sv.getDimension(); i++) {
@@ -304,11 +311,11 @@ public class QPDualActiveSolver extends QPOptimizer {
         RealMatrix L = null;
         RealMatrix L1= null;
         QRUpdater qrUpdater = null;
-        double tol=EPS;
+        double tol = EPS;
         if (this.inverseL == null) {
             try {
-                CholeskyDecomposition cholesky;
-                cholesky = new CholeskyDecomposition(G, EPS, EPS);
+                final double eps = matrixDecompositionTolerance.getEpsMatrixDecomposition();
+                final CholeskyDecomposition cholesky = new CholeskyDecomposition(G, eps, eps);
                 DecompositionSolver solver = cholesky.getSolver();
                 x = solver.solve(g0).mapMultiply(-1.0);
                 L = cholesky.getL();

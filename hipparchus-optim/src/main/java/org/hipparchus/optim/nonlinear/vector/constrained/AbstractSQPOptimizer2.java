@@ -18,19 +18,12 @@ package org.hipparchus.optim.nonlinear.vector.constrained;
 
 import org.hipparchus.exception.LocalizedCoreFormats;
 import org.hipparchus.exception.MathIllegalArgumentException;
+import org.hipparchus.linear.EigenDecompositionSymmetric;
 import org.hipparchus.linear.RealMatrix;
 import org.hipparchus.linear.RealVector;
 import org.hipparchus.optim.LocalizedOptimFormats;
 import org.hipparchus.optim.OptimizationData;
 import org.hipparchus.optim.nonlinear.scalar.ObjectiveFunction;
-import org.hipparchus.optim.nonlinear.vector.constrained.BoundedConstraint;
-import org.hipparchus.optim.nonlinear.vector.constrained.ConstraintOptimizer;
-import org.hipparchus.optim.nonlinear.vector.constrained.EqualityConstraint;
-import org.hipparchus.optim.nonlinear.vector.constrained.InequalityConstraint;
-import org.hipparchus.optim.nonlinear.vector.constrained.LagrangeSolution;
-import org.hipparchus.optim.nonlinear.vector.constrained.QPOptimizer;
-import org.hipparchus.optim.nonlinear.vector.constrained.SQPOption;
-import org.hipparchus.optim.nonlinear.vector.constrained.TwiceDifferentiableFunction;
 import org.hipparchus.util.MathUtils;
 
 /**
@@ -41,6 +34,11 @@ public abstract class AbstractSQPOptimizer2 extends ConstraintOptimizer {
 
     /** Algorithm settings. */
     private SQPOption settings;
+
+    /** Tolerance for symmetric matrix decomposition.
+     * @since 4.1
+     */
+    private MatrixDecompositionTolerance matrixDecompositionTolerance;
 
     /** Objective function. */
     private TwiceDifferentiableFunction obj;
@@ -60,7 +58,8 @@ public abstract class AbstractSQPOptimizer2 extends ConstraintOptimizer {
     /** Simple constructor.
      */
     protected AbstractSQPOptimizer2() {
-        this.settings = new SQPOption();
+        this.settings                     = new SQPOption();
+        this.matrixDecompositionTolerance = new MatrixDecompositionTolerance(EigenDecompositionSymmetric.DEFAULT_EPSILON);
     }
 
     /** Getter for settings.
@@ -68,6 +67,14 @@ public abstract class AbstractSQPOptimizer2 extends ConstraintOptimizer {
      */
     public SQPOption getSettings() {
         return settings;
+    }
+
+    /** Getter for matrix decomposition tolerance.
+     * @return matrix decomposition tolerance
+     * @since 4.1
+     */
+    public MatrixDecompositionTolerance getMatrixDecompositionTolerance() {
+        return matrixDecompositionTolerance;
     }
 
     /** Getter for objective function.
@@ -140,6 +147,10 @@ public abstract class AbstractSQPOptimizer2 extends ConstraintOptimizer {
             
             if (data instanceof QPOptimizer) {
                 QPSolver = (QPOptimizer) data;
+            }
+
+            if (data instanceof MatrixDecompositionTolerance) {
+                matrixDecompositionTolerance = (MatrixDecompositionTolerance) data;
             }
 
         }

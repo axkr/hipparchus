@@ -449,7 +449,9 @@ public class SQPOptimizerGM extends AbstractSQPOptimizer {
         double thirtTerm = s.dotProduct(oldH1.operate(s));
         RealMatrix Hnew = oldH1.add(firstTerm).subtract(secondTerm.scalarMultiply(1.0 / thirtTerm));
         //RESET HESSIAN IF NOT POSITIVE DEFINITE
-        EigenDecompositionSymmetric dsX = new EigenDecompositionSymmetric(Hnew);
+        EigenDecompositionSymmetric dsX = new EigenDecompositionSymmetric(Hnew,
+                                                                          getMatrixDecompositionTolerance().getEpsMatrixDecomposition(),
+                                                                          true);
         double min = new ArrayRealVector(dsX.getEigenvalues()).getMinValue();
         if (new ArrayRealVector(dsX.getEigenvalues()).getMinValue() < 0) {
 
