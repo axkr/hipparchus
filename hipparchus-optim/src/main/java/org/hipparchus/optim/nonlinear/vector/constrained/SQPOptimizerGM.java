@@ -37,7 +37,9 @@ import org.hipparchus.util.FastMath;
  * Algorithm based on paper:"Some Theoretical properties of an augmented lagrangian merit function
  * (Gill,Murray,Sauders,Wriht,April 1986)"
  * @since 3.1
+ * @deprecated as of 4.1, replaced by {@link SQPOptimizerS2}
  */
+@Deprecated
 public class SQPOptimizerGM extends AbstractSQPOptimizer {
 
     /** Jacobian constraint. */

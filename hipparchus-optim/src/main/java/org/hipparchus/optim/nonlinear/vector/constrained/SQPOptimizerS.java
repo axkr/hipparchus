@@ -40,7 +40,9 @@ import org.hipparchus.util.FastMath;
  * Algorithm based on paper:"On the convergence of a sequential quadratic
  * programming method(Klaus Shittkowki,January 1982)"
  * @since 3.1
+ * @deprecated as of 4.1, replaced by {@link SQPOptimizerS2}
  */
+@Deprecated
 public class SQPOptimizerS extends AbstractSQPOptimizer {
 
     /** Forgetting factor. */
@@ -602,7 +604,7 @@ public class SQPOptimizerS extends AbstractSQPOptimizer {
         QuadraticFunction q = new QuadraticFunction(H1, g1, 0);
 
         ADMMQPOptimizer solver = new ADMMQPOptimizer();
-        LagrangeSolution sol = solver.optimize(new ObjectiveFunction(q), iqc, eqc, bc);
+        LagrangeSolution sol = solver.optimize(new ObjectiveFunction(q), iqc, eqc, bc, getMatrixDecompositionTolerance());
 
         final double sigma;
         if (add == 1) {
@@ -663,7 +665,9 @@ public class SQPOptimizerS extends AbstractSQPOptimizer {
         double thirtTerm = s.dotProduct(oldH1.operate(s));
         RealMatrix Hnew = oldH1.add(firstTerm).subtract(secondTerm.scalarMultiply(1.0 / thirtTerm));
         //RESET HESSIAN IF NOT POSITIVE DEFINITE
-        EigenDecompositionSymmetric dsX = new EigenDecompositionSymmetric(Hnew);
+        EigenDecompositionSymmetric dsX = new EigenDecompositionSymmetric(Hnew,
+                                                                          getMatrixDecompositionTolerance().getEpsMatrixDecomposition(),
+                                                                          true);
         double min = new ArrayRealVector(dsX.getEigenvalues()).getMinValue();
         if (min < 0) {
             Hnew = MatrixUtils.createRealIdentityMatrix(oldH.getRowDimension());
