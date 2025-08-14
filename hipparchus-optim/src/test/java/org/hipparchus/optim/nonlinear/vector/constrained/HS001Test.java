@@ -16,39 +16,63 @@
  */
 package org.hipparchus.optim.nonlinear.vector.constrained;
 
-
-
+import org.hipparchus.linear.MatrixUtils;
 import org.hipparchus.linear.RealVector;
 import org.hipparchus.linear.RealMatrix;
 import org.hipparchus.optim.InitialGuess;
 import org.hipparchus.optim.nonlinear.scalar.ObjectiveFunction;
-import org.hipparchus.optim.nonlinear.vector.constrained.LagrangeSolution;
-import org.hipparchus.optim.nonlinear.vector.constrained.SQPOption;
-import org.hipparchus.optim.nonlinear.vector.constrained.TwiceDifferentiableFunction;
-import org.hipparchus.util.FastMath;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
-
 public class HS001Test {
-    private static final double pi = FastMath.PI;
 
     private static class HS001Obj extends TwiceDifferentiableFunction {
         @Override public int dim() { return 2; }
-        @Override public double value(RealVector x) {
-            return ((100 * FastMath.pow((x.getEntry(1) - FastMath.pow(x.getEntry(0), 2)), 2)) + FastMath.pow((1 - x.getEntry(0)), 2));
+        @Override public double value(final RealVector x) {
+
+            final double x0     = x.getEntry(0);
+            final double x1     = x.getEntry(1);
+            final double x1Mx02 = x1 - x0  * x0;
+            final double oMx0   = 1 - x0;
+            return 100 * x1Mx02 * x1Mx02 + oMx0 * oMx0;
         }
-        @Override public RealVector gradient(RealVector x) { throw new UnsupportedOperationException(); }
-        @Override public RealMatrix hessian(RealVector x) { throw new UnsupportedOperationException(); }
+        @Override public RealVector gradient(final RealVector x) {
+            final double x0     = x.getEntry(0);
+            final double x1     = x.getEntry(1);
+            final double x1Mx02 = x1 - x0  * x0;
+            final double a      = 200 * x1Mx02;
+            return MatrixUtils.createRealVector(new double[] {
+                    2 * (x0 * (1 - a) - 1),
+                    a
+            });
+        }
+        @Override public RealMatrix hessian(final RealVector x) {
+            throw new UnsupportedOperationException();
+        }
     }
 
     @Test
-    public void testHS001() {
-         SQPOption sqpOption=new SQPOption();
-        sqpOption.setMaxLineSearchIteration(20);
+    public void testHS001ExternalGradient() {
+        doTestHS001(GradientMode.EXTERNAL);
+    }
+
+    @Test
+    public void testHS001ForwardGradient() {
+        doTestHS001(GradientMode.FORWARD);
+    }
+
+    @Test
+    public void testHS001CentralGradient() {
+        doTestHS001(GradientMode.CENTRAL);
+    }
+
+    private void doTestHS001(final GradientMode gradientMode) {
+        SQPOption sqpOption=new SQPOption();
+        sqpOption.setMaxLineSearchIteration(10);
         sqpOption.setB(0.5);
         sqpOption.setMu(1.0e-4);
         sqpOption.setEps(10e-7);
+        sqpOption.setGradientMode(gradientMode);
         InitialGuess guess = new InitialGuess(new double[]{-2, 1});
         SQPOptimizerS2 optimizer = new SQPOptimizerS2();
         

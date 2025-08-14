@@ -49,13 +49,9 @@ public class SQPOption implements OptimizationData {
 
     /** Default max iteration before reset hessian. */
     public static final  int DEFAULT_MAX_LINE_SEARCH_ITERATION = 50;
-    
+
     /** Default Gradient mode. */
-    /**0 gradient from functions
-     * 1 forward difference
-     * 2 centrad difference
-     */
-    public static final  int DEFAULT_GRADIENT_MODE = 1;
+    public static final GradientMode DEFAULT_GRADIENT_MODE = GradientMode.FORWARD;
 
     /** Convergence criteria*/
     private int convCriteria;
@@ -86,9 +82,9 @@ public class SQPOption implements OptimizationData {
 
     /** Enable or Disable using direct the function Hessian. */
     private boolean useFunHessian;
-    
+
     /** Gradient Mode. */
-    private int gradientMode;
+    private GradientMode gradientMode;
 
     /** Simple constructor.
      * <p>
@@ -105,23 +101,23 @@ public class SQPOption implements OptimizationData {
         this.b                      = DEFAULT_B;
         this.maxLineSearchIteration = DEFAULT_MAX_LINE_SEARCH_ITERATION;
         this.useFunHessian          = DEFAULT_USE_FUNCTION_HESSIAN;
-        this.gradientMode=DEFAULT_GRADIENT_MODE;
+        this.gradientMode           = DEFAULT_GRADIENT_MODE;
     }
 
      /** Set Gradient mode
-     * @param gradientMode 
+     * @param gradientMode
      */
-    public void setGradientMode(final int gradientMode) {
+    public void setGradientMode(final GradientMode gradientMode) {
         this.gradientMode = gradientMode;
     }
 
     /** Get Gradient Mode.
      * @return Gradient Mode
      */
-    public int getGradientMode() {
+    public GradientMode getGradientMode() {
         return gradientMode;
     }
-    
+
     /** Set convergence criteria.
      * @param convCriteria convergence criteria
      */

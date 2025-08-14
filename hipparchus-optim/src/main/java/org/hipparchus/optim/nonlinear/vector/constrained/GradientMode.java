@@ -16,29 +16,18 @@
  */
 package org.hipparchus.optim.nonlinear.vector.constrained;
 
-import org.hipparchus.linear.RealMatrix;
-import org.hipparchus.optim.OptimizationData;
-
-/** Inverse of Cholesky factorization.
+/** Enumerate for gradient mode.
  * @since 4.1
  */
-public class InverseCholesky implements OptimizationData {
+public enum GradientMode {
 
-    /** Inverse of Cholesku factorization. */
-    private final RealMatrix invL;
+    /** Compute gradients from the objective and constraints functions themselves. */
+    EXTERNAL,
 
-    /** Simple constructor.
-     * @param inverseL inverse of Cholesku factorization
-     */
-    public InverseCholesky(final RealMatrix inverseL) {
-       this.invL = inverseL;
-    }
+    /** Compute gradients using forward difference. */
+    FORWARD,
 
-    /** Get inverse of Cholesku factorization.
-     * @return inverse of Cholesku factorization
-     */
-    public RealMatrix getInverseL() {
-        return this.invL;
-    }
+    /** Compute gradients using central differences. */
+    CENTRAL
 
 }

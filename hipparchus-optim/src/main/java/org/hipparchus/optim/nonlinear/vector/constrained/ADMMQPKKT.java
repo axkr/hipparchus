@@ -87,11 +87,11 @@ public class ADMMQPKKT implements KarushKuhnTuckerSolver<ADMMQPSolution> {
     }
 
     /** Update tolerance for matrix decomposition
-     * @param decompositionEpsilon tolerance for symmetric matrix decomposition
+     * @param newDecompositionEpsilon tolerance for symmetric matrix decomposition
      * @since 4.1
      */
-    public void updateDecompositionEpsilon(final double decompositionEpsilon) {
-        this.decompositionEpsilon = decompositionEpsilon;
+    public void updateDecompositionEpsilon(final double newDecompositionEpsilon) {
+        this.decompositionEpsilon = newDecompositionEpsilon;
     }
 
     /** Update steps

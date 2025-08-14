@@ -26,7 +26,7 @@ import org.hipparchus.util.Precision;
 
 /**
  * Updates a QR factorization when adding or removing constraints in
- * <a href="https://en.wikipedia.org/wiki/Active_set_method">active set methods</a> for
+ * <a href = "https://en.wikipedia.org/wiki/Active_set_method">active set methods</a> for
  * nonlinear vector optimization.
  * <p>
  * Maintains an inverse of the lower triangular matrix (J) and an upper triangular factor (R),
@@ -42,7 +42,7 @@ public class QRUpdater {
     private RealMatrix J;
 
     /** Upper triangular R matrix for active constraints. */
-    private RealMatrix R;
+    private final RealMatrix R;
 
     /** Number of active constraints. */
     private int iq;
@@ -64,9 +64,12 @@ public class QRUpdater {
      */
     public QRUpdater(RealMatrix L,boolean isInverse) {
         this.n = L.getRowDimension();
-        if(isInverse)  this.J=L.transpose();
-        else           this.J = inverseLowerTriangular(L).transpose();
-            
+        if (isInverse) {
+            this.J = L.transpose();
+        } else {
+            this.J = inverseLowerTriangular(L).transpose();
+        }
+
         this.R = MatrixUtils.createRealMatrix(n, n);
         this.iq = 0;
     }
@@ -79,10 +82,10 @@ public class QRUpdater {
      *         the problem is degenerate and the constraint cannot be added
      */
     public boolean addConstraint(RealVector d) {
-        
+
         RealMatrix Jtemp = new Array2DRowRealMatrix(J.getData());
         RealVector tempD = new ArrayRealVector(d);
-       
+
         double cc, ss, h, t1, t2, xny;
         for (int j = n - 1; j >= iq + 1; j--) {
             cc = tempD.getEntry(j - 1);
@@ -115,7 +118,7 @@ public class QRUpdater {
             return false;
         }
 
-        
+
         for (int i = 0; i <= iq; i++) {
             R.setEntry(i, iq, tempD.getEntry(i));
         }
@@ -191,7 +194,7 @@ public class QRUpdater {
         return Linv;
     }
 
-  
+
     /**
      * Returns the current active upper triangular factor R.
      *

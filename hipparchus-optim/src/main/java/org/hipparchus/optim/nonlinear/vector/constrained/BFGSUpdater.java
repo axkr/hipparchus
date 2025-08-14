@@ -82,15 +82,6 @@ public class BFGSUpdater {
     }
 
     /**
-     * Returns the inverse of the current L factor.
-     *
-     * @return inverse of lower‐triangular L
-     */
-    public RealMatrix getInvL() {
-        return inverseLowerTriangular(L);
-    }
-
-    /**
      * Updates the Hessian approximation using the BFGS formula.
      * <p>
      * If curvature condition fails, applies damping or regularization.
@@ -115,7 +106,7 @@ public class BFGSUpdater {
         final CholeskyDecomposition ch = new CholeskyDecomposition(initialH, decompositionEpsilon, decompositionEpsilon);
         L = ch.getL();
     }
-    
+
     /**
      * Applies dynamic damping to y to satisfy curvature condition sᵀy ≥ γ sᵀHs.
      *
@@ -128,7 +119,9 @@ public class BFGSUpdater {
         double sty = s.dotProduct(y1);
         RealVector Hs = getHessian().operate(s);
         double sHs = s.dotProduct(Hs);
-        if (sty <= Precision.EPSILON) return null;
+        if (sty <= Precision.EPSILON) {
+            return null;
+        }
         if (sty < GAMMA * sHs) {
             double phi = (1.0 - GAMMA) * sHs / (sHs - sty);
             // clamp phi to [0,1]
@@ -145,10 +138,9 @@ public class BFGSUpdater {
     /**
      * Computes the inverse of a lower‐triangular matrix via forward substitution.
      *
-     * @param L lower‐triangular matrix
      * @return inverse of L
      */
-    private RealMatrix inverseLowerTriangular(RealMatrix L) {
+    private RealMatrix inverseLowerTriangular() {
         int n = L.getRowDimension();
         RealMatrix Linv = MatrixUtils.createRealMatrix(n, n);
         for (int i = 0; i < n; i++) {
@@ -174,9 +166,9 @@ public class BFGSUpdater {
         double theta = 1.0 / FastMath.sqrt(s.dotProduct(Hs));
         RealVector v = y.mapMultiply(rho);
         RealVector w = Hs.mapMultiply(theta);
-        cholupdateLower(L, v, +1) ;
-        
-        if (!cholupdateLower(L, w, -1)) {
+        cholupdateLower(v, +1) ;
+
+        if (!cholupdateLower(w, -1)) {
             //try to regularize
             L.setSubMatrix(Lcopy.getData(), 0, 0);
         }
@@ -186,15 +178,14 @@ public class BFGSUpdater {
     /**
      * Performs a rank‐one Cholesky update/downdate on L.
      * <p>
-     * Updates L such that A'=A+σu uᵀ or A'=A−u uᵀ, without refactorization.
+     * Updates L such that A' = A+σu uᵀ or A' = A−u uᵀ, without refactorization.
      * </p>
      *
-     * @param L lower‐triangular factor (overwritten)
      * @param u update vector
      * @param sigma +1 for update, -1 for downdate
      * @return true if resulting matrix remains PD, false otherwise
      */
-    private boolean cholupdateLower(RealMatrix L, RealVector u, int sigma) {
+    private boolean cholupdateLower(RealVector u, int sigma) {
         int n = u.getDimension();
         RealVector temp = new ArrayRealVector(u);
         for (int i = 0; i < n; i++) {
@@ -219,5 +210,5 @@ public class BFGSUpdater {
         }
         return true;
     }
-    
+
 }

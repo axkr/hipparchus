@@ -33,7 +33,7 @@ import org.hipparchus.util.FastMath;
  * <br/>
  * min f(x)
  * <br/>
- * q(x)=b1
+ * q(x) = b1
  * <br/>
  * h(x)>=b2
  * <br/>
@@ -231,7 +231,6 @@ public class SQPOptimizerS extends AbstractSQPOptimizer {
 
                 }
                 notMonotone = true;
-                // if (search < maxLineSearchIteration) failedSearch = 0;
             }
 
             //UPDATE ALL FUNCTION
@@ -260,13 +259,6 @@ public class SQPOptimizerS extends AbstractSQPOptimizer {
             }
 
             if (!notMonotone) {
-//                if (iterations.getCount()==1)
-//                {
-//                    RealVector yfirst = new1.subtract(old1);
-//                    RealVector sfirst = dx.mapMultiply(alfa);
-//                    double scaleFactor = yfirst.dotProduct(sfirst)/yfirst.dotProduct(yfirst);
-//                    hessian = hessian.scalarMultiply(scaleFactor);
-//                }
                 hessian = BFGSFormula(hessian, dx, alpha, new1, old1);
             }
 
@@ -504,11 +496,8 @@ public class SQPOptimizerS extends AbstractSQPOptimizer {
     }
 
     private double updateRho(RealVector dx, RealVector dy, RealMatrix H, RealMatrix jacobianG, double additionalVariable) {
-
         double num = 10.0 * FastMath.pow(dx.dotProduct(jacobianG.transpose().operate(dy)), 2);
         double den = (1.0 - additionalVariable) * (1.0 - additionalVariable) * dx.dotProduct(H.operate(dx));
-        //double den = (1.0 - additionalVariable) * dx.dotProduct(H.operate(dx));
-
         return FastMath.max(10.0, num / den);
     }
 
@@ -534,7 +523,6 @@ public class SQPOptimizerS extends AbstractSQPOptimizer {
         // violated = true;
         if (me > 0 || violated) {
             add = 1;
-
         }
 
         RealMatrix H1 = new Array2DRowRealMatrix(H.getRowDimension() + add, H.getRowDimension() + add);
