@@ -136,17 +136,18 @@ public class QPDualActiveSolver extends QPOptimizer {
      * @param equality true if constraint is equality
      * @return the primal step size
      */
-    private double findPrimalStep(final RealVector z,
-                                  final RealVector ai,
-                                  final double sv,
-                                  final boolean equality) {
+    private double findPrimalStep(final RealVector z, final RealVector ai, final double sv, final boolean equality) {
         double norm2 = z.dotProduct(z);
-        if (FastMath.abs(norm2) < Precision.EPSILON) return Double.POSITIVE_INFINITY;
+        if (FastMath.abs(norm2) < Precision.EPSILON) {
+            return Double.POSITIVE_INFINITY;
+        }
 
         double denom = ai.dotProduct(z);
         double alpha = -sv / denom;
         //step for inequality should be positive
-        if (!equality && alpha < 0) alpha = Double.POSITIVE_INFINITY;
+        if (!equality && alpha < 0) {
+            alpha = Double.POSITIVE_INFINITY;
+        }
 
         return alpha;
     }
@@ -160,23 +161,18 @@ public class QPDualActiveSolver extends QPOptimizer {
      * @param me threshold index for equality
      * @return the blocking step and index
      */
-    private Pair<Integer, Double> findDualBlockingConstraint(final RealVector u,
-                                                             final RealVector r,
-                                                             final List<Integer> activeSet,
-                                                             final int me) {
-         if (activeSet.isEmpty()) {
+    private Pair<Integer, Double> findDualBlockingConstraint(final RealVector u, final RealVector r,
+                                                             final List<Integer> activeSet, final int me) {
+        if (activeSet.isEmpty()) {
             return new Pair<>(-1, Double.POSITIVE_INFINITY);
         }
-//        if (r == null || activeSet.isEmpty()) {
-//            return new Pair<>(-1, Double.POSITIVE_INFINITY);
-//        }
         double alpha = Double.POSITIVE_INFINITY;
         int block = -1;
         int size = activeSet.size();
         for (int i = 0; i < size; i++) {
             double ui = u.getEntry(i);
             double ri = r.getEntry(i);
-            //consider only inequality constraint in active set
+            //consider only inequality constraint in the active set
             if (ri > 0 && activeSet.get(i) >= me) {
                 double cand = ui / ri;
                 if (cand < alpha) {
@@ -197,14 +193,11 @@ public class QPDualActiveSolver extends QPOptimizer {
      * @param partial new partial multiplier
      * @return updated multipliers
      */
-    private RealVector updateMultipliersOnAddition(final RealVector u,
-                                                   final RealVector r,
-                                                   final double alpha,
-                                                   final double partial) {
+    private RealVector updateMultipliersOnAddition(final RealVector u, final RealVector r,
+                                                   final double alpha, final double partial) {
         if (u.getDimension() == 0) {
             RealVector v = new ArrayRealVector(1);
             v.set(partial);
-
             return v;
         }
 
@@ -221,10 +214,8 @@ public class QPDualActiveSolver extends QPOptimizer {
      * @param dropIndex index to remove
      * @return updated multipliers
      */
-    private RealVector updateMultipliersOnRemoval(final RealVector u,
-                                                  final RealVector r,
-                                                  final double alpha,
-                                                  final int dropIndex) {
+    private RealVector updateMultipliersOnRemoval(final RealVector u, final RealVector r,
+                                                  final double alpha, final int dropIndex) {
         if (u.getDimension() == 1) {
             return new ArrayRealVector(0,0);
         }
@@ -251,16 +242,16 @@ public class QPDualActiveSolver extends QPOptimizer {
     private Pair<Integer, Double> mostViolatedConstraint(RealVector sv, Set<Integer> blackList, List<Integer> activeSet, int me) {
         double maxViolation = 0;
         int mostViolated = -1;
-                for (int i = 0; i < sv.getDimension(); i++) {
-                    if (blackList.contains(me + i) || activeSet.contains(me+i)) {
-                        continue;
-                    }
-                    double violation = sv.getEntry(i);
-                    if (violation < maxViolation) {
-                        maxViolation = violation;
-                        mostViolated = i;
-                    }
-                }
+        for (int i = 0; i < sv.getDimension(); i++) {
+            if (blackList.contains(me + i) || activeSet.contains(me + i)) {
+                continue;
+            }
+            double violation = sv.getEntry(i);
+            if (violation < maxViolation) {
+                maxViolation = violation;
+                mostViolated = i;
+            }
+        }
         return new Pair<>(mostViolated, maxViolation);
     }
 
@@ -350,10 +341,7 @@ public class QPDualActiveSolver extends QPOptimizer {
         //max iteration adjusted in base of problem dimension
         this.maxIter = 40 * (n + m + p);
 
-        //convergence theshold calculated in base at the matrix  conditioning
-
-
-
+        //convergence threshold calculated in base at the matrix conditioning
         //ActiveSet and blackLit(dependent constraints)
 
         final Set<Integer> blacklist = new HashSet<>();
@@ -370,7 +358,7 @@ public class QPDualActiveSolver extends QPOptimizer {
             RealMatrix Q = qrUpdater.getJ();
             d = Q.transpose().operate(ai);
             RealMatrix J2 = qrUpdater.getJ2();
-            z = (n - active.size()>0) ?
+            z = (n - active.size() > 0) ?
                 J2.operate(d.getSubVector(active.size(), n - active.size())) :
                 new ArrayRealVector(n);
             if (!active.isEmpty()) {
@@ -398,7 +386,9 @@ public class QPDualActiveSolver extends QPOptimizer {
 
             //calculate norm1 of the constraints
             double sum = 0;
-            for (int k = 0; k < sv.getDimension(); k++) sum += FastMath.min(0.0, sv.getEntry(k));
+            for (int k = 0; k < sv.getDimension(); k++) {
+                sum += FastMath.min(0.0, sv.getEntry(k));
+            }
 
             // Evaluate convergence
             if (FastMath.abs(sum) <= tol) {
@@ -420,7 +410,7 @@ public class QPDualActiveSolver extends QPOptimizer {
                 int dropIndex;
                 RealVector np;
                 RealMatrix J2;
-                // Dual step loop update multiplier and x(if step is also in primal) until primal step is not done
+                // Dual step loop update multiplier and x (if step is also in primal) until primal step is not done
                 while (iteration++ < maxIter) {
                     np = CI.getColumnVector(mostViolated.getKey());
                     sv.setEntry(mostViolated.getKey(), np.dotProduct(x) + ci0.getEntry(mostViolated.getKey()));
@@ -442,10 +432,13 @@ public class QPDualActiveSolver extends QPOptimizer {
                     if (t >= Double.POSITIVE_INFINITY) {
                         return new LagrangeSolution(new ArrayRealVector(0,0), new ArrayRealVector(0,0), 0.0); // infeasible
                     } else if (t == t1) {
-                        break; // primal full step(exit from dual step loop)
+                        break; // primal full step (exit from dual step loop)
                     } else {
                         //Manage dual step
-                        if (t1 < Double.POSITIVE_INFINITY)  x = x.add(z.mapMultiply(t));// step is also in primal
+                        if (t1 < Double.POSITIVE_INFINITY) {
+                            // step is also in primal
+                            x = x.add(z.mapMultiply(t));
+                        }
                         uPartial += t;
                         u = updateMultipliersOnRemoval(u, r, t, dropIndex);
                         qrUpdater.deleteConstraint(dropIndex);
@@ -462,7 +455,7 @@ public class QPDualActiveSolver extends QPOptimizer {
                     uPartial += t;
                     u = updateMultipliersOnAddition(u, r, t, uPartial);
                     blacklist.clear();
-                    break;//revaluate convergence(exit from most violated constraint loop)
+                    break; //revaluate convergence (exit from most violated constraint loop)
                 } else {
                     // dependent constraint -> add in blacklist and revert state
                     // revaluate only violated constraint without recalculate them;
@@ -473,7 +466,7 @@ public class QPDualActiveSolver extends QPOptimizer {
             }
         }
         if (iteration == maxIter) {
-            return new LagrangeSolution(new ArrayRealVector(0,0), new ArrayRealVector(0,0), 0.0);//no optimal solution is found
+            return new LagrangeSolution(new ArrayRealVector(0,0), new ArrayRealVector(0,0), 0.0); // no optimal solution is found
         }
         return buildSolution(x, u, active, G, g0, g, p, m);
     }
@@ -519,6 +512,5 @@ public class QPDualActiveSolver extends QPOptimizer {
         }
         return Linv;
     }
-
 
 }

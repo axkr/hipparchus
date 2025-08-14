@@ -335,15 +335,15 @@ public class MeritFunctionL2 {
      * Update Weight Vector Rj.
      * called after QP solution before update the penalty function
      * @param H hessina Matrix (updated after line search)
-     * @param y last estimate of multiplier (updated after line search)
-     * @param dx direction of x provided by QP solution
-     * @param u direction of y provided by QP solution
+     * @param newY last estimate of multiplier (updated after line search)
+     * @param newDx direction of x provided by QP solution
+     * @param newU direction of y provided by QP solution
      * @param sigmaValue value of the additional variable of QP solution
      * @param iterations current iteration
      */
-     public void updateRj(RealMatrix H,RealVector y,RealVector dx, RealVector u,double sigmaValue,int iterations) {
+     public void updateRj(RealMatrix H, RealVector newY, RealVector newDx, RealVector newU, double sigmaValue, int iterations) {
         //calculate sigma vector that depends on iterations
-        if (y.getDimension() == 0)return;
+        if (newY.getDimension() == 0)return;
         RealVector sigma = new ArrayRealVector(r.getDimension());
         for (int i = 0; i < sigma.getDimension(); i++) {
             final double appoggio = iterations / FastMath.sqrt(r.getEntry(i));
@@ -361,9 +361,9 @@ public class MeritFunctionL2 {
 
         RealVector sigmar = sigma.ebeMultiply(r);
         //(u-v)^2 or (ru-v)
-        RealVector numerator = ((u.subtract(y)).ebeMultiply(u.subtract(y))).mapMultiply(2.0 * (mi + me));
+        RealVector numerator = ((newU.subtract(newY)).ebeMultiply(newU.subtract(newY))).mapMultiply(2.0 * (mi + me));
 
-        double denominator = dx.dotProduct(H.operate(dx)) * (1.0 - sigmaValue);
+        double denominator = newDx.dotProduct(H.operate(newDx)) * (1.0 - sigmaValue);
         RealVector r1 = new ArrayRealVector(r);
         if (this.eqConstraint != null) {
             for (int i = 0; i < me; i++) {
