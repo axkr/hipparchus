@@ -318,7 +318,7 @@ public class QPDualActiveSolver extends QPOptimizer {
                //c2 trace of inverse of cholesky factorization
                double c2 = FastMath.sqrt(L1.getTrace());
                tol = m * c1 * c2 * Precision.EPSILON * 100.0;
-                qrUpdater = new QRUpdater(L1, true);
+                qrUpdater = new QRUpdater(L1);
             } catch (MathIllegalArgumentException ex) {
                 // matrix is not positive definite return empty solution
                 return new LagrangeSolution(new ArrayRealVector(0,0), new ArrayRealVector(0,0), 0.0);
@@ -331,7 +331,7 @@ public class QPDualActiveSolver extends QPOptimizer {
             double c1 = FastMath.sqrt(G1.getTrace());
             double c2 = FastMath.sqrt(L.getTrace());
             tol = m * c1 * c2 * Precision.EPSILON * 100.0;
-            qrUpdater = new QRUpdater(L, true);
+            qrUpdater = new QRUpdater(L);
         }
         if (m + p == 0) {
             return new LagrangeSolution(x,

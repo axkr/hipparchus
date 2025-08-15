@@ -58,18 +58,11 @@ public class QRUpdater {
      * <p>
      * Computes J = L^{-1} and initializes R to an n-by-n zero matrix.
      * </p>
-     *
      * @param L lower triangular matrix to initialize the updater
-     * @param isInverse flag indicate if the matrix is already inverted
      */
-    public QRUpdater(RealMatrix L,boolean isInverse) {
+    public QRUpdater(final RealMatrix L) {
         this.n = L.getRowDimension();
-        if (isInverse) {
-            this.J = L.transpose();
-        } else {
-            this.J = inverseLowerTriangular(L).transpose();
-        }
-
+        this.J = L.transpose();
         this.R = MatrixUtils.createRealMatrix(n, n);
         this.iq = 0;
     }
@@ -179,25 +172,6 @@ public class QRUpdater {
             }
         }
     }
-
-    /**
-     * Computes the inverse of a lower triangular matrix via forward substitution.
-     *
-     * @param L lower triangular matrix to invert
-     * @return inverse of the lower triangular matrix
-     */
-    private RealMatrix inverseLowerTriangular(RealMatrix L) {
-        int p = L.getRowDimension();
-        RealMatrix Linv = MatrixUtils.createRealMatrix(p, p);
-        for (int i = 0; i < p; i++) {
-            RealVector e = MatrixUtils.createRealVector(new double[p]);
-            e.setEntry(i, 1.0);
-            MatrixUtils.solveLowerTriangularSystem(L, e);
-            Linv.setColumnVector(i, e);
-        }
-        return Linv;
-    }
-
 
     /**
      * Returns the current active upper triangular factor R.
