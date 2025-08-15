@@ -63,7 +63,6 @@ public class HS058Test {
         optimizer.setDebugPrinter(s -> {});
         double val = 3.19033354957;
         LagrangeSolution sol = optimizer.optimize(sqpOption,guess, new ObjectiveFunction(new HS058Obj()), new HS058Ineq());
-        System.out.println(sol.getX()+";"+sol.getLambda());
         assertEquals(val, sol.getValue(), 1e-1);
         
     }
