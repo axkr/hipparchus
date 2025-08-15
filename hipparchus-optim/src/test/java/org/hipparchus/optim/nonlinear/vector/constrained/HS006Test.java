@@ -25,7 +25,6 @@ import org.hipparchus.optim.MaxIter;
 import org.hipparchus.optim.nonlinear.scalar.ObjectiveFunction;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 
@@ -41,7 +40,7 @@ public class HS006Test {
         @Override public RealVector gradient(RealVector x) {
             final double x0     = x.getEntry(0);
             return MatrixUtils.createRealVector(new double[] {
-                    -2 * x0, 0
+                    2 * (x0 - 1), 0
             });
         }
         @Override public RealMatrix hessian(RealVector x) { throw new UnsupportedOperationException(); }
@@ -64,7 +63,6 @@ public class HS006Test {
     }
 
     @Test
-    @Disabled // this test fails to converge after 100 iterations (the other tests converge in 10 iterations)
     public void testHS006ExternalGradient() {
         doTestHS006(GradientMode.EXTERNAL);
     }
