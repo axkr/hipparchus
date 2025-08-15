@@ -105,8 +105,7 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
         final int m = me + mi;
 
         double alpha;
-        double rho = 100.0;
-
+        double rho = getSettings().getRhoCons(); //get initial value of slack variable from SQPOption
 
         if (this.getStartPoint() != null) {
             x = new ArrayRealVector(this.getStartPoint());
@@ -163,7 +162,7 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
                 sigma = (sol1.getX().getDimension() == 0) ? getSettings().getSigmaMax() * 10.0 : sol1.getValue();
 
                 if (sigma > getSettings().getSigmaMax() || sigma < - Precision.EPSILON) {
-                    rho = getSettings().getRhoCons() * rho;
+                    rho *= 10.0; //increment slack variable by factor 10.0
                     qpLoop += 1;
                     augmented = true;
                 }
@@ -250,7 +249,7 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
 
                     H         = bfgs.getHessian();
                     augmented = true;
-                    rho = 100.0;
+                    rho = getSettings().getRhoCons(); //get initial value of slack variable
                     penalty.resetRj();
                     //y.set(0.0);
                     lineSearch.resetBadStepCount();
@@ -259,6 +258,7 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
                     //maintain the same Hessian
 
                     H = bfgs.getHessian();
+                    augmented = true;// in case of bad step solve augmented QP
 
                 } else {
                     // good step detected proceed with hessian update
@@ -268,7 +268,7 @@ public class SQPOptimizerS2 extends AbstractSQPOptimizer2 {
 
             } else {
                 augmented = true;
-                rho = getSettings().getRhoCons() * rho;
+                rho *= 10.0; //increment slack variable by factor 10.0
             }
         }
 
