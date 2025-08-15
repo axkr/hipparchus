@@ -126,7 +126,7 @@ public class BFGSUpdater {
             double phi = (1.0 - GAMMA) * sHs / (sHs - sty);
             // clamp phi to [0,1]
             phi = FastMath.max(0.0, FastMath.min(1.0, phi));
-            y = y1.mapMultiply(1.0 - phi).add(Hs.mapMultiply(phi));
+            y = y1.mapMultiply(phi).add(Hs.mapMultiply(1.0 - phi));
             sty = s.dotProduct(y);
             if (sty < GAMMA * sHs) {
                 return null;
