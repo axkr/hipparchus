@@ -219,60 +219,73 @@ public class LineSearch {
         double fxCurrent = f.getPenaltyEval();
         alphaMin = FastMath.max(1e-12, 1e-6 / FastMath.max(1.0, f.getDx().getNorm()));
         //double fxCurrent = f.value(0);
-        double alpha = 1.0;
-        double fxNew;
         double directionalDeriv = f.getGradient();
-        // Monotone Search
-        while (alpha >= alphaMin) {
 
-            fxNew = f.value(alpha);
-            if (acceptStep(fxNew, fxCurrent, alpha, directionalDeriv)) {
-                markGoodStep();
-                updateHistory(fxNew);
+        // Monotone Search
+        nonMonotoneEnabled = false;
+        double alpha = searchLoop(f, fxCurrent, directionalDeriv);
+        if (!Double.isNaN(alpha)) {
+            // monotone search succeeded
+            return alpha;
+        } else {
+            // Non-monotone search
+            nonMonotoneEnabled = true;
+            alpha = searchLoop(f, fxCurrent, directionalDeriv);
+            if (!Double.isNaN(alpha)) {
+                // non-monotone search succeeded
                 return alpha;
+            } else {
+                // last attempt before we declare bad step
+                final double fxNew = f.value(alphaMin);
+                searchCount++;
+                if (acceptStep(fxNew, fxCurrent, alphaMin, directionalDeriv)) {
+                    markGoodStep();
+                    updateHistory(fxNew);
+                } else {
+                    markBadStep();
+                }
+                return alphaMin;
             }
-            alpha = updateStepLength(alpha, fxCurrent, fxNew, directionalDeriv);
-            monotoneFailures++;
-            if (monotoneFailures >= maxMonotoneFailures) {
-                nonMonotoneEnabled = true;
-                break;
-            }
-             searchCount++;
         }
 
-        // Non-Monotone Search
-        monotoneFailures = 0;
-        alpha = 1.0;
+    }
 
+    /** Iterativ search (either monotone or non-monotone).
+     * @param f penalty function
+     * @param fxCurrent penalty function at current point
+     * @param directionalDeriv directional derivative
+     * @return accepted alpha, or NaN if search failed
+     */
+    private double searchLoop(final MeritFunctionL2 f, final double fxCurrent,
+                              final double directionalDeriv) {
+
+        // start value for step length
+        double alpha = 1.0;
+
+        // step length reduction loop
         while (alpha >= alphaMin) {
 
-            fxNew = f.value(alpha);
+            final double fxNew = f.value(alpha);
             if (acceptStep(fxNew, fxCurrent, alpha, directionalDeriv)) {
+                // we have found an acceptable step length
                 markGoodStep();
                 updateHistory(fxNew);
                 return alpha;
             }
+
+            // step length was not accepted, continue iteration
             alpha = updateStepLength(alpha, fxCurrent, fxNew, directionalDeriv);
             monotoneFailures++;
             if (monotoneFailures >= maxMonotoneFailures) {
-                nonMonotoneEnabled = false;
+                nonMonotoneEnabled = !nonMonotoneEnabled;
                 break;
             }
             searchCount++;
+
         }
 
-        // last trial before we declare bad step
-        fxNew = f.value(alphaMin);
-        searchCount++;
-        if (acceptStep(fxNew, fxCurrent, alphaMin, directionalDeriv)) {
-                markGoodStep();
-                updateHistory(fxNew);
-                return alpha;
-        }
-
-        // Both searches failed
-        markBadStep();
-        return alphaMin;
+        // we failed to find an acceptable step length
+        return Double.NaN;
 
     }
 

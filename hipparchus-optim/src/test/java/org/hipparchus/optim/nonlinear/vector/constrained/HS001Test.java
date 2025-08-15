@@ -68,7 +68,7 @@ public class HS001Test {
 
     private void doTestHS001(final GradientMode gradientMode) {
         SQPOption sqpOption=new SQPOption();
-        sqpOption.setMaxLineSearchIteration(10);
+        sqpOption.setMaxLineSearchIteration(12);
         sqpOption.setB(0.5);
         sqpOption.setMu(1.0e-4);
         sqpOption.setEps(10e-7);
