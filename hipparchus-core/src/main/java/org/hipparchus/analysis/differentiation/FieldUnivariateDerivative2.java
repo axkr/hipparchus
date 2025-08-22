@@ -606,18 +606,14 @@ public class FieldUnivariateDerivative2<T extends CalculusFieldElement<T>>
     /** {@inheritDoc} */
     @Override
     public FieldUnivariateDerivative2<T> atan2(final FieldUnivariateDerivative2<T> x) {
-        final T x2    = x.f0.multiply(x.f0);
-        final T f02   = f0.add(f0);
-        final T inv   = f0.square().add(x2).reciprocal();
         final T atan0 = FastMath.atan2(f0, x.f0);
-        final T atan1 = f0.linearCombination(x.f0, f1, x.f1.negate(), f0).multiply(inv);
-        final T c     = f0.linearCombination(f2, x2,
-                                             f1.multiply(-2), x.f0.multiply(x.f1),
-                                             f02, x.f1.multiply(x.f1),
-                                             f0.negate(), x.f0.multiply(x.f2)).multiply(inv);
-        return new FieldUnivariateDerivative2<>(atan0,
-                                                atan1,
-                                                c.subtract(f02.multiply(atan1).multiply(atan1)).divide(x.f0));
+        final FieldUnivariateDerivative2<T> result;
+        if (!x.getValue().isZero()) {
+            result = (this.divide(x)).atan();
+        } else {
+            result = (x.divide(this).negate()).atan();
+        }
+        return new FieldUnivariateDerivative2<>(atan0, result.f1, result.f2);
     }
 
     /** {@inheritDoc} */
