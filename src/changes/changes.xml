@@ -49,6 +49,11 @@ If the output is not quite correct, check for invisible trailing spaces!
     <title>Hipparchus Release Notes</title>
   </properties>
   <body>
+    <release version="4.0.2" date="TBC" description="This is a patch release.">
+      <action dev="serrof" type="fix" issue="issues/411">
+        Fixes NaN appearing in second derivative for atan2 with (Field)UnivariateDerivative2 when argument has zero value.
+      </action>
+    </release>
     <release version="4.0.1" date="2025-03-21" description="This is a patch release.">
       <action dev="luc" type="fix" issue="issues/386">
         Restores a Java 8 compatible mockito version, which is used only for tests purposes;
