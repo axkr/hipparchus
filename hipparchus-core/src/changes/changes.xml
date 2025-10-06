@@ -50,6 +50,12 @@ If the output is not quite correct, check for invisible trailing spaces!
   </properties>
   <body>
     <release version="4.1" date="TBD" description="TBD">
+      <action dev="luc" type="add" issue="issues/421">
+        Added random generators for exponential, gamma and Nakagami distributions.
+      </action>
+      <action dev="luc" type="add" due-to="Xavier Vasseur" issue="issues/419">
+        Added half Cauchy, half normal and inverse gamma distributions.
+      </action>
       <action dev="luc" type="add" issue="issues/406">
         Added AxisChecker helper class to check grid data consistency.
       </action>
