@@ -47,6 +47,7 @@ import org.hipparchus.util.FastMath;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -116,7 +117,7 @@ public abstract class AdamsIntegratorAbstractTest {
             assertEquals(0.2, integ.getMinReduction(), 1.0e-10);
             assertEquals(4, integ.getNSteps());
             assertEquals(0.9, integ.getSafety(), 1.0e-10);
-             assertTrue(integ.getStarterIntegrator() instanceof DormandPrince853Integrator);
+            assertInstanceOf(DormandPrince853Integrator.class, integ.getStarterIntegrator());
             TestProblemHandler handler = new TestProblemHandler(pb, integ);
             integ.addStepHandler(handler);
             integ.integrate(new ExpandableODE(pb), pb.getInitialState(), pb.getFinalTime());

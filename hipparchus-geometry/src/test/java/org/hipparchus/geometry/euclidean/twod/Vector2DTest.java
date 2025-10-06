@@ -123,8 +123,15 @@ class Vector2DTest {
         final Vector2D v = new Vector2D(3.0, -4.0);
         assertEquals( 7.0, v.getNorm1(),   1.0e-15);
         assertEquals( 5.0, v.getNorm(),    1.0e-15);
-        assertEquals(25.0, v.getNormSq(),  1.0e-15);
+        assertEquals(25.0, v.getNorm2Sq(),  1.0e-15);
         assertEquals( 4.0, v.getNormInf(), 1.0e-15);
+    }
+
+    @Deprecated
+    @Test
+    void testNormSq() {
+        final Vector2D v = new Vector2D(3.0, -4.0);
+        assertEquals( v.getNorm2Sq(), v.getNormSq());
     }
 
     @Test
@@ -314,6 +321,13 @@ class Vector2DTest {
 
         // Then
         check(blendedVector, 2.4, 3.4, 1e-12);
+    }
+
+    @Test
+    void testMoveTowards() {
+        check(new Vector2D(5.0, -1.0).moveTowards(new Vector2D(3.0, 4.0), 0.0), 5.0, -1.0, 1.0e-15);
+        check(new Vector2D(5.0, -1.0).moveTowards(new Vector2D(3.0, 4.0), 0.5), 4.0,  1.5, 1.0e-15);
+        check(new Vector2D(5.0, -1.0).moveTowards(new Vector2D(3.0, 4.0), 1.0), 3.0,  4.0, 1.0e-15);
     }
 
     private void check(final Vector2D v, final double x, final double y, final double tol) {

@@ -48,7 +48,7 @@ import org.hipparchus.geometry.Space;
 
  */
 public interface SubHyperplane<S extends Space,
-                               P extends Point<S>,
+                               P extends Point<S, P>,
                                H extends Hyperplane<S, P, H, I>,
                                I extends SubHyperplane<S, P, H, I>> {
 
@@ -92,13 +92,19 @@ public interface SubHyperplane<S extends Space,
      */
     I reunite(I other);
 
+    /** Get an interior point.
+     * @return an arbitrary interior point, or null if sub-hyperplane is empty
+     * @since 4.0
+     */
+    P getInteriorPoint();
+
     /** Class holding the results of the {@link #split split} method.
      * @param <U> Type of the embedding space.
      * @param <R> Type of the points in the embedding space.
      * @param <F> Type of the hyperplane.
      * @param <J> Type of the sub-hyperplane.
      */
-    class SplitSubHyperplane<U extends Space, R extends Point<U>, F extends Hyperplane<U, R, F, J>, J extends SubHyperplane<U, R, F, J>> {
+    class SplitSubHyperplane<U extends Space, R extends Point<U, R>, F extends Hyperplane<U, R, F, J>, J extends SubHyperplane<U, R, F, J>> {
 
         /** Part of the sub-hyperplane on the plus side of the splitting hyperplane. */
         private final J plus;

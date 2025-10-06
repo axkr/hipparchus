@@ -20,6 +20,8 @@ package org.hipparchus.analysis.differentiation;
 import org.hipparchus.Field;
 import org.hipparchus.util.Binary64;
 import org.hipparchus.util.Binary64Field;
+import org.hipparchus.util.FastMath;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -30,6 +32,15 @@ class FieldDerivativeStructureBinary64Test extends FieldDerivativeStructureAbstr
     @Override
     protected Field<Binary64> getField() {
         return Binary64Field.getInstance();
+    }
+
+    @Test
+    void testNorm() {
+        final FDSFactory<Binary64> factory = buildFactory(1, 1);
+        final FieldDerivativeStructure<Binary64> fds = new FieldDerivativeStructure<>(factory,
+                new Binary64[]{ Binary64.ONE, Binary64.PI});
+        final double norm = fds.norm();
+        Assertions.assertEquals(1 + FastMath.PI, norm);
     }
 
     @Override

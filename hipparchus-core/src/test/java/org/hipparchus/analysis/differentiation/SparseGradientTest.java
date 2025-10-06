@@ -56,6 +56,12 @@ class SparseGradientTest extends CalculusFieldElementAbstractTest<SparseGradient
     }
 
     @Test
+    void testNorm() {
+        final SparseGradient x = build(-3.0);
+        assertTrue(x.norm() >= FastMath.abs(x.getValue()));
+    }
+
+    @Test
     void testVariable() {
         double v = 1.0;
         int id = 0;

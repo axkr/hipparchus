@@ -18,6 +18,7 @@ package org.hipparchus.geometry.euclidean.twod;
 
 import org.hipparchus.CalculusFieldElement;
 import org.hipparchus.Field;
+import org.hipparchus.complex.Complex;
 import org.hipparchus.exception.LocalizedCoreFormats;
 import org.hipparchus.exception.MathIllegalArgumentException;
 import org.hipparchus.exception.MathRuntimeException;
@@ -200,8 +201,15 @@ class FieldVector2DTest {
         final FieldVector2D<T> v = new FieldVector2D<>(field, new Vector2D(3.0, -4.0));
         assertEquals( 7.0, v.getNorm1().getReal(),   1.0e-15);
         assertEquals( 5.0, v.getNorm().getReal(),    1.0e-15);
-        assertEquals(25.0, v.getNormSq().getReal(),  1.0e-15);
+        assertEquals(25.0, v.getNorm2Sq().getReal(),  1.0e-15);
         assertEquals( 4.0, v.getNormInf().getReal(), 1.0e-15);
+    }
+
+    @Deprecated
+    @Test
+    void testNormSq() {
+        final FieldVector2D<Complex> vector2D = new FieldVector2D<>(Complex.I, Complex.ONE);
+        assertEquals(vector2D.getNorm2Sq(), vector2D.getNormSq());
     }
 
     private <T extends CalculusFieldElement<T>> void doTestDistances(final Field<T> field) {

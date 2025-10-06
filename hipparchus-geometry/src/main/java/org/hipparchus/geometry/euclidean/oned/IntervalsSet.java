@@ -30,7 +30,6 @@ import java.util.NoSuchElementException;
 import org.hipparchus.geometry.partitioning.AbstractRegion;
 import org.hipparchus.geometry.partitioning.BSPTree;
 import org.hipparchus.geometry.partitioning.BoundaryProjection;
-import org.hipparchus.geometry.partitioning.SubHyperplane;
 import org.hipparchus.util.Precision;
 
 /** This class represents a 1D region: a set of intervals.
@@ -75,7 +74,7 @@ public class IntervalsSet
 
     /** Build an intervals set from a Boundary REPresentation (B-rep).
      * <p>The boundary is provided as a collection of {@link
-     * SubHyperplane sub-hyperplanes}. Each sub-hyperplane has the
+     * org.hipparchus.geometry.partitioning.SubHyperplane sub-hyperplanes}. Each sub-hyperplane has the
      * interior part of the region on its minus side and the exterior on
      * its plus side.</p>
      * <p>The boundary elements can be in any order, and can form
@@ -135,6 +134,35 @@ public class IntervalsSet
     @Override
     public IntervalsSet buildNew(final BSPTree<Euclidean1D, Vector1D, OrientedPoint, SubOrientedPoint> tree) {
         return new IntervalsSet(tree, getTolerance());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Vector1D getInteriorPoint() {
+
+        // look for the midpoint of the longest interval
+        // or some finite point if interval extends to ±∞
+        double selectedPoint  = Double.NaN;
+        double selectedLength = 0;
+        for (final double[] a : this) {
+            final double length = a[1] - a[0];
+            if (length > selectedLength) {
+                // this interval is longer than the selected one, change selection
+                if (Double.isInfinite(a[0])) {
+                    // interval starts at -∞, it may extend to +∞ as well
+                    selectedPoint = Double.isInfinite(a[1]) ? 0 : a[1] - 1.0e9 * getTolerance();
+                } else if (Double.isInfinite(a[1])) {
+                    // interval ends at +∞
+                    selectedPoint = a[0] + 1.0e9 * getTolerance();
+                } else {
+                    selectedPoint  = 0.5 * (a[0] + a[1]);
+                }
+                selectedLength = length;
+            }
+        }
+
+        return Double.isNaN(selectedPoint) ? null : new Vector1D(selectedPoint);
+
     }
 
     /** {@inheritDoc} */
@@ -324,7 +352,7 @@ public class IntervalsSet
             return false;
         }
 
-        // the cell has an outside before and an inside after it
+        // the cell has an outside before and an inside after it,
         // it is the start of an interval
         return true;
 
@@ -346,7 +374,7 @@ public class IntervalsSet
             return false;
         }
 
-        // the cell has an inside before and an outside after it
+        // the cell has an inside before and an outside after it,
         // it is the end of an interval
         return true;
 
@@ -361,7 +389,7 @@ public class IntervalsSet
         nextInternalNode(BSPTree<Euclidean1D, Vector1D, OrientedPoint, SubOrientedPoint> node) {
 
         if (childAfter(node).getCut() != null) {
-            // the next node is in the sub-tree
+            // the next node is in the subtree
             return leafAfter(node).getParent();
         }
 
@@ -382,7 +410,7 @@ public class IntervalsSet
         previousInternalNode(BSPTree<Euclidean1D, Vector1D, OrientedPoint, SubOrientedPoint> node) {
 
         if (childBefore(node).getCut() != null) {
-            // the next node is in the sub-tree
+            // the next node is in the subtree
             return leafBefore(node).getParent();
         }
 
@@ -395,7 +423,7 @@ public class IntervalsSet
     }
 
     /** Find the leaf node just before an internal node.
-     * @param node internal node at which the sub-tree starts
+     * @param node internal node at which the subtree starts
      * @return leaf node just before the internal node
      */
     private BSPTree<Euclidean1D, Vector1D, OrientedPoint, SubOrientedPoint>
@@ -411,7 +439,7 @@ public class IntervalsSet
     }
 
     /** Find the leaf node just after an internal node.
-     * @param node internal node at which the sub-tree starts
+     * @param node internal node at which the subtree starts
      * @return leaf node just after the internal node
      */
     private BSPTree<Euclidean1D, Vector1D, OrientedPoint, SubOrientedPoint>
@@ -453,7 +481,7 @@ public class IntervalsSet
     }
 
     /** Find the child node just before an internal node.
-     * @param node internal node at which the sub-tree starts
+     * @param node internal node at which the subtree starts
      * @return child node just before the internal node
      */
     private BSPTree<Euclidean1D, Vector1D, OrientedPoint, SubOrientedPoint>
@@ -468,7 +496,7 @@ public class IntervalsSet
     }
 
     /** Find the child node just after an internal node.
-     * @param node internal node at which the sub-tree starts
+     * @param node internal node at which the subtree starts
      * @return child node just after the internal node
      */
     private BSPTree<Euclidean1D, Vector1D, OrientedPoint, SubOrientedPoint>

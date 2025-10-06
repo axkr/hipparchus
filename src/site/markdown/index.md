@@ -71,23 +71,10 @@ at fork time.
 
  ---
 
-## 3.1 Release is out!
+## 4.0.2 Release is out!
 
-Hipparchus 3.1 is now available for download from the [Hipparchus download page](downloads.html) or on
-Maven central and its mirrors under the groupId **org.hipparchus**. Highlights in the 3.1 release are:
+Hipparchus 4.0.2 is now available for download from the [Hipparchus download page](downloads.html) or on
+Maven central and its mirrors under the groupId **org.hipparchus**. Highlights in the 4.0.2 release are:
 
-   * Add public, static access to integrators name.
-   * Add possibility to use real coefficients for Butcher array based Field integrators.
-   * Added constrained optimization. Thanks to Francesco Rocca.
-   * Added GCD and LCM to {Big}Fraction. Thanks to Axel Kramer.
-   * Add default implementations in CalculusFieldElement and inheritors.
-   * Add square method to CalculusFieldElement.
-   * Added Gauss-Markov order 1 autoregressive process generation.
-   * Added equals and hashCode to OpenIntTo{Double|Field}HashMap.
-   * Allow variable arguments for building PolynomialFunction.
-   * Extracted class JacobiKey from PolynomialsUtils.
-   * Allow retrieving correct Cardan/Euler angles even at singularity.
-   * Improved performance of Gradient.
-   * Replace uses of scalar multiplication on Field one.
-   * Rework interfaces for Derivative and FieldDerivative.
-   * Several bug fixes in field classes and rotation
+   * Fixed inconsistency between Abstract{Field}ODEStateInterpolator and {Field}DetectorBasedEventState for event time handling. 
+   * Fixes NaN appearing in second derivative for atan2 with (Field)UnivariateDerivative2 when argument has zero value.

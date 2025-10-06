@@ -40,7 +40,7 @@ import org.hipparchus.geometry.partitioning.SubHyperplane.SplitSubHyperplane;
  * @param <I> Type of the sub-hyperplane.
 
  */
-public class RegionFactory<S extends Space, P extends Point<S>, H extends Hyperplane<S, P, H, I>, I extends SubHyperplane<S, P, H, I>> {
+public class RegionFactory<S extends Space, P extends Point<S, P>, H extends Hyperplane<S, P, H, I>, I extends SubHyperplane<S, P, H, I>> {
 
     /** Visitor removing internal nodes attributes. */
     private final NodesCleaner nodeCleaner;
@@ -255,10 +255,8 @@ public class RegionFactory<S extends Space, P extends Point<S>, H extends Hyperp
         @Override
         public BSPTree<S, P, H, I> fixNode(final BSPTree<S, P, H, I> node) {
             // get a representative point in the degenerate cell
-            final BSPTree<S, P, H, I> cell = node.pruneAroundConvexCell(Boolean.TRUE, Boolean.FALSE, null);
-            final Region<S, P, H, I> r = region1.buildNew(cell);
-            final P p = r.getBarycenter();
-            return new BSPTree<>(shouldBeInside(region1.checkPoint(p), region2.checkPoint(p)));
+            final BSPTree.InteriorPoint<S, P> interior = node.getInteriorPoint(node.getParent().getCut().getHyperplane().arbitraryPoint());
+            return new BSPTree<>(shouldBeInside(region1.checkPoint(interior.getPoint()), region2.checkPoint(interior.getPoint())));
         }
 
         /**
@@ -267,7 +265,7 @@ public class RegionFactory<S extends Space, P extends Point<S>, H extends Hyperp
          * @param location2 location of representative point in region2
          * @return true if node should be an inside node
          */
-        protected abstract boolean shouldBeInside(final Location location1, final Location location2);
+        protected abstract boolean shouldBeInside(Location location1, Location location2);
 
     }
 

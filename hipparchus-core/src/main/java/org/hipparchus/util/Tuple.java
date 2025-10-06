@@ -771,6 +771,16 @@ public class Tuple implements CalculusFieldElement<Tuple> {
 
     /** {@inheritDoc} */
     @Override
+    public double norm() {
+        double sum = 0;
+        for (final double value : values) {
+            sum += FastMath.abs(value);
+        }
+        return sum;
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public Tuple getPi() {
         final Tuple result = new Tuple(field, new double[values.length]);
         Arrays.fill(result.values, FastMath.PI);

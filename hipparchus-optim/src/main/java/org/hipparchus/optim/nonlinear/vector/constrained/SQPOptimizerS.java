@@ -30,17 +30,19 @@ import org.hipparchus.util.FastMath;
 
 /**
  * Sequential Quadratic Programming Optimizer.
- * <br/>
+ * <p>
  * min f(x)
- * <br/>
- * q(x)=b1
- * <br/>
- * h(x)>=b2
- * <br/>
+ * <p>
+ * q(x) = b1
+ * <p>
+ * h(x)&gt;=b2
+ * <p>
  * Algorithm based on paper:"On the convergence of a sequential quadratic
  * programming method(Klaus Shittkowki,January 1982)"
  * @since 3.1
+ * @deprecated as of 4.1, replaced by {@link SQPOptimizerS2}
  */
+@Deprecated
 public class SQPOptimizerS extends AbstractSQPOptimizer {
 
     /** Forgetting factor. */
@@ -229,7 +231,6 @@ public class SQPOptimizerS extends AbstractSQPOptimizer {
 
                 }
                 notMonotone = true;
-                // if (search < maxLineSearchIteration) failedSearch = 0;
             }
 
             //UPDATE ALL FUNCTION
@@ -258,13 +259,6 @@ public class SQPOptimizerS extends AbstractSQPOptimizer {
             }
 
             if (!notMonotone) {
-//                if (iterations.getCount()==1)
-//                {
-//                    RealVector yfirst = new1.subtract(old1);
-//                    RealVector sfirst = dx.mapMultiply(alfa);
-//                    double scaleFactor = yfirst.dotProduct(sfirst)/yfirst.dotProduct(yfirst);
-//                    hessian = hessian.scalarMultiply(scaleFactor);
-//                }
                 hessian = BFGSFormula(hessian, dx, alpha, new1, old1);
             }
 
@@ -502,11 +496,8 @@ public class SQPOptimizerS extends AbstractSQPOptimizer {
     }
 
     private double updateRho(RealVector dx, RealVector dy, RealMatrix H, RealMatrix jacobianG, double additionalVariable) {
-
         double num = 10.0 * FastMath.pow(dx.dotProduct(jacobianG.transpose().operate(dy)), 2);
         double den = (1.0 - additionalVariable) * (1.0 - additionalVariable) * dx.dotProduct(H.operate(dx));
-        //double den = (1.0 - additionalVariable) * dx.dotProduct(H.operate(dx));
-
         return FastMath.max(10.0, num / den);
     }
 
@@ -532,7 +523,6 @@ public class SQPOptimizerS extends AbstractSQPOptimizer {
         // violated = true;
         if (me > 0 || violated) {
             add = 1;
-
         }
 
         RealMatrix H1 = new Array2DRowRealMatrix(H.getRowDimension() + add, H.getRowDimension() + add);
@@ -602,7 +592,7 @@ public class SQPOptimizerS extends AbstractSQPOptimizer {
         QuadraticFunction q = new QuadraticFunction(H1, g1, 0);
 
         ADMMQPOptimizer solver = new ADMMQPOptimizer();
-        LagrangeSolution sol = solver.optimize(new ObjectiveFunction(q), iqc, eqc, bc);
+        LagrangeSolution sol = solver.optimize(new ObjectiveFunction(q), iqc, eqc, bc, getMatrixDecompositionTolerance());
 
         final double sigma;
         if (add == 1) {
@@ -663,7 +653,9 @@ public class SQPOptimizerS extends AbstractSQPOptimizer {
         double thirtTerm = s.dotProduct(oldH1.operate(s));
         RealMatrix Hnew = oldH1.add(firstTerm).subtract(secondTerm.scalarMultiply(1.0 / thirtTerm));
         //RESET HESSIAN IF NOT POSITIVE DEFINITE
-        EigenDecompositionSymmetric dsX = new EigenDecompositionSymmetric(Hnew);
+        EigenDecompositionSymmetric dsX = new EigenDecompositionSymmetric(Hnew,
+                                                                          getMatrixDecompositionTolerance().getEpsMatrixDecomposition(),
+                                                                          true);
         double min = new ArrayRealVector(dsX.getEigenvalues()).getMinValue();
         if (min < 0) {
             Hnew = MatrixUtils.createRealIdentityMatrix(oldH.getRowDimension());

@@ -42,7 +42,13 @@ public class FieldTupleTest extends CalculusFieldElementAbstractTest<FieldTuple<
 
     @Override
     protected FieldTuple<Binary64> build(final double x) {
-        return new FieldTuple<Binary64>(new Binary64(x), new Binary64(x));
+        return new FieldTuple<>(new Binary64(x), new Binary64(x));
+    }
+
+    @Test
+    void testNorm() {
+        final FieldTuple<Binary64> oneToFive = new FieldTuple<>(Binary64.ONE, new Binary64(2));
+        assertEquals(3, oneToFive.norm());
     }
 
     @Test

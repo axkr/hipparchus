@@ -83,9 +83,15 @@
       <Class name="org.hipparchus.optim.nonlinear.vector.constrained.LinearBoundedConstraint"/>
       <Class name="org.hipparchus.optim.nonlinear.vector.constrained.LinearEqualityConstraint"/>
       <Class name="org.hipparchus.optim.nonlinear.vector.constrained.LinearInequalityConstraint"/>
+      <Class name="org.hipparchus.optim.nonlinear.vector.constrained.InverseCholesky"/>
       <Class name="org.hipparchus.optim.univariate.MultiStartUnivariateOptimizer"/>
     </Or>
     <Method name="&lt;init>"/>
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="org.hipparchus.optim.nonlinear.vector.constrained.MeritFunctionL2"/>
+    <Method name="update"/>
     <Bug pattern="EI_EXPOSE_REP2" />
   </Match>
   <Match>
@@ -102,7 +108,10 @@
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
   <Match>
-    <Class name="org.hipparchus.optim.nonlinear.vector.constrained.AbstractSQPOptimizer"/>
+    <Or>
+      <Class name="org.hipparchus.optim.nonlinear.vector.constrained.AbstractSQPOptimizer"/>
+      <Class name="org.hipparchus.optim.nonlinear.vector.constrained.AbstractSQPOptimizer2"/>
+    </Or>
     <Method name="getSettings"/>
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
@@ -133,6 +142,16 @@
       <Method name="getP"/>
       <Method name="getQ"/>
     </Or>
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <Class name="org.hipparchus.optim.nonlinear.vector.constrained.InverseCholesky"/>
+    <Method name="getInverseL"/>
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <Class name="org.hipparchus.optim.nonlinear.vector.constrained.QRUpdater"/>
+    <Method name="getJ"/>
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
 

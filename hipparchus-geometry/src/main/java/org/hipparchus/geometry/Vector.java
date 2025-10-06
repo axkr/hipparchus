@@ -34,7 +34,7 @@ import java.text.NumberFormat;
  * @see Space
  * @see Point
  */
-public interface Vector<S extends Space, V extends Vector<S,V>> extends Point<S>, Blendable<Vector<S,V>> {
+public interface Vector<S extends Space, V extends Vector<S, V>> extends Point<S, V>, Blendable<V> {
 
     /** Get the null vector of the vectorial space or origin point of the affine space.
      * @return null vector of the vectorial space or origin point of the affine space
@@ -48,12 +48,30 @@ public interface Vector<S extends Space, V extends Vector<S,V>> extends Point<S>
 
     /** Get the L<sub>2</sub> norm for the vector.
      * @return Euclidean norm for the vector
+     * @since 4.1
+     */
+    default double getNorm2() {
+        return getNorm();
+    }
+
+    /** Get the square of the 2-norm for the vector.
+     * @return square of the Euclidean norm for the vector
+     * @since 4.1
+     */
+    default double getNorm2Sq() {
+        return getNorm2() * getNorm2();
+    }
+
+    /** Get the most common norm for the vector. By default, it is the Euclidean one.
+     * @return norm for the vector
      */
     double getNorm();
 
     /** Get the square of the norm for the vector.
      * @return square of the Euclidean norm for the vector
+     * @deprecated since 4.1, use getNorm2Sq
      */
+    @Deprecated
     double getNormSq();
 
     /** Get the L<sub>&infin;</sub> norm for the vector.
@@ -65,27 +83,27 @@ public interface Vector<S extends Space, V extends Vector<S,V>> extends Point<S>
      * @param v vector to add
      * @return a new vector
      */
-    V add(Vector<S,V> v);
+    V add(V v);
 
     /** Add a scaled vector to the instance.
      * @param factor scale factor to apply to v before adding it
      * @param v vector to add
      * @return a new vector
      */
-    V add(double factor, Vector<S,V> v);
+    V add(double factor, V v);
 
     /** Subtract a vector from the instance.
      * @param v vector to subtract
      * @return a new vector
      */
-    V subtract(Vector<S,V> v);
+    V subtract(V v);
 
     /** Subtract a scaled vector from the instance.
      * @param factor scale factor to apply to v before subtracting it
      * @param v vector to subtract
      * @return a new vector
      */
-    V subtract(double factor, Vector<S,V> v);
+    V subtract(double factor, V v);
 
     /** Get the opposite of the instance.
      * @return a new vector which is opposite to the instance
@@ -125,7 +143,7 @@ public interface Vector<S extends Space, V extends Vector<S,V>> extends Point<S>
      * @param v second vector
      * @return the distance between the instance and p according to the L<sub>1</sub> norm
      */
-    double distance1(Vector<S,V> v);
+    double distance1(V v);
 
     /** Compute the distance between the instance and another vector according to the L<sub>&infin;</sub> norm.
      * <p>Calling this method is equivalent to calling:
@@ -134,22 +152,22 @@ public interface Vector<S extends Space, V extends Vector<S,V>> extends Point<S>
      * @param v second vector
      * @return the distance between the instance and p according to the L<sub>&infin;</sub> norm
      */
-    double distanceInf(Vector<S,V> v);
+    double distanceInf(V v);
 
     /** Compute the square of the distance between the instance and another vector.
      * <p>Calling this method is equivalent to calling:
-     * <code>q.subtract(p).getNormSq()</code> except that no intermediate
+     * <code>q.subtract(p).getNorm2Sq()</code> except that no intermediate
      * vector is built</p>
      * @param v second vector
      * @return the square of the distance between the instance and p
      */
-    double distanceSq(Vector<S,V> v);
+    double distanceSq(V v);
 
     /** Compute the dot-product of the instance and another vector.
      * @param v second vector
      * @return the dot product this.v
      */
-    double dotProduct(Vector<S,V> v);
+    double dotProduct(V v);
 
     /** Get a string representation of this vector.
      * @param format the custom format for components
@@ -159,7 +177,7 @@ public interface Vector<S extends Space, V extends Vector<S,V>> extends Point<S>
 
     /** {@inheritDoc} */
     @Override
-    default V blendArithmeticallyWith(Vector<S,V> other, double blendingValue)
+    default V blendArithmeticallyWith(V other, double blendingValue)
             throws MathIllegalArgumentException {
         SmoothStepFactory.checkBetweenZeroAndOneIncluded(blendingValue);
         return this.scalarMultiply(1 - blendingValue).add(other.scalarMultiply(blendingValue));

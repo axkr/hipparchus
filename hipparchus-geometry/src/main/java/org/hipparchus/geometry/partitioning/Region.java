@@ -57,7 +57,7 @@ import org.hipparchus.geometry.Space;
  * @param <I> Type of the sub-hyperplane.
 
  */
-public interface Region<S extends Space, P extends Point<S>, H extends Hyperplane<S, P, H, I>, I extends SubHyperplane<S, P, H, I>> {
+public interface Region<S extends Space, P extends Point<S, P>, H extends Hyperplane<S, P, H, I>, I extends SubHyperplane<S, P, H, I>> {
 
     /** Enumerate for the location of a point with respect to the region. */
     enum Location {
@@ -202,6 +202,12 @@ public interface Region<S extends Space, P extends Point<S>, H extends Hyperplan
      * @return an object representing the barycenter
      */
     P getBarycenter();
+
+    /** Get an interior point.
+     * @return an arbitrary interior point, or null if region is empty
+     * @since 4.0
+     */
+    P getInteriorPoint();
 
     /** Get the parts of a sub-hyperplane that are contained in the region.
      * <p>The parts of the sub-hyperplane that belong to the boundary are

@@ -1,39 +1,18 @@
 
-              Hipparchus 3.1 RELEASE NOTES
+              Hipparchus 4.0.2 RELEASE NOTES
 
-The Hipparchus team is pleased to announce the release of hipparchus-3.1
+The Hipparchus team is pleased to announce the release of hipparchus-4.0.2
 
 The Hipparchus library is a library of mathematical components. It started as a fork of Apache Commons Math.
 
-This is a maintenance release. It includes several bugfixes and
-improvements, and adds one important feature: constrained
-optimization! Other additions are Gauss-Markov order 1 autoregressive
-process generation and GCD/LCM to {Big}Fraction.
+This is a patch release.
 
 Changes in this version include:
 
-New features:
-o issues/269:  Add public, static access to integrators name.
-o issues/300:  Add possibility to use real coefficients for Butcher array based Field integrators.
-o issues/296:  Added constrained optimization. Thanks to Francesco Rocca.
-o issues/294:  Added GCD and LCM to {Big}Fraction. Thanks to Axel Kramer.
-o issues/281:  Add default implementations in CalculusFieldElement and inheritors.
-o issues/280:  Add square method to CalculusFieldElement.
-
 Fixed Bugs:
-o issues/290:  Fixes regressions with Field in event detection.
-o issues/291:  Fix broken newInstance method for FieldTuple.
+o issues/416:  Fixed inconsistency between Abstract{Field}ODEStateInterpolator and {Field}DetectorBasedEventState for event time handling.
+o issues/411:  Fixes NaN appearing in second derivative for atan2 with (Field)UnivariateDerivative2 when argument has zero value.
 
-Changes:
-o issues/277:  Improved release guide. Thanks to Bryan.
-o issues/333:  Added Gauss-Markov order 1 autoregressive process generation.
-o issues/289:  Added equals and hashCode to OpenIntTo{Double|Field}HashMap.
-o issues/327:  Allow variable arguments for building PolynomialFunction.
-o issues/322:  Extracted class JacobiKey from PolynomialsUtils.
-o issues/304:  Allow retrieving correct Cardan/Euler angles even at singularity.
-o issues/302:  Improved performance of Gradient.
-o issues/288:  Replace uses of scalar multiplication on Field one.
-o issues/286:  Rework interfaces for Derivative and FieldDerivative.
 
 For complete information on Hipparchus, including instructions on how to submit bug reports,
 patches, or suggestions for improvement, see the Hipparchus website:

@@ -22,7 +22,6 @@
 package org.hipparchus.geometry.spherical.twod;
 
 import org.hipparchus.exception.MathIllegalArgumentException;
-import org.hipparchus.geometry.Point;
 import org.hipparchus.geometry.euclidean.threed.Rotation;
 import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.hipparchus.geometry.partitioning.Embedding;
@@ -42,7 +41,7 @@ import org.hipparchus.util.SinCos;
 /** This class represents an oriented great circle on the 2-sphere.
 
  * <p>An oriented circle can be defined by a center point. The circle
- * is the the set of points that are in the normal plan the center.</p>
+ * is the set of points that are in the normal plan the center.</p>
 
  * <p>Since it is oriented the two spherical caps at its two sides are
  * unambiguously identified as a left cap and a right cap. This can be
@@ -304,6 +303,22 @@ public class Circle
 
     /** {@inheritDoc} */
     @Override
+    public S2Point moveToOffset(final S2Point point, final double offset) {
+        final SinCos scOld = FastMath.sinCos(getOffset(point));
+        final SinCos scNew = FastMath.sinCos(offset);
+        final double ratio = scNew.cos() / scOld.cos();
+        return new S2Point(new Vector3D(ratio * scOld.sin() - scNew.sin(), pole,
+                                        ratio, point.getVector()));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public S2Point arbitraryPoint() {
+        return new S2Point(pole.orthogonal());
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public boolean sameOrientationAs(final Circle other) {
         return Vector3D.dotProduct(pole, other.pole) >= 0.0;
     }
@@ -329,7 +344,7 @@ public class Circle
      * Transform} embedding a 3D rotation.
      * @param rotation rotation to use
      * @return a new transform that can be applied to either {@link
-     * Point Point}, {@link Circle Line} or {@link
+     * org.hipparchus.geometry.Point Point}, {@link Circle Line} or {@link
      * org.hipparchus.geometry.partitioning.SubHyperplane
      * SubHyperplane} instances
      */

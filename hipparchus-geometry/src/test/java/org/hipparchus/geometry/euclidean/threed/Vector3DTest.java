@@ -39,6 +39,7 @@ import java.util.Locale;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -71,7 +72,38 @@ class Vector3DTest {
         assertEquals(3, space.getDimension());
         assertEquals(2, space.getSubSpace().getDimension());
         Space deserialized = (Space) UnitTestUtils.serializeAndRecover(space);
-        assertTrue(space == deserialized);
+        assertSame(space, deserialized);
+    }
+
+    @Test
+    void testGetNorm2() {
+        // GIVEN
+        final Vector3D vector3D = new Vector3D(1, 2, 3);
+        // WHEN
+        final double norm2 = vector3D.getNorm2();
+        // THEN
+        assertEquals(vector3D.getNorm(), norm2);
+    }
+
+    @Test
+    void testGetNorm2Sq() {
+        // GIVEN
+        final Vector3D vector3D = new Vector3D(1, 2, 3);
+        // WHEN
+        final double norm2Sq = vector3D.getNorm2Sq();
+        // THEN
+        assertEquals(vector3D.getNorm2() * vector3D.getNorm2(), norm2Sq);
+    }
+
+    @Deprecated
+    @Test
+    void testGetNormSq() {
+        // GIVEN
+        final Vector3D vector3D = new Vector3D(1, 2, 3);
+        // WHEN
+        final double normSq = vector3D.getNormSq();
+        // THEN
+        assertEquals(vector3D.getNorm2Sq(), normSq);
     }
 
     @Test
@@ -173,8 +205,8 @@ class Vector3DTest {
 
     @Test
     void testNormSq() {
-        assertEquals(0.0, new Vector3D(0, 0, 0).getNormSq(), 0);
-        assertEquals(14, new Vector3D(1, 2, 3).getNormSq(), 1.0e-12);
+        assertEquals(0.0, new Vector3D(0, 0, 0).getNorm2Sq(), 0);
+        assertEquals(14, new Vector3D(1, 2, 3).getNorm2Sq(), 1.0e-12);
     }
 
     @Test
@@ -377,7 +409,7 @@ class Vector3DTest {
     void testDotProduct() {
         // we compare accurate versus naive dot product implementations
         // on regular vectors (i.e. not extreme cases like in the previous test)
-        Well1024a random = new Well1024a(553267312521321234l);
+        Well1024a random = new Well1024a(553267312521321234L);
         for (int i = 0; i < 10000; ++i) {
             double ux = 10000 * random.nextDouble();
             double uy = 10000 * random.nextDouble();
@@ -419,7 +451,7 @@ class Vector3DTest {
     void testCrossProduct() {
         // we compare accurate versus naive cross product implementations
         // on regular vectors (i.e. not extreme cases like in the previous test)
-        Well1024a random = new Well1024a(885362227452043214l);
+        Well1024a random = new Well1024a(885362227452043214L);
         for (int i = 0; i < 10000; ++i) {
             double ux = 10000 * random.nextDouble();
             double uy = 10000 * random.nextDouble();
@@ -447,6 +479,13 @@ class Vector3DTest {
 
         // Then
         checkVector(blendedVector, 3.1, 4.1, 5.1);
+    }
+
+    @Test
+    void testMoveTowards() {
+        checkVector(new Vector3D(5.0, -1.0, 2.0).moveTowards(new Vector3D(3.0, 4.0, 6.0), 0.0), 5.0, -1.0, 2.0);
+        checkVector(new Vector3D(5.0, -1.0, 2.0).moveTowards(new Vector3D(3.0, 4.0, 6.0), 0.5), 4.0,  1.5, 4.0);
+        checkVector(new Vector3D(5.0, -1.0, 2.0).moveTowards(new Vector3D(3.0, 4.0, 6.0), 1.0), 3.0,  4.0, 6.0);
     }
 
     private void checkVector(Vector3D v, double x, double y, double z) {

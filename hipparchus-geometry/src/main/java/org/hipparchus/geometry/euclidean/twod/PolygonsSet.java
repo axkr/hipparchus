@@ -27,6 +27,8 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hipparchus.exception.MathIllegalStateException;
+import org.hipparchus.geometry.LocalizedGeometryFormats;
 import org.hipparchus.geometry.euclidean.oned.Euclidean1D;
 import org.hipparchus.geometry.euclidean.oned.Interval;
 import org.hipparchus.geometry.euclidean.oned.IntervalsSet;
@@ -37,6 +39,7 @@ import org.hipparchus.geometry.partitioning.AbstractRegion;
 import org.hipparchus.geometry.partitioning.BSPTree;
 import org.hipparchus.geometry.partitioning.BSPTreeVisitor;
 import org.hipparchus.geometry.partitioning.BoundaryAttribute;
+import org.hipparchus.geometry.partitioning.InteriorPointFinder;
 import org.hipparchus.geometry.partitioning.Side;
 import org.hipparchus.geometry.partitioning.SubHyperplane;
 import org.hipparchus.util.FastMath;
@@ -549,6 +552,16 @@ public class PolygonsSet
 
     /** {@inheritDoc} */
     @Override
+    public Vector2D getInteriorPoint() {
+        final InteriorPointFinder<Euclidean2D, Vector2D, Line, SubLine> finder =
+                new InteriorPointFinder<>(Vector2D.ZERO);
+        getTree(false).visit(finder);
+        final BSPTree.InteriorPoint<Euclidean2D, Vector2D> interior = finder.getPoint();
+        return interior == null ? null : interior.getPoint();
+    }
+
+    /** {@inheritDoc} */
+    @Override
     protected void computeGeometricalProperties() {
 
         final Vector2D[][] v = getVertices();
@@ -644,17 +657,18 @@ public class PolygonsSet
                     pending -= splitEdgeConnections(segments);
                 }
                 if (pending > 0) {
-                    closeVerticesConnections(segments);
+                    pending -= closeVerticesConnections(segments);
                 }
 
                 // create the segment loops
                 final ArrayList<List<Segment>> loops = new ArrayList<>();
                 for (ConnectableSegment s = getUnprocessed(segments); s != null; s = getUnprocessed(segments)) {
                     final List<Segment> loop = followLoop(s);
-                    if (loop != null) {
+                    if (loop != null && !loop.isEmpty()) {
                         if (loop.get(0).getStart() == null) {
                             // this is an open loop, we put it on the front
                             loops.add(0, loop);
+                            --pending;
                         } else {
                             // this is a closed loop, we put it on the back
                             loops.add(loop);
@@ -662,13 +676,17 @@ public class PolygonsSet
                     }
                 }
 
+                if (pending != 0) {
+                    // this should not happen
+                    throw new MathIllegalStateException(LocalizedGeometryFormats.OUTLINE_BOUNDARY_LOOP_OPEN);
+                }
+
                 // transform the loops in an array of arrays of points
                 vertices = new Vector2D[loops.size()][];
                 int i = 0;
 
                 for (final List<Segment> loop : loops) {
-                    if (loop.size() < 2 ||
-                        (loop.size() == 2 && loop.get(0).getStart() == null && loop.get(1).getEnd() == null)) {
+                    if (loop.size() < 2) {
                         // single infinite line
                         final Line line = loop.get(0).getLine();
                         vertices[i++] = new Vector2D[] {
@@ -678,7 +696,7 @@ public class PolygonsSet
                         };
                     } else if (loop.get(0).getStart() == null) {
                         // open loop with at least one real point
-                        final Vector2D[] array = new Vector2D[loop.size() + 2];
+                        final Vector2D[] array = new Vector2D[loop.size() + 3];
                         int j = 0;
                         for (Segment segment : loop) {
 
@@ -688,18 +706,19 @@ public class PolygonsSet
                                 x -= FastMath.max(1.0, FastMath.abs(x / 2));
                                 array[j++] = null;
                                 array[j++] = segment.getLine().toSpace(new Vector1D(x));
-                            }
+                            } else {
 
-                            if (j < (array.length - 1)) {
-                                // current point
-                                array[j++] = segment.getEnd();
-                            }
+                                if (j < (array.length - 2)) {
+                                    // current point
+                                    array[j++] = segment.getStart();
+                                }
 
-                            if (j == (array.length - 1)) {
-                                // last dummy point
-                                double x = segment.getLine().toSubSpace(segment.getStart()).getX();
-                                x += FastMath.max(1.0, FastMath.abs(x / 2));
-                                array[j++] = segment.getLine().toSpace(new Vector1D(x));
+                                if (j == (array.length - 2)) {
+                                    // last dummy point
+                                    double x = segment.getLine().toSubSpace(segment.getStart()).getX();
+                                    x += FastMath.max(1.0, FastMath.abs(x / 2));
+                                    array[j++] = segment.getLine().toSpace(new Vector1D(x));
+                                }
                             }
 
                         }
@@ -828,7 +847,7 @@ public class PolygonsSet
      * </p>
      * @param defining segment used to define the loop
      * @return loop containing the segment (may be null if the loop is a
-     * degenerated infinitely thin 2 points loop
+     * degenerated infinitely thin 2 points loop)
      */
     private List<Segment> followLoop(final ConnectableSegment defining) {
 

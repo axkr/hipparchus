@@ -52,6 +52,7 @@ import org.hipparchus.util.MathArrays;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -127,7 +128,7 @@ public abstract class AdamsFieldIntegratorAbstractTest {
             assertEquals(0.2, integ.getMinReduction(), 1.0e-10);
             assertEquals(4, integ.getNSteps());
             assertEquals(0.9, integ.getSafety(), 1.0e-10);
-             assertTrue(integ.getStarterIntegrator() instanceof DormandPrince853FieldIntegrator);
+            assertInstanceOf(DormandPrince853FieldIntegrator.class, integ.getStarterIntegrator());
             TestFieldProblemHandler<T> handler = new TestFieldProblemHandler<T>(pb, integ);
             integ.addStepHandler(handler);
             integ.integrate(new FieldExpandableODE<T>(pb), pb.getInitialState(), pb.getFinalTime());

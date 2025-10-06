@@ -36,7 +36,6 @@ import org.hipparchus.geometry.partitioning.AbstractRegion;
 import org.hipparchus.geometry.partitioning.BSPTree;
 import org.hipparchus.geometry.partitioning.BoundaryProjection;
 import org.hipparchus.geometry.partitioning.Side;
-import org.hipparchus.geometry.partitioning.SubHyperplane;
 import org.hipparchus.util.FastMath;
 import org.hipparchus.util.MathUtils;
 import org.hipparchus.util.Precision;
@@ -105,7 +104,7 @@ public class ArcsSet extends AbstractRegion<Sphere1D, S1Point, LimitAngle, SubLi
 
     /** Build an arcs set from a Boundary REPresentation (B-rep).
      * <p>The boundary is provided as a collection of {@link
-     * SubHyperplane sub-hyperplanes}. Each sub-hyperplane has the
+     * org.hipparchus.geometry.partitioning.SubHyperplane sub-hyperplanes}. Each sub-hyperplane has the
      * interior part of the region on its minus side and the exterior on
      * its plus side.</p>
      * <p>The boundary elements can be in any order, and can form
@@ -467,6 +466,26 @@ public class ArcsSet extends AbstractRegion<Sphere1D, S1Point, LimitAngle, SubLi
     @Override
     public ArcsSet buildNew(final BSPTree<Sphere1D, S1Point, LimitAngle, SubLimitAngle> tree) {
         return new ArcsSet(tree, getTolerance());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public S1Point getInteriorPoint() {
+
+        // look for the midpoint of the longest arc
+        double selectedPoint  = Double.NaN;
+        double selectedLength = 0;
+        for (final double[] a : this) {
+            final double length = a[1] - a[0];
+            if (length > selectedLength) {
+                // this arc is longer than the selected one, change selection
+                selectedPoint  = 0.5 * (a[0] + a[1]);
+                selectedLength = length;
+            }
+        }
+
+        return Double.isNaN(selectedPoint) ? null : new S1Point(selectedPoint);
+
     }
 
     /** {@inheritDoc} */

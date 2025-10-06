@@ -72,6 +72,18 @@ public class LimitAngle implements Hyperplane<Sphere1D, S1Point, LimitAngle, Sub
         return direct ? delta : -delta;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public S1Point moveToOffset(final S1Point point, final double offset) {
+        return new S1Point(location.getAlpha() + (direct ? offset : -offset));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public S1Point arbitraryPoint() {
+        return location;
+    }
+
     /** Check if the hyperplane orientation is direct.
      * @return true if the plus side of the hyperplane is towards
      * angles greater than hyperplane location

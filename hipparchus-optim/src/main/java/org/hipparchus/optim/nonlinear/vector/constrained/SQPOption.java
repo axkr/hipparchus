@@ -27,7 +27,7 @@ public class SQPOption implements OptimizationData {
     public static final int DEFAULT_CONV_CRITERIA = 1;
 
     /** Default tolerance for convergence and active constraint. */
-    public static final double DEFAULT_EPSILON = 1.0e-9;//>0
+    public static final double DEFAULT_EPSILON = 1.0e-7;//>0
 
     /** Default weight for augmented QP subproblem. */
     public static final double DEFAULT_RHO = 100.0;//rho>1
@@ -39,16 +39,19 @@ public class SQPOption implements OptimizationData {
     public static final  int DEFAULT_QP_MAX_LOOP = 4;
 
     /** Default parameter for evaluation of Armijo condition for descend direction. */
-    public static final  double DEFAULT_MU = 0.1;//[0,0.5]
+    public static final  double DEFAULT_MU = 1.0e-4;//[0,0.5]
 
     /** Default parameter for quadratic line search. */
-    public static final  double DEFAULT_B = 0.1;//[0;1]
+    public static final  double DEFAULT_B = 0.5;//[0;1]
 
     /** Default flag for using BFGS update formula. */
     public static final  boolean DEFAULT_USE_FUNCTION_HESSIAN = false;
 
     /** Default max iteration before reset hessian. */
-    public static final  int DEFAULT_MAX_LINE_SEARCH_ITERATION = 20;
+    public static final  int DEFAULT_MAX_LINE_SEARCH_ITERATION = 50;
+
+    /** Default Gradient mode. */
+    public static final GradientMode DEFAULT_GRADIENT_MODE = GradientMode.FORWARD;
 
     /** Convergence criteria*/
     private int convCriteria;
@@ -80,6 +83,9 @@ public class SQPOption implements OptimizationData {
     /** Enable or Disable using direct the function Hessian. */
     private boolean useFunHessian;
 
+    /** Gradient Mode. */
+    private GradientMode gradientMode;
+
     /** Simple constructor.
      * <p>
      * This constructor uses all defaults values.
@@ -95,6 +101,21 @@ public class SQPOption implements OptimizationData {
         this.b                      = DEFAULT_B;
         this.maxLineSearchIteration = DEFAULT_MAX_LINE_SEARCH_ITERATION;
         this.useFunHessian          = DEFAULT_USE_FUNCTION_HESSIAN;
+        this.gradientMode           = DEFAULT_GRADIENT_MODE;
+    }
+
+     /** Set Gradient mode
+     * @param gradientMode
+     */
+    public void setGradientMode(final GradientMode gradientMode) {
+        this.gradientMode = gradientMode;
+    }
+
+    /** Get Gradient Mode.
+     * @return Gradient Mode
+     */
+    public GradientMode getGradientMode() {
+        return gradientMode;
     }
 
     /** Set convergence criteria.
