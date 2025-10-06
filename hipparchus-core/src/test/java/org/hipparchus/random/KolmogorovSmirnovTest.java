@@ -67,13 +67,14 @@ class KolmogorovSmirnovTest { // NOPMD - this is not a Junit test class, PMD fal
     public double kolmogorovSmirnovStatistic(RealDistribution distribution, double[] data) {
         checkArray(data);
         final int n = data.length;
+        final double nd = n;
         final double[] dataCopy = new double[n];
         System.arraycopy(data, 0, dataCopy, 0, n);
         Arrays.sort(dataCopy);
         double d = 0d;
         for (int i = 1; i <= n; i++) {
             final double yi = distribution.cumulativeProbability(dataCopy[i - 1]);
-            final double currD = FastMath.max(yi - (i - 1) / n, i / n - yi);
+            final double currD = FastMath.max(yi - (i - 1) / nd, i / nd - yi);
             if (currD > d) {
                 d = currD;
             }
@@ -507,8 +508,8 @@ class KolmogorovSmirnovTest { // NOPMD - this is not a Junit test class, PMD fal
     private void checkArray(double[] array) {
         MathUtils.checkNotNull(array);
         if (array.length < 2) {
-            throw new MathIllegalArgumentException(LocalizedCoreFormats.INSUFFICIENT_OBSERVED_POINTS_IN_SAMPLE, array.length,
-                                                   2);
+            throw new MathIllegalArgumentException(LocalizedCoreFormats.INSUFFICIENT_OBSERVED_POINTS_IN_SAMPLE,
+                                                   array.length, 2);
         }
     }
 
