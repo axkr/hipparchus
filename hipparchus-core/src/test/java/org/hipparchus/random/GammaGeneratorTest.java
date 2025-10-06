@@ -18,6 +18,8 @@ package org.hipparchus.random;
 
 import org.hipparchus.distribution.RealDistribution;
 import org.hipparchus.distribution.continuous.GammaDistribution;
+import org.hipparchus.exception.LocalizedCoreFormats;
+import org.hipparchus.exception.MathIllegalStateException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -80,6 +82,17 @@ public class GammaGeneratorTest extends AbstractNonUniformGeneratorTest
                 final double theoretical = alpha * theta * theta;
                 Assertions.assertEquals(theoretical, variance, 0.021 * theoretical);
             }
+        }
+    }
+
+    @Test
+    public void testMaxRejection()
+    {
+        try {
+            new GammaGenerator(new RandomAdaptorTest.ConstantGenerator(1.23), 2.3, 4.5).nextVariate();
+            Assertions.fail("an exception should have been thrown");
+        } catch (MathIllegalStateException mise) {
+            Assertions.assertEquals(LocalizedCoreFormats.INTERNAL_ERROR, mise.getSpecifier());
         }
     }
 
