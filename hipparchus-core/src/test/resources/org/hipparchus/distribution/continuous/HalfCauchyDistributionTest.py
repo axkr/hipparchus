@@ -25,4 +25,3 @@ print("Probability density: ")
 print(halfcauchy.pdf(vals))
 print("Check if the results are consistent: ",np.allclose(pset, halfcauchy.cdf(vals)))
 
-
