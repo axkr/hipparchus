@@ -20,7 +20,6 @@ import org.hipparchus.util.FastMath;
 
 /**
  * Procedure to generate variates for Nakagami distribution.
- * @author Luc Maisonobe
  */
 public class NakagamiGenerator extends AbstractNonUniformGenerator
 {

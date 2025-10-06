@@ -18,7 +18,6 @@ package org.hipparchus.random;
 
 /**
  * Interface for generating non-uniform random variates.
- * @author Luc Maisonobe
  */
 public interface NonUniformGenerator
 {

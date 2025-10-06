@@ -20,7 +20,6 @@ import org.hipparchus.util.FastMath;
 
 /**
  * Procedure to generate variates for exponential distribution.
- * @author Luc Maisonobe
  */
 public class ExponentialGenerator extends AbstractNonUniformGenerator
 {

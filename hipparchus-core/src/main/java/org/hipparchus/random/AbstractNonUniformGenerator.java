@@ -18,7 +18,6 @@ package org.hipparchus.random;
 
 /**
  * Base class for generating non-uniform random variates from an underlying uniform generator.
- * @author Luc Maisonobe
  */
 public abstract class AbstractNonUniformGenerator implements NonUniformGenerator
 {

@@ -27,7 +27,6 @@ import org.hipparchus.util.FastMath;
  * 2000 paper <a href="https://doi.org/10.1145/358407.358414">A
  * Simple Method for Generating Gamma Variables</a>
  * </p>
- * @author Luc Maisonobe
  */
 public class GammaGenerator extends AbstractNonUniformGenerator
 {
