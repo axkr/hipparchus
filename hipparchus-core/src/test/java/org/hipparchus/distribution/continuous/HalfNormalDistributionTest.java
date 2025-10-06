@@ -83,7 +83,7 @@ public class HalfNormalDistributionTest extends RealDistributionAbstractTest {
     }
 
     //---------------------------- Additional test cases -------------------------
-    
+
     private void verifyQuantiles() {
         HalfNormalDistribution distribution = (HalfNormalDistribution) getDistribution();
         double mu = distribution.getMean();
@@ -101,7 +101,7 @@ public class HalfNormalDistributionTest extends RealDistributionAbstractTest {
     void testQuantiles() {
         verifyQuantiles();
     }
-    
+
 
     @Test
     void testInverseCumulativeProbabilityExtremes() {
@@ -110,7 +110,7 @@ public class HalfNormalDistributionTest extends RealDistributionAbstractTest {
                 new double[] {0.0, Double.POSITIVE_INFINITY});
         verifyInverseCumulativeProbabilities();
     }
-    
+
     @Test
     void testGetMean() {
         double mean;

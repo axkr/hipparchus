@@ -103,7 +103,7 @@ public class InvGammaDistribution extends AbstractRealDistribution {
         this.shape = shape;
         this.scale = scale;
         this.shiftedShape = shape + Gamma.LANCZOS_G + 0.5;
-        // gammaShape is the Lanczos approximation of Gamma function evaluated at shape 
+        // gammaShape is the Lanczos approximation of Gamma function evaluated at shape
         // See https://www.hipparchus.org/apidocs/org/hipparchus/special/Gamma.html#lanczos(double)
         final double gammaShape;
         gammaShape = FastMath.sqrt(2.0 * FastMath.PI)/shape * FastMath.sqrt(shiftedShape) * FastMath.pow(shiftedShape, shape) *

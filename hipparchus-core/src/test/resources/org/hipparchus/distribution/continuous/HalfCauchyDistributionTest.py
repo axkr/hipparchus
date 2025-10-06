@@ -5,7 +5,7 @@ from scipy.stats import halfcauchy
 #
 np.set_printoptions(precision=16)
 #
-# Half-Cauchy distribution 
+# Half-Cauchy distribution
 # https://docs.scipy.org/doc/scipy-1.16.1/reference/generated/scipy.stats.halfcauchy.html
 #
 print("\n\n\n")
@@ -19,9 +19,9 @@ print("Probability set: ")
 print(pset)
 print("Related percentiles: ")
 print(vals)
-print("Cumulative distribution: ") 
+print("Cumulative distribution: ")
 print(halfcauchy.cdf(vals))
-print("Probability density: ") 
+print("Probability density: ")
 print(halfcauchy.pdf(vals))
 print("Check if the results are consistent: ",np.allclose(pset, halfcauchy.cdf(vals)))
 

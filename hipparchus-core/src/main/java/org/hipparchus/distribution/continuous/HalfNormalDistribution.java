@@ -126,7 +126,7 @@ public class HalfNormalDistribution extends AbstractRealDistribution {
     public double probability(double x0,
                               double x1)
         throws MathIllegalArgumentException {
-        
+
         if (x0 < 0 || x1 < 0) {
             return 0;
         }
@@ -168,7 +168,7 @@ public class HalfNormalDistribution extends AbstractRealDistribution {
      * no matter the parameters.
      *
      * @return lower bound of the support (always zero)
-     * 
+     *
      */
     @Override
     public double getSupportLowerBound() {

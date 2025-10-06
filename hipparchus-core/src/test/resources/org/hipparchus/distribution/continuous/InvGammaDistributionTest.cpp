@@ -1,5 +1,5 @@
-#include <boost/math/distributions/inverse_gamma.hpp> 
-  using boost::math::inverse_gamma_distribution; 
+#include <boost/math/distributions/inverse_gamma.hpp>
+  using boost::math::inverse_gamma_distribution;
 
 #include <iostream>
   using std::cout; using std::endl; using std::left; using std::showpoint; using std::noshowpoint;
@@ -11,7 +11,7 @@
 int main()
 {
   cout << "Inverse Gamma distribution with Boost" << endl;
-  cout << "Using Boost "     
+  cout << "Using Boost "
        << BOOST_VERSION / 100000     << "."  // major version
        << BOOST_VERSION / 100 % 1000 << "."  // minor version
        << BOOST_VERSION % 100                // patch level
@@ -59,10 +59,10 @@ int main()
 
   }
   catch(const std::exception& e)
-  { 
+  {
     std::cout << "\n""Message from thrown exception was:\n   " << e.what() << std::endl;
   }
   return 0;
-}   
+}
 
-  
+

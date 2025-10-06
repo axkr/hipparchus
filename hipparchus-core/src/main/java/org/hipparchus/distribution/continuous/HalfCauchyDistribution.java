@@ -96,7 +96,7 @@ public class HalfCauchyDistribution extends AbstractRealDistribution {
     @Override
     public double inverseCumulativeProbability(double p) throws MathIllegalArgumentException {
         MathUtils.checkRangeInclusive(p, 0, 1);
-        
+
         double ret;
         if (p == 0) {
             ret = 0.0;
@@ -106,7 +106,7 @@ public class HalfCauchyDistribution extends AbstractRealDistribution {
             ret = scale * FastMath.tan(FastMath.PI * p / 2.0);
         }
         return ret;
-        
+
     }
 
     /**
