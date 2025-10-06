@@ -17,15 +17,14 @@
 
 package org.hipparchus.distribution.continuous;
 
-import org.hipparchus.distribution.RealDistribution;
 import org.hipparchus.exception.MathIllegalArgumentException;
 import org.hipparchus.util.FastMath;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test cases for {@link HalfNormalDistribution}.
@@ -34,8 +33,8 @@ public class HalfNormalDistributionTest extends RealDistributionAbstractTest {
 
     //-------------- Implementations for abstract methods -----------------------
 
-    /** Creates the default real distribution instance to use in tests. */
-    /** The scale parameter is set to 1.0 to allow a comparison with the SciPy implementation */
+    /* Creates the default real distribution instance to use in tests. */
+    /* The scale parameter is set to 1.0 to allow a comparison with the SciPy implementation */
     @Override
     public HalfNormalDistribution makeDistribution() {
         return new HalfNormalDistribution(1.0);
@@ -124,9 +123,7 @@ public class HalfNormalDistributionTest extends RealDistributionAbstractTest {
 
     @Test
     void testPreconditions() {
-        assertThrows(MathIllegalArgumentException.class, () -> {
-            new HalfNormalDistribution(0);
-        });
+        assertThrows(MathIllegalArgumentException.class, () -> new HalfNormalDistribution(0));
     }
 
     @Test
@@ -168,5 +165,26 @@ public class HalfNormalDistributionTest extends RealDistributionAbstractTest {
         assertEquals(dist.getNumericalMean(), mean, tol);
         assertEquals(dist.getNumericalVariance(), sd * sd, tol);
     }
+
+    @Test
+    public void testNegative() {
+        final HalfNormalDistribution dist = new HalfNormalDistribution(1.0);
+        Assertions.assertEquals(0.0, dist.density(-0.5), 1.0e-15);
+        Assertions.assertEquals(Double.NEGATIVE_INFINITY, dist.logDensity(-0.5), 1.0);
+        Assertions.assertEquals(0.0, dist.cumulativeProbability(-0.5), 1.0e-15);
+        Assertions.assertEquals(0.0, dist.probability(-0.5, 1.0), 1.0e-15);
+        Assertions.assertEquals(0.0, dist.probability(1.0, -0.5), 1.0e-15);
+        Assertions.assertEquals(0.0, dist.probability(-0.5, -0.5), 1.0e-15);
+    }
+
+    @Test
+    public void testInvariants() {
+        final HalfNormalDistribution dist = new HalfNormalDistribution(1.0);
+        Assertions.assertEquals(0.0, dist.getSupportLowerBound(), 1.0e-15);
+        Assertions.assertEquals(Double.POSITIVE_INFINITY, dist.getSupportUpperBound(), 1.0);
+        Assertions.assertTrue(dist.isSupportConnected());
+
+    }
+
 }
 

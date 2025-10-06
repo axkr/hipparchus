@@ -18,6 +18,7 @@
 package org.hipparchus.distribution.continuous;
 
 import org.hipparchus.exception.MathIllegalArgumentException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -42,8 +43,8 @@ public class HalfCauchyDistributionTest extends RealDistributionAbstractTest {
 
     //-------------- Implementations for abstract methods -----------------------
 
-    /** Creates the default continuous distribution instance to use in tests. */
-    /** The scale parameter is set to 1.0 to allow a comparison with the SciPy implementation */
+    /* Creates the default continuous distribution instance to use in tests. */
+    /* The scale parameter is set to 1.0 to allow a comparison with the SciPy implementation */
     @Override
     public HalfCauchyDistribution makeDistribution() {
         return new HalfCauchyDistribution(1.0);
@@ -120,5 +121,24 @@ public class HalfCauchyDistributionTest extends RealDistributionAbstractTest {
         assertTrue(Double.isNaN(dist.getNumericalMean()));
         assertTrue(Double.isNaN(dist.getNumericalVariance()));
     }
+
+    @Test
+    public void testNegative() {
+        final HalfCauchyDistribution dist = new HalfCauchyDistribution(0.15);
+        Assertions.assertEquals(0.0, dist.density(-0.5), 1.0e-15);
+        Assertions.assertEquals(Double.NEGATIVE_INFINITY, dist.logDensity(-0.5), 1.0);
+        Assertions.assertEquals(0.0, dist.cumulativeProbability(-0.5), 1.0e-15);
+    }
+
+    @Test
+    public void testInvariants() {
+        final HalfCauchyDistribution dist = new HalfCauchyDistribution(1.0);
+        Assertions.assertEquals(0.0, dist.getSupportLowerBound(), 1.0e-15);
+        Assertions.assertEquals(Double.POSITIVE_INFINITY, dist.getSupportUpperBound(), 1.0);
+        Assertions.assertTrue(Double.isNaN(dist.getMedian()));
+        Assertions.assertTrue(dist.isSupportConnected());
+
+    }
+
 }
 

@@ -17,22 +17,12 @@
 
 package org.hipparchus.distribution.continuous;
 
-import org.hipparchus.UnitTestUtils;
 import org.hipparchus.exception.MathIllegalArgumentException;
-import org.hipparchus.special.Gamma;
-import org.hipparchus.util.FastMath;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
@@ -169,6 +159,26 @@ public class InvGammaDistributionTest extends RealDistributionAbstractTest {
         dist = new InvGammaDistribution(shape,scale);
         assertEquals(two,dist.getNumericalMean(),tol);
         assertEquals(four,dist.getNumericalVariance(),tol);
+    }
+
+    @Test
+    public void testNegative() {
+        final InvGammaDistribution dist = new InvGammaDistribution(3.0, 2.0);
+        Assertions.assertEquals(0.0, dist.density(-0.5), 1.0e-15);
+        Assertions.assertEquals(Double.NEGATIVE_INFINITY, dist.logDensity(-0.5), 1.0);
+        Assertions.assertEquals(0.0, dist.cumulativeProbability(-0.5), 1.0e-15);
+        Assertions.assertEquals(1.0, dist.getNumericalMean(), 1.0e-15);
+        Assertions.assertTrue(Double.isNaN(new InvGammaDistribution(0.999, 2.0).getNumericalMean()));
+        Assertions.assertTrue(Double.isNaN(new InvGammaDistribution(1.999, 2.0).getNumericalVariance()));
+    }
+
+    @Test
+    public void testInvariants() {
+        final InvGammaDistribution dist = new InvGammaDistribution(3.0, 2.0);
+        Assertions.assertEquals(0.0, dist.getSupportLowerBound(), 1.0e-15);
+        Assertions.assertEquals(Double.POSITIVE_INFINITY, dist.getSupportUpperBound(), 1.0);
+        Assertions.assertTrue(dist.isSupportConnected());
+
     }
 
 }
