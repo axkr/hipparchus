@@ -136,23 +136,6 @@ public class BFGSUpdater {
     }
 
     /**
-     * Computes the inverse of a lower‐triangular matrix via forward substitution.
-     *
-     * @return inverse of L
-     */
-    private RealMatrix inverseLowerTriangular() {
-        int n = L.getRowDimension();
-        RealMatrix Linv = MatrixUtils.createRealMatrix(n, n);
-        for (int i = 0; i < n; i++) {
-            RealVector e = new ArrayRealVector(n);
-            e.setEntry(i, 1.0);
-            MatrixUtils.solveLowerTriangularSystem(L, e);
-            Linv.setColumnVector(i, e);
-        }
-        return Linv;
-    }
-
-    /**
      * Performs a BFGS rank‐one update on L.
      *
      * @param s displacement vector
