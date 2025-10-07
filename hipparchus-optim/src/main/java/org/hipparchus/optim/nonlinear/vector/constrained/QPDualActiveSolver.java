@@ -429,9 +429,7 @@ public class QPDualActiveSolver extends QPOptimizer {
                     t2 = dualStep.getValue();
                     dropIndex = dualStep.getKey();
                     t = FastMath.min(t1, t2);
-                    if (t >= Double.POSITIVE_INFINITY) {
-                        return new LagrangeSolution(new ArrayRealVector(0,0), new ArrayRealVector(0,0), 0.0); // infeasible
-                    } else if (t == t1) {
+                    if (t == t1) {
                         break; // primal full step (exit from dual step loop)
                     } else {
                         //Manage dual step
