@@ -42,7 +42,7 @@ import java.util.Set;
  * minimize   (1/2) x^T G x + g0^T x
  * subject to CE^T x  =  ce0     (equality constraints)
  *            CI^T x  &gt;= ci0     (inequality constraints)
- *            lb &lt;<= Ax &lt;= ub      (bounded constraints)
+ *            lb &lt;= Ax &lt;= ub      (bounded constraints)
  * </pre> <p>
  * Uses an incremental QR factorization updater (QRUpdater) for managing active
  * constraints and maintains multipliers for dual and primal steps.
