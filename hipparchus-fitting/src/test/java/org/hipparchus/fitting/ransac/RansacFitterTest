@@ -59,6 +59,7 @@ class RansacFitterTest {
         Assertions.assertEquals(0.957302, getBestModel(fitted).getCoefficients()[1], 1.0e-6);
         Assertions.assertEquals(-0.106412, getBestModel(fitted).getCoefficients()[0], 1.0e-6);
         Assertions.assertEquals(49, fitted.getBestInliers().size());
+        Assertions.assertEquals(48, fitted.filterPointsBelowThreshold(points, standardDeviation / 5).size()); // Exact number of "true" points!
     }
 
     @Test
@@ -72,6 +73,7 @@ class RansacFitterTest {
         Assertions.assertEquals(1.048147, getBestModel(fitted).getCoefficients()[1], 1.0e-6);
         Assertions.assertEquals(-56.274050, getBestModel(fitted).getCoefficients()[0], 1.0e-6);
         Assertions.assertEquals(205, fitted.getBestInliers().size());
+        Assertions.assertEquals(214, fitted.filterPointsBelowThreshold(points, standardDeviation).size()); // Exact number of "true" points!
     }
 
     private void doTestLineFittingWithSmallNumberOfOutliers(final double slopeDelta, final double interceptDelta, final double noiseFactor) {

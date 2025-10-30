@@ -16,8 +16,10 @@
  */
 package org.hipparchus.fitting.ransac;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Class containing the best estimate of the model parameters.
@@ -25,6 +27,9 @@ import java.util.Optional;
  * @since 4.1
  */
 public class RansacFitterOutputs<M> {
+
+    /** Mathematical model fitter used by RANSAC algorithm. */
+    private final IModelFitter<M> fitter;
 
     /** Best model parameters. */
     private final Optional<M> bestModel;
@@ -36,10 +41,12 @@ public class RansacFitterOutputs<M> {
      * Constructor.
      * @param bestModel best model parameters
      * @param bestInliers list of points used to determine the best model parameters
+     * @param fitter mathematical model fitter used by RANSAC algorithm
      */
-    public RansacFitterOutputs(final Optional<M> bestModel, final List<double[]> bestInliers) {
+    public RansacFitterOutputs(final Optional<M> bestModel, final List<double[]> bestInliers, final IModelFitter<M> fitter) {
         this.bestModel = bestModel;
         this.bestInliers = bestInliers;
+        this.fitter = fitter;
     }
 
     /**
@@ -56,5 +63,17 @@ public class RansacFitterOutputs<M> {
      */
     public List<double[]> getBestInliers() {
         return bestInliers;
+    }
+
+    /**
+     * Finds the points below a given threshold based on the computed best model parameters.
+     * @param points input list of points
+     * @param threshold threshold to use
+     * @return the list of points below the given threshold based on the computed best model parameters
+     *         (can be empty if the all points are above the threshold or if no best model has been found)
+     */
+    public List<double[]> filterPointsBelowThreshold(final List<double[]> points, final double threshold) {
+        return bestModel.map(model -> points.stream().filter(point -> fitter.computeModelError(model, point) < threshold).collect(Collectors.toList()))
+                        .orElse(Collections.emptyList());
     }
 }

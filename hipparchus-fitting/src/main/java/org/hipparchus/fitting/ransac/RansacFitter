@@ -114,7 +114,7 @@ public class RansacFitter<M> {
         }
 
         // Returns the best model data
-        return new RansacFitterOutputs<>(bestModel, bestInliers);
+        return new RansacFitterOutputs<>(bestModel, bestInliers, fitter);
     }
 
     /**
