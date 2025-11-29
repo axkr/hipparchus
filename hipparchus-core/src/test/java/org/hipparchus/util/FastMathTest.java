@@ -1088,11 +1088,11 @@ class FastMathTest {
     }
 
     private Dfp cosh(Dfp x) {
-      return DfpMath.exp(x).add(DfpMath.exp(x.negate())).divide(2);
+      return DfpMath.exp(x).add(DfpMath.exp(x.negate())).half();
     }
 
     private Dfp sinh(Dfp x) {
-      return DfpMath.exp(x).subtract(DfpMath.exp(x.negate())).divide(2);
+      return DfpMath.exp(x).subtract(DfpMath.exp(x.negate())).half();
     }
 
     private Dfp tanh(Dfp x) {
