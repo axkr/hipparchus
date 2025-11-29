@@ -423,7 +423,7 @@ class FiniteDifferencesDifferentiatorTest {
            for (double y = -2; y < 2; y += 0.1) {
                DerivativeStructure dsX  = factory.variable(0, x);
                DerivativeStructure dsY  = factory.variable(1, y);
-               DerivativeStructure dsT  = dsX.multiply(3).subtract(dsY.multiply(2));
+               DerivativeStructure dsT  = dsX.multiply(3).subtract(dsY.twice());
                DerivativeStructure sRef = sine.value(dsT);
                DerivativeStructure s    = f.value(dsT);
                for (int xOrder = 0; xOrder <= sRef.getOrder(); ++xOrder) {

@@ -2096,7 +2096,7 @@ public class DerivativeStructureTest extends CalculusFieldElementAbstractTest<De
     void testReciprocalVersusAlternativeImplementation() {
         final DSFactory factory = new DSFactory(2, 15);
         final DerivativeStructure operand = factory.variable(0, 1.).
-                add(factory.variable(1, 0.).multiply(2.));
+                add(factory.variable(1, 0.).twice());
         compareReciprocalToVersionViaPower(operand, 1e-15);
     }
 

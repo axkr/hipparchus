@@ -290,9 +290,9 @@ public abstract class FieldDerivativeStructureAbstractTest<T extends CalculusFie
     public void testPrimitiveDivide() {
         for (int maxOrder = 1; maxOrder < 5; ++maxOrder) {
             final FDSFactory<T> factory = buildFactory(3, maxOrder);
-            checkF0F1(factory.variable(0, 1.0).divide(2),  0.5, 0.5, 0.0, 0.0);
-            checkF0F1(factory.variable(1, 2.0).divide(2),  1.0, 0.0, 0.5, 0.0);
-            checkF0F1(factory.variable(2, 3.0).divide(2),  1.5, 0.0, 0.0, 0.5);
+            checkF0F1(factory.variable(0, 1.0).half(),  0.5, 0.5, 0.0, 0.0);
+            checkF0F1(factory.variable(1, 2.0).half(),  1.0, 0.0, 0.5, 0.0);
+            checkF0F1(factory.variable(2, 3.0).half(),  1.5, 0.0, 0.0, 0.5);
         }
     }
 
