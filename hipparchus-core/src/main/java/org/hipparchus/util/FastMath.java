@@ -897,10 +897,21 @@ public class FastMath {
     }
 
     /**
-     * Exponential function.<br>
-     * <br>
+     * Exponential function.
      *
-     * Delegates to {@link Math#exp(double)}
+     * Computes exp(x), function result is nearly rounded.   It will be correctly
+     * rounded to the theoretical value for 99.9% of input values, otherwise it will
+     * have a 1 ULP error.
+     *
+     * Method:
+     *    Lookup intVal = exp(int(x))
+     *    Lookup fracVal = exp(int(x-int(x) / 1024.0) * 1024.0 );
+     *    Compute z as the exponential of the remaining bits by a polynomial minus one
+     *    exp(x) = intVal * fracVal * (1 + z)
+     *
+     * Accuracy:
+     *    Calculation is done with 63 bits of precision, so result should be correctly
+     *    rounded for 99.9% of input values, with less than 1 ULP error otherwise.
      *
      * @param x   a double
      * @return double e<sup>x</sup>
@@ -1204,10 +1215,7 @@ public class FastMath {
     }
 
     /**
-     * Natural logarithm.<br>
-     * <br>
-     *
-     * Delegates to {@link Math#log(double)}
+     * Natural logarithm.
      *
      * @param x   a double
      * @return log(x)
@@ -1217,10 +1225,7 @@ public class FastMath {
     }
 
     /**
-     * Computes log(1 + x).<br>
-     * <br>
-     *
-     * Delegates to {@link Math#log1p(double)}
+     * Computes log(1 + x).
      *
      * @param x Number.
      * @return {@code log(1 + x)}.
@@ -1229,11 +1234,7 @@ public class FastMath {
         return Math.log1p(x);
     }
 
-    /** Compute the base 10 logarithm.<br>
-     * <br>
-     *
-     * Delegates to {@link Math#log10(double)}
-     *
+    /** Compute the base 10 logarithm.
      * @param x a number
      * @return log10(x)
      */
@@ -1261,10 +1262,7 @@ public class FastMath {
     }
 
     /**
-     * Power function.  Compute x^y.<br>
-     * <br>
-     *
-     * Delegates to {@link Math#pow(double, double)}
+     * Power function.  Compute x^y.
      *
      * @param x   a double
      * @param y   a double
@@ -1428,10 +1426,7 @@ public class FastMath {
     }
 
     /**
-     * Sine function.<br>
-     * <br>
-     *
-     * Delegates to {@link Math#sin(double)}
+     * Sine function.
      *
      * @param x Argument.
      * @return sin(x)
@@ -1441,10 +1436,7 @@ public class FastMath {
     }
 
     /**
-     * Cosine function.<br>
-     * <br>
-     *
-     * Delegates to {@link Math#cos(double)}
+     * Cosine function.
      *
      * @param x Argument.
      * @return cos(x)
@@ -1454,10 +1446,7 @@ public class FastMath {
     }
 
     /**
-     * Combined Sine and Cosine function.<br>
-     * <br>
-     *
-     * Delegates to {@link Math#sin(double)} and {@link Math#cos(double)}
+     * Combined Sine and Cosine function.
      *
      * @param x Argument.
      * @return [sin(x), cos(x)]
@@ -1907,11 +1896,7 @@ public class FastMath {
       return atan(ra, rb, x<0);
     }
 
-    /** Compute the cubic root of a number.<br>
-     * <br>
-     *
-     * Delegates to {@link Math#cbrt(double)}
-     *
+    /** Compute the cubic root of a number.
      * @param x number on which evaluation is done
      * @return cubic root of x
      */
@@ -2026,11 +2011,7 @@ public class FastMath {
     }
 
     /**
-     * Absolute value.<br>
-     * <br>
-     *
-     * Delegates to {@link Math#abs(double)}
-     *
+     * Absolute value.
      * @param x number from which absolute value is requested
      * @return abs(x)
      */
@@ -2374,11 +2355,7 @@ public class FastMath {
 
     }
 
-    /** Get the largest whole number smaller than x.<br>
-     * <br>
-     *
-     * Delegates to {@link Math#floor(double)}
-     *
+    /** Get the largest whole number smaller than x.
      * @param x number from which floor is requested
      * @return a double number f such that f is an integer f &lt;= x &lt; f + 1.0
      */
@@ -2386,11 +2363,7 @@ public class FastMath {
         return Math.floor(x);
     }
 
-    /** Get the smallest whole number larger than x.<br>
-     * <br>
-     *
-     * Delegates to {@link Math#ceil(double)}
-     *
+    /** Get the smallest whole number larger than x.
      * @param x number from which ceil is requested
      * @return a double number c such that c is an integer c - 1.0 &lt; x &lt;= c
      */
@@ -2618,8 +2591,6 @@ public class FastMath {
      * <li> If either argument is infinite, then the result is positive infinity.</li>
      * <li> else, if either argument is NaN then the result is NaN.</li>
      * </ul>
-     *
-     * Delegates to {@link Math#hypot(double, double)}
      *
      * @param x a value
      * @param y a value
