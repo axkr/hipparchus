@@ -942,7 +942,7 @@ public abstract class FieldDerivativeStructureAbstractTest<T extends CalculusFie
     @Override
     @Test
     public void testExp() {
-        double[] epsilon = new double[] { 5.0e-16, 5.0e-16, 5.0e-16, 5.0e-16, 5.0e-16 };
+        double[] epsilon = new double[] { 1.0e-16, 1.0e-16, 1.0e-16, 1.0e-16, 1.0e-16 };
         for (int maxOrder = 0; maxOrder < 5; ++maxOrder) {
             final FDSFactory<T> factory = buildFactory(1, maxOrder);
             for (double x = 0.1; x < 1.2; x += 0.001) {
