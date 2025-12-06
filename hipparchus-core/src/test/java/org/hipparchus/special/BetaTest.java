@@ -53,23 +53,17 @@ class BetaTest {
         final Class<Double> d = Double.TYPE;
         b = Beta.class;
         AtomicReference<Method> m = new AtomicReference<>();
-        assertDoesNotThrow(() -> {
-            m.set(b.getDeclaredMethod("logGammaSum", d, d));
-        });
+        assertDoesNotThrow(() -> m.set(b.getDeclaredMethod("logGammaSum", d, d)));
         LOG_GAMMA_SUM_METHOD = m.get();
         LOG_GAMMA_SUM_METHOD.setAccessible(true);
 
         m.set(null);
-        assertDoesNotThrow(() -> {
-            m.set(b.getDeclaredMethod("logGammaMinusLogGammaSum", d, d));
-        });
+        assertDoesNotThrow(() -> m.set(b.getDeclaredMethod("logGammaMinusLogGammaSum", d, d)));
         LOG_GAMMA_MINUS_LOG_GAMMA_SUM_METHOD = m.get();
         LOG_GAMMA_MINUS_LOG_GAMMA_SUM_METHOD.setAccessible(true);
 
         m.set(null);
-        assertDoesNotThrow(() -> {
-            m.set(b.getDeclaredMethod("sumDeltaMinusDeltaSum", d, d));
-        });
+        assertDoesNotThrow(() -> m.set(b.getDeclaredMethod("sumDeltaMinusDeltaSum", d, d)));
         SUM_DELTA_MINUS_DELTA_SUM_METHOD = m.get();
         SUM_DELTA_MINUS_DELTA_SUM_METHOD.setAccessible(true);
     }
@@ -332,34 +326,22 @@ class BetaTest {
 
     @Test
     void testLogGammaSumPrecondition1() {
-        assertThrows(MathIllegalArgumentException.class, () -> {
-
-            logGammaSum(0.0, 1.0);
-        });
+        assertThrows(MathIllegalArgumentException.class, () -> logGammaSum(0.0, 1.0));
     }
 
     @Test
     void testLogGammaSumPrecondition2() {
-        assertThrows(MathIllegalArgumentException.class, () -> {
-
-            logGammaSum(3.0, 1.0);
-        });
+        assertThrows(MathIllegalArgumentException.class, () -> logGammaSum(3.0, 1.0));
     }
 
     @Test
     void testLogGammaSumPrecondition3() {
-        assertThrows(MathIllegalArgumentException.class, () -> {
-
-            logGammaSum(1.0, 0.0);
-        });
+        assertThrows(MathIllegalArgumentException.class, () -> logGammaSum(1.0, 0.0));
     }
 
     @Test
     void testLogGammaSumPrecondition4() {
-        assertThrows(MathIllegalArgumentException.class, () -> {
-
-            logGammaSum(1.0, 3.0);
-        });
+        assertThrows(MathIllegalArgumentException.class, () -> logGammaSum(1.0, 3.0));
     }
 
     private static final double[][] LOG_GAMMA_MINUS_LOG_GAMMA_SUM_REF = {
@@ -526,16 +508,12 @@ class BetaTest {
 
     @Test
     void testLogGammaMinusLogGammaSumPrecondition1() {
-        assertThrows(MathIllegalArgumentException.class, () -> {
-            logGammaMinusLogGammaSum(-1.0, 8.0);
-        });
+        assertThrows(MathIllegalArgumentException.class, () -> logGammaMinusLogGammaSum(-1.0, 8.0));
     }
 
     @Test
     void testLogGammaMinusLogGammaSumPrecondition2() {
-        assertThrows(MathIllegalArgumentException.class, () -> {
-            logGammaMinusLogGammaSum(1.0, 7.0);
-        });
+        assertThrows(MathIllegalArgumentException.class, () -> logGammaMinusLogGammaSum(1.0, 7.0));
     }
 
     private static final double[][] SUM_DELTA_MINUS_DELTA_SUM_REF = {
@@ -704,18 +682,12 @@ class BetaTest {
 
     @Test
     void testSumDeltaMinusDeltaSumPrecondition1() {
-        assertThrows(MathIllegalArgumentException.class, () -> {
-
-            sumDeltaMinusDeltaSum(9.0, 10.0);
-        });
+        assertThrows(MathIllegalArgumentException.class, () -> sumDeltaMinusDeltaSum(9.0, 10.0));
     }
 
     @Test
     void testSumDeltaMinusDeltaSumPrecondition2() {
-        assertThrows(MathIllegalArgumentException.class, () -> {
-
-            sumDeltaMinusDeltaSum(10.0, 9.0);
-        });
+        assertThrows(MathIllegalArgumentException.class, () -> sumDeltaMinusDeltaSum(10.0, 9.0));
     }
 
     private static final double[][] LOG_BETA_REF = {

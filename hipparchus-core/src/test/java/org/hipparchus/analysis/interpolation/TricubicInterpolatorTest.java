@@ -131,12 +131,7 @@ public final class TricubicInterpolatorTest {
         double[] zval = new double[] {-12, -8, -5.5, -3, 0, 2.5};
 
         // Function values
-        TrivariateFunction f = new TrivariateFunction() {
-                @Override
-                public double value(double x, double y, double z) {
-                    return 2 * x - 3 * y - 4 * z + 5;
-                }
-            };
+        TrivariateFunction f = (x, y, z) -> 2 * x - 3 * y - 4 * z + 5;
 
         double[][][] fval = new double[xval.length][yval.length][zval.length];
 
@@ -189,12 +184,7 @@ public final class TricubicInterpolatorTest {
         final double ky = 1;
 
         // Function values
-        TrivariateFunction f = new TrivariateFunction() {
-                @Override
-                public double value(double x, double y, double z) {
-                    return a * FastMath.cos(omega * z - kx * x - ky * y);
-                }
-            };
+        TrivariateFunction f = (x, y, z) -> a * FastMath.cos(omega * z - kx * x - ky * y);
 
         double[][][] fval = new double[xval.length][yval.length][zval.length];
         for (int i = 0; i < xval.length; i++) {

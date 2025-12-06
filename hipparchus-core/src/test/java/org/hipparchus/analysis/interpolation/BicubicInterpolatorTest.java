@@ -86,12 +86,7 @@ final class BicubicInterpolatorTest {
      */
     @Test
     void testPlane() {
-        BivariateFunction f = new BivariateFunction() {
-                @Override
-                public double value(double x, double y) {
-                    return 2 * x - 3 * y + 5;
-                }
-            };
+        BivariateFunction f = (x, y) -> 2 * x - 3 * y + 5;
 
         testInterpolation(3000,
                           1e-13,
@@ -106,12 +101,7 @@ final class BicubicInterpolatorTest {
      */
     @Test
     void testParaboloid() {
-        BivariateFunction f = new BivariateFunction() {
-                @Override
-                public double value(double x, double y) {
-                    return 2 * x * x - 3 * y * y + 4 * x * y - 5;
-                }
-            };
+        BivariateFunction f = (x, y) -> 2 * x * x - 3 * y * y + 4 * x * y - 5;
 
         testInterpolation(3000,
                           1e-12,
