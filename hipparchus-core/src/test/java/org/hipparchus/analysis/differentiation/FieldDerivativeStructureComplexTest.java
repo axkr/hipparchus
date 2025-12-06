@@ -70,24 +70,6 @@ class FieldDerivativeStructureComplexTest extends FieldDerivativeStructureAbstra
 
     @Override
     @Test
-    public void testLinearCombination1DSDS() {
-        doTestLinearCombination1DSDS(1.0e-15);
-    }
-
-    @Override
-    @Test
-    public void testLinearCombination1FieldDS() {
-        doTestLinearCombination1FieldDS(1.0e-15);
-    }
-
-    @Override
-    @Test
-    public void testLinearCombination1DoubleDS() {
-        doTestLinearCombination1DoubleDS(1.0e-15);
-    }
-
-    @Override
-    @Test
     public void testAtan2() {
         double[] epsilon = new double[] { 9.0e-16, 3.0e-15, 2.9e-14, 1.0e-12, 8.0e-11 };
         for (int maxOrder = 0; maxOrder < 5; ++maxOrder) {

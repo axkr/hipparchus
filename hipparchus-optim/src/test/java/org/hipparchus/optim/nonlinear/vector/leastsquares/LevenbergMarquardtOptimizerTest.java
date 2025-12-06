@@ -153,9 +153,7 @@ public class LevenbergMarquardtOptimizerTest
             assertFalse(shouldFail);
             //TODO check it got the right answer
 
-        } catch (MathIllegalArgumentException ee) {
-            assertTrue(shouldFail);
-        } catch (MathIllegalStateException ee) {
+        } catch (MathIllegalArgumentException | MathIllegalStateException ee) {
             assertTrue(shouldFail);
         }
     }

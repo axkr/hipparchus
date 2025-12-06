@@ -294,9 +294,7 @@ class BetaTest {
          */
         try {
             return ((Double) LOG_GAMMA_SUM_METHOD.invoke(null, a, b)).doubleValue();
-        } catch (final IllegalAccessException e) {
-            fail(e.getMessage());
-        } catch (final IllegalArgumentException e) {
+        } catch (final IllegalAccessException | IllegalArgumentException e) {
             fail(e.getMessage());
         } catch (final InvocationTargetException e) {
             final Throwable te = e.getTargetException();
@@ -476,9 +474,7 @@ class BetaTest {
         try {
             final Method m = LOG_GAMMA_MINUS_LOG_GAMMA_SUM_METHOD;
             return ((Double) m.invoke(null, a, b)).doubleValue();
-        } catch (final IllegalAccessException e) {
-            fail(e.getMessage());
-        } catch (final IllegalArgumentException e) {
+        } catch (final IllegalAccessException | IllegalArgumentException e) {
             fail(e.getMessage());
         } catch (final InvocationTargetException e) {
             final Throwable te = e.getTargetException();
@@ -649,9 +645,7 @@ class BetaTest {
         try {
             final Method m = SUM_DELTA_MINUS_DELTA_SUM_METHOD;
             return ((Double) m.invoke(null, a, b)).doubleValue();
-        } catch (final IllegalAccessException e) {
-            fail(e.getMessage());
-        } catch (final IllegalArgumentException e) {
+        } catch (final IllegalAccessException | IllegalArgumentException e) {
             fail(e.getMessage());
         } catch (final InvocationTargetException e) {
             final Throwable te = e.getTargetException();

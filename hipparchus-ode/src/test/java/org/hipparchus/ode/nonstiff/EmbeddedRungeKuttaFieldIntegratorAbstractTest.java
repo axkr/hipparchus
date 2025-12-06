@@ -143,9 +143,6 @@ public abstract class EmbeddedRungeKuttaFieldIntegratorAbstractTest {
                 return 1;
             }
 
-            public void init(T t0, T[] y0, T t) {
-            }
-
             public T[] computeDerivatives(T t, T[] y) {
                 if (t.getReal() < -0.5) {
                     throw new LocalException();

@@ -245,9 +245,7 @@ public abstract class AbstractLeastSquaresOptimizerAbstractTest {
             optimizer.optimize(problem.getBuilder().build());
 
             customFail(optimizer);
-        } catch (MathIllegalArgumentException miae) {
-            // expected
-        } catch (MathIllegalStateException mise) {
+        } catch (MathIllegalArgumentException | MathIllegalStateException miae) {
             // expected
         }
     }
