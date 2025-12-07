@@ -150,7 +150,7 @@ class CircleProblem {
     }
 
     public MultivariateMatrixFunction getModelFunctionJacobian() {
-        return point -> jacobian(point);
+        return this::jacobian;
     }
 
     private double[][] jacobian(double[] params) {

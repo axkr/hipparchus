@@ -22,8 +22,6 @@
 
 package org.hipparchus.optim.nonlinear.scalar.gradient;
 
-import org.hipparchus.analysis.MultivariateFunction;
-import org.hipparchus.analysis.MultivariateVectorFunction;
 import org.hipparchus.exception.MathRuntimeException;
 import org.hipparchus.geometry.euclidean.twod.Vector2D;
 import org.hipparchus.linear.BlockRealMatrix;

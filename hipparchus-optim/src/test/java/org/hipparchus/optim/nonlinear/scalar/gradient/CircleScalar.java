@@ -24,8 +24,6 @@ package org.hipparchus.optim.nonlinear.scalar.gradient;
 
 import java.util.ArrayList;
 
-import org.hipparchus.analysis.MultivariateFunction;
-import org.hipparchus.analysis.MultivariateVectorFunction;
 import org.hipparchus.geometry.euclidean.twod.Vector2D;
 import org.hipparchus.optim.nonlinear.scalar.ObjectiveFunction;
 import org.hipparchus.optim.nonlinear.scalar.ObjectiveFunctionGradient;

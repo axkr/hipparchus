@@ -97,7 +97,6 @@ class AbstractSQPOptimizerTest {
     private static class TestSQPOptimizer extends AbstractSQPOptimizer {
 
         TestSQPOptimizer() {
-            super();
         }
 
         @Override

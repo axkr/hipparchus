@@ -481,7 +481,7 @@ public class FieldUnivariateDerivative2<T extends CalculusFieldElement<T>>
             final T      aXlnA = aX.multiply(lnA);
             return new FieldUnivariateDerivative2<>(aX,
                                                     aXlnA.multiply(x.f1),
-                                                    aXlnA.multiply(x.f1.multiply(x.f1).multiply(lnA).add(x.f2)));
+                                                    aXlnA.multiply(x.f1.square().multiply(lnA).add(x.f2)));
         }
     }
 

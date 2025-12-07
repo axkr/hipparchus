@@ -580,7 +580,7 @@ class TricubicFunction
         MathUtils.checkRangeInclusive(y.getReal(), 0, 1);
         MathUtils.checkRangeInclusive(z.getReal(), 0, 1);
 
-        final T x2 = x.multiply(x);
+        final T x2 = x.square();
         final T x3 = x2.multiply(x);
         final List<T> pX = Arrays.asList(x.getField().getOne(), x, x2, x3);
 

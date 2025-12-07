@@ -34,7 +34,7 @@ class SqrtTest {
     @Test
     void testComparison() {
        final Sqrt s = new Sqrt();
-       final UnivariateFunction f = x -> FastMath.sqrt(x);
+       final UnivariateFunction f = FastMath::sqrt;
 
        for (double x = 1e-30; x < 1e10; x *= 2) {
            final double fX = f.value(x);

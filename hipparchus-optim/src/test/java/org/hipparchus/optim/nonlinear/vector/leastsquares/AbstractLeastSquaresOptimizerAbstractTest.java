@@ -32,10 +32,8 @@ import org.hipparchus.linear.BlockRealMatrix;
 import org.hipparchus.linear.DiagonalMatrix;
 import org.hipparchus.linear.RealMatrix;
 import org.hipparchus.linear.RealVector;
-import org.hipparchus.optim.ConvergenceChecker;
 import org.hipparchus.optim.SimpleVectorValueChecker;
 import org.hipparchus.optim.nonlinear.vector.leastsquares.LeastSquaresOptimizer.Optimum;
-import org.hipparchus.optim.nonlinear.vector.leastsquares.LeastSquaresProblem.Evaluation;
 import org.hipparchus.util.FastMath;
 import org.hipparchus.util.Pair;
 import org.junit.jupiter.api.Assertions;
@@ -577,7 +575,7 @@ public abstract class AbstractLeastSquaresOptimizerAbstractTest {
         }
 
         public MultivariateVectorFunction getModelFunction() {
-            return params -> factors.operate(params);
+            return factors::operate;
         }
 
         public MultivariateMatrixFunction getModelFunctionJacobian() {

@@ -177,7 +177,7 @@ final class BracketingNthOrderBrentSolverTest extends BaseSecantSolverAbstractTe
 
             @Override
             public <T extends Derivative<T>> T value(T x) {
-                return x.subtract(1).multiply(x).multiply(x).subtract(1);
+                return x.subtract(1).multiply(x.square()).subtract(1);
             }
         });
 

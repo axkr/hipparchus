@@ -411,7 +411,7 @@ public final class EmpiricalDistributionTest extends RealDistributionAbstractTes
         final double tol = 1.0e-9;
         final BaseAbstractUnivariateIntegrator integrator =
             new IterativeLegendreGaussIntegrator(5, 1.0e-12, 1.0e-10);
-        final UnivariateFunction d = x -> distribution.density(x);
+        final UnivariateFunction d = distribution::density;
         final double[] lower = {0, 5, 1000, 5001, 9995};
         final double[] upper = {5, 12, 1030, 5010, 10000};
         for (int i = 1; i < 5; i++) {

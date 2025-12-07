@@ -123,7 +123,7 @@ final class FieldBracketingNthOrderBrentSolverTest {
 
             check(x -> DfpMath.log(x).add(x.sqrt()).subtract(field.newDfp(5)), 200, 0.001, 10.0, allowed);
 
-            check(x -> x.subtract(field.getOne()).multiply(x).multiply(x).subtract(field.getOne()), 200, -0.5, 1.5, allowed);
+            check(x -> x.subtract(field.getOne()).multiply(x.square()).subtract(field.getOne()), 200, -0.5, 1.5, allowed);
         }
 
     }

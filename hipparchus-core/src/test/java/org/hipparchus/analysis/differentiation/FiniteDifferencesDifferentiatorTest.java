@@ -273,7 +273,7 @@ class FiniteDifferencesDifferentiatorTest {
 
         UnivariateFunctionDifferentiator differentiator =
                 new FiniteDifferencesDifferentiator(9, 1.0 / 32, 0.0, Double.POSITIVE_INFINITY);
-        UnivariateDifferentiableFunction sqrt = differentiator.differentiate(x -> FastMath.sqrt(x));
+        UnivariateDifferentiableFunction sqrt = differentiator.differentiate(FastMath::sqrt);
 
         // we are able to compute derivative near 0, but the accuracy is much poorer there
         DSFactory factory = new DSFactory(1, 1);

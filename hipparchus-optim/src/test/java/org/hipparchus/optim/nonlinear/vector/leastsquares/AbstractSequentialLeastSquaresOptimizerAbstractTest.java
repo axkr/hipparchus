@@ -29,7 +29,6 @@ import org.hipparchus.linear.DiagonalMatrix;
 import org.hipparchus.linear.MatrixUtils;
 import org.hipparchus.linear.RealMatrix;
 import org.hipparchus.linear.RealVector;
-import org.hipparchus.optim.ConvergenceChecker;
 import org.hipparchus.optim.SimpleVectorValueChecker;
 import org.hipparchus.optim.nonlinear.vector.leastsquares.LeastSquaresOptimizer.Optimum;
 import org.hipparchus.optim.nonlinear.vector.leastsquares.LeastSquaresProblem.Evaluation;
@@ -555,7 +554,7 @@ public abstract class AbstractSequentialLeastSquaresOptimizerAbstractTest {
         }
 
         public MultivariateVectorFunction getModelFunction() {
-            return params -> factors.operate(params);
+            return factors::operate;
         }
 
         public MultivariateMatrixFunction getModelFunctionJacobian() {

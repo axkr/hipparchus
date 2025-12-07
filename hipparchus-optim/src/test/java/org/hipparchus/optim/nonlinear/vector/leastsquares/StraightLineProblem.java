@@ -115,7 +115,7 @@ class StraightLineProblem {
     }
 
     public MultivariateMatrixFunction getModelFunctionJacobian() {
-        return point -> jacobian(point);
+        return this::jacobian;
     }
 
     /**

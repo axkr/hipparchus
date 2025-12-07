@@ -661,7 +661,7 @@ public class SmoothStepFactory {
             checkBetweenZeroAndOneIncluded(xNormalized.getReal());
 
             if (xNormalized.getReal() >= 0 && xNormalized.getReal() <= 0.5) {
-                return xNormalized.multiply(xNormalized).twice();
+                return xNormalized.square().twice();
             }
             else {
                 final T one = getField().getOne();

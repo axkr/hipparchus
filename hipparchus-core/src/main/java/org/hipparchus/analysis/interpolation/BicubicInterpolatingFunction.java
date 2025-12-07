@@ -337,7 +337,7 @@ class BicubicFunction implements BivariateFunction, FieldBivariateFunction {
         MathUtils.checkRangeInclusive(x.getReal(), 0, 1);
         MathUtils.checkRangeInclusive(y.getReal(), 0, 1);
 
-        final T x2 = x.multiply(x);
+        final T x2 = x.square();
         final T x3 = x2.multiply(x);
         final T[] pX = buildArray(x.getField(), 4);
         pX[0] = x.getField().getOne();

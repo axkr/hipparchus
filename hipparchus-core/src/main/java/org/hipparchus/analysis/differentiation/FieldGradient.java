@@ -570,7 +570,7 @@ public class FieldGradient<T extends CalculusFieldElement<T>> implements FieldDe
     /** {@inheritDoc} */
     @Override
     public FieldGradient<T> atan2(final FieldGradient<T> x) {
-        final T inv = value.square().add(x.value.multiply(x.value)).reciprocal();
+        final T inv = value.square().add(x.value.square()).reciprocal();
         final FieldGradient<T> result = newInstance(FastMath.atan2(value, x.value));
         final T xValueInv = x.value.multiply(inv);
         final T mValueInv = value.negate().multiply(inv);
