@@ -23,6 +23,7 @@ import org.hipparchus.CalculusFieldElement;
  * @param <T> type of the field elements
  * @since 4.1
  */
+@FunctionalInterface
 public interface CalculusFieldTrivariateFunction<T extends CalculusFieldElement<T>> {
 
     /**

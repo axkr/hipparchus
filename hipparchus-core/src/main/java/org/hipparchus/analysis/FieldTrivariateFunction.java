@@ -21,8 +21,9 @@ import org.hipparchus.Field;
 
 /**
  * An interface representing a trivariate field function.
- * @since 4.0
+ * @since 4.1
  */
+@FunctionalInterface
 public interface FieldTrivariateFunction
 {
 
