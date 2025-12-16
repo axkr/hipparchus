@@ -178,11 +178,8 @@ public class TrilinearInterpolatingFunction implements TrivariateFunction, Field
         final double c1 = (dx0 * (dy0 * c111 + dy1 * c101) + dx1 * (dy0 * c011 + dy1 * c001)) / (dx10 * dy10);
 
         // interpolate along z
-        final double dz0  = z  - z0;
-        final double dz1  = z1 - z;
-        final double dz10 = z1 - z0;
-
-        return (dz0 * c1 + dz1 * c0) / dz10;
+        final double t = (z  - z0) / (z1 - z0);
+        return c0 + t * (c1 - c0);
     }
 
     /**
@@ -229,9 +226,7 @@ public class TrilinearInterpolatingFunction implements TrivariateFunction, Field
                 divide(dx10 * dy10);
 
         // interpolate along z
-        final T dz0  = z.subtract(z0);
-        final T mdz1 = z.subtract(z1);
-
-        return dz0.multiply(c1).subtract(mdz1.multiply(c0)).divide(z1 - z0);
+        final T t = z.subtract(z0).divide(z1 - z0);
+        return c0.add(t.multiply(c1.subtract(c0)));
     }
 }
