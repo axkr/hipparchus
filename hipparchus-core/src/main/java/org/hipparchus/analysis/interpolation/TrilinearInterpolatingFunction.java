@@ -20,7 +20,6 @@ import org.hipparchus.CalculusFieldElement;
 import org.hipparchus.analysis.FieldTrivariateFunction;
 import org.hipparchus.analysis.TrivariateFunction;
 import org.hipparchus.exception.MathIllegalArgumentException;
-import org.hipparchus.util.MathArrays;
 
 import java.io.Serializable;
 
@@ -158,9 +157,6 @@ public class TrilinearInterpolatingFunction implements TrivariateFunction, Field
         final double z0 = zGrid.node(k);
         final double z1 = zGrid.node(k + 1);
 
-        // Normalized coordinates (between 0 and 1) inside the selected cube
-        final double zd = (z - z0) / (z1 - z0);
-
         // get the function values at interpolation nodes
         final double c000 = fVal[i][j][k];
         final double c100 = fVal[i + 1][j][k];
@@ -209,11 +205,6 @@ public class TrilinearInterpolatingFunction implements TrivariateFunction, Field
         final double z0 = zGrid.node(k);
         final double z1 = zGrid.node(k + 1);
 
-        // Normalized coordinates (between 0 and 1) inside the selected cube
-        final T xd = x.subtract(x0).divide(x1 - x0);
-        final T yd = y.subtract(y0).divide(y1 - y0);
-        final T zd = z.subtract(z0).divide(z1 - z0);
-
         // get the function values at interpolation nodes
         final double c000 = fVal[i][j][k];
         final double c100 = fVal[i + 1][j][k];
@@ -245,17 +236,4 @@ public class TrilinearInterpolatingFunction implements TrivariateFunction, Field
 
         return dz0.multiply (c1).subtract(mdz1.multiply(c0)).divide(dz10);
     }
-
-    /**
-     * compute linear interpolation with minimum loss of precision by using FMA function
-     *
-     * @param a lower bound (value at 0)
-     * @param b higher bound (value at 1)
-     * @param t interpolation weight (between 0 and 1)
-     * @return interpolated value
-     */
-    private static double lerp(double a, double b, double t) {
-        return MathArrays.linearCombination(t, b-a, 1.0, a);
-    }
-
 }
