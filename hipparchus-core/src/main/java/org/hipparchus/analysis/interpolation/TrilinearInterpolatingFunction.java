@@ -167,7 +167,6 @@ public class TrilinearInterpolatingFunction implements TrivariateFunction, Field
         final double c011 = fVal[i][j + 1][k + 1];
         final double c111 = fVal[i + 1][j + 1][k + 1];
 
-
         // bilinear interpolations on (x, y)
         final double dx0  = x  - x0;
         final double dx1  = x1 - x;
@@ -216,12 +215,12 @@ public class TrilinearInterpolatingFunction implements TrivariateFunction, Field
         final double c111 = fVal[i + 1][j + 1][k + 1];
 
         // interpolate
-        final T      dx0   = x.subtract(x0);
-        final T      mdx1  = x.subtract(x1);
-        final double dx10  = x1 - x0;
-        final T      dy0   = y.subtract(y0);
-        final T      mdy1  = y.subtract(y1);
-        final double dy10  = y1 - y0;
+        final T      dx0  = x.subtract(x0);
+        final T      mdx1 = x.subtract(x1);
+        final double dx10 = x1 - x0;
+        final T      dy0  = y.subtract(y0);
+        final T      mdy1 = y.subtract(y1);
+        final double dy10 = y1 - y0;
         final T c0 = dy0.multiply(c110).subtract(mdy1.multiply(c100)).multiply(dx0).
                 subtract(dy0.multiply(c010).subtract(mdy1.multiply(c000)).multiply(mdx1)).
                 divide(dx10 * dy10);
@@ -230,10 +229,9 @@ public class TrilinearInterpolatingFunction implements TrivariateFunction, Field
                 divide(dx10 * dy10);
 
         // interpolate along z
-        final T      dz0   = z.subtract(z0);
-        final T      mdz1  = z.subtract(z1);
-        final double dz10  = z1 - z0;
+        final T dz0  = z.subtract(z0);
+        final T mdz1 = z.subtract(z1);
 
-        return dz0.multiply (c1).subtract(mdz1.multiply(c0)).divide(dz10);
+        return dz0.multiply(c1).subtract(mdz1.multiply(c0)).divide(z1 - z0);
     }
 }

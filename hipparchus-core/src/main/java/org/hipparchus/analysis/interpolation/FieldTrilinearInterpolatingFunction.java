@@ -171,6 +171,6 @@ public class FieldTrilinearInterpolatingFunction<T extends CalculusFieldElement<
         final T dz10 = z1.subtract(z0);
         final T dc10 = c1.subtract(c0);
 
-        return c0.add(dz0.multiply(dc10).divide(dz10));
+        return c0.add(dz0.divide(dz10).multiply(dc10));
     }
 }
