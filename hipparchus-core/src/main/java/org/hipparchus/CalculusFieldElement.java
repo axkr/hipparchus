@@ -605,6 +605,8 @@ public interface CalculusFieldElement<T extends FieldElement<T>> extends FieldEl
      * to {@code base}, using a relative threshold. The default implementation
      * uses only the relative threshold with respect to he {@link #getReal()} part.
      * </p>
+     * @param base base value to compare against
+     * @param relativeThreshold relative threshold
      * @return true if instance is small with respect to reference
      * @since 5.0
      */

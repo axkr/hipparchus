@@ -358,7 +358,7 @@ class BicubicFunction implements BivariateFunction, FieldBivariateFunction {
 
     /**
      * Compute the value of the bicubic polynomial.
-     *
+     * @param <T> type of the field elements
      * @param pX Powers of the x-coordinate.
      * @param pY Powers of the y-coordinate.
      * @param coeff Spline coefficients.
