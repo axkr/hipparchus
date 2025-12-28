@@ -1997,4 +1997,11 @@ public class FieldComplex<T extends CalculusFieldElement<T>> implements Calculus
         return getPi(getPartsField());
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean isSmall(final FieldComplex<T> base, final double relativeThreshold) {
+        return getRealPart().isSmall(base.getRealPart(), relativeThreshold) &&
+               getImaginaryPart().isSmall(base.getImaginaryPart(), relativeThreshold);
+    }
+
 }

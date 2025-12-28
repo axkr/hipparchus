@@ -598,6 +598,20 @@ public interface CalculusFieldElement<T extends FieldElement<T>> extends FieldEl
         return abs().getReal();
     }
 
+    /** Check if instance is small with respect to reference.
+     * <p>
+     * This check is mainly intended for checking convergence of iterative
+     * algorithms. The idea is that {@code this + base} is <em>close enough</em>
+     * to {@code base}, using a relative threshold. The default implementation
+     * uses only the relative threshold with respect to he {@link #getReal()} part.
+     * </p>
+     * @return true if instance is small with respect to reference
+     * @since 5.0
+     */
+    default boolean isSmall(final T base, final double relativeThreshold) {
+        return FastMath.abs(getReal()) <= FastMath.abs(base.getReal() * relativeThreshold);
+    }
+
     /** absolute value.
      * @return abs(this)
      */

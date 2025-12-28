@@ -44,24 +44,24 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class FieldComplexTest extends CalculusFieldElementAbstractTest<FieldComplex<Binary64>> {
 
 
-    private FieldComplex<Binary64> oneInf       = build(1,                        Double.POSITIVE_INFINITY);
-    private FieldComplex<Binary64> oneNegInf    = build(1,                        Double.NEGATIVE_INFINITY);
-    private FieldComplex<Binary64> infOne       = build(Double.POSITIVE_INFINITY, 1);
-    private FieldComplex<Binary64> infZero      = build(Double.POSITIVE_INFINITY, 0);
-    private FieldComplex<Binary64> infNaN       = build(Double.POSITIVE_INFINITY, Double.NaN);
-    private FieldComplex<Binary64> infNegInf    = build(Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY);
-    private FieldComplex<Binary64> infInf       = build(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
-    private FieldComplex<Binary64> negInfInf    = build(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-    private FieldComplex<Binary64> negInfZero   = build(Double.NEGATIVE_INFINITY, 0);
-    private FieldComplex<Binary64> negInfOne    = build(Double.NEGATIVE_INFINITY, 1);
-    private FieldComplex<Binary64> negInfNaN    = build(Double.NEGATIVE_INFINITY, Double.NaN);
-    private FieldComplex<Binary64> negInfNegInf = build(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY);
-    private FieldComplex<Binary64> oneNaN       = build(1,                        Double.NaN);
-    private FieldComplex<Binary64> zeroInf      = build(0,                        Double.POSITIVE_INFINITY);
-    private FieldComplex<Binary64> zeroNaN      = build(0,                        Double.NaN);
-    private FieldComplex<Binary64> nanInf       = build(Double.NaN,               Double.POSITIVE_INFINITY);
-    private FieldComplex<Binary64> nanNegInf    = build(Double.NaN,               Double.NEGATIVE_INFINITY);
-    private FieldComplex<Binary64> nanZero      = build(Double.NaN);
+    private final FieldComplex<Binary64> oneInf       = build(1,                        Double.POSITIVE_INFINITY);
+    private final FieldComplex<Binary64> oneNegInf    = build(1,                        Double.NEGATIVE_INFINITY);
+    private final FieldComplex<Binary64> infOne       = build(Double.POSITIVE_INFINITY, 1);
+    private final FieldComplex<Binary64> infZero      = build(Double.POSITIVE_INFINITY, 0);
+    private final FieldComplex<Binary64> infNaN       = build(Double.POSITIVE_INFINITY, Double.NaN);
+    private final FieldComplex<Binary64> infNegInf    = build(Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY);
+    private final FieldComplex<Binary64> infInf       = build(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
+    private final FieldComplex<Binary64> negInfInf    = build(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+    private final FieldComplex<Binary64> negInfZero   = build(Double.NEGATIVE_INFINITY, 0);
+    private final FieldComplex<Binary64> negInfOne    = build(Double.NEGATIVE_INFINITY, 1);
+    private final FieldComplex<Binary64> negInfNaN    = build(Double.NEGATIVE_INFINITY, Double.NaN);
+    private final FieldComplex<Binary64> negInfNegInf = build(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY);
+    private final FieldComplex<Binary64> oneNaN       = build(1,                        Double.NaN);
+    private final FieldComplex<Binary64> zeroInf      = build(0,                        Double.POSITIVE_INFINITY);
+    private final FieldComplex<Binary64> zeroNaN      = build(0,                        Double.NaN);
+    private final FieldComplex<Binary64> nanInf       = build(Double.NaN,               Double.POSITIVE_INFINITY);
+    private final FieldComplex<Binary64> nanNegInf    = build(Double.NaN,               Double.NEGATIVE_INFINITY);
+    private final FieldComplex<Binary64> nanZero      = build(Double.NaN);
 
     @Override
     protected FieldComplex<Binary64> build(final double x) {
@@ -610,7 +610,7 @@ public class FieldComplexTest extends CalculusFieldElementAbstractTest<FieldComp
     @Test
     void testEqualsClass() {
         FieldComplex<Binary64> x = build(3.0, 4.0);
-        assertNotEquals(x, this);
+        assertNotEquals(this, x);
     }
 
     @Test
@@ -1189,6 +1189,7 @@ public class FieldComplexTest extends CalculusFieldElementAbstractTest<FieldComp
         }
     }
 
+    @Test
     public void testPowT() {
         for (double x = -0.9; x < 0.9; x += 0.05) {
             for (double y = 0.1; y < 4; y += 0.2) {
@@ -1901,7 +1902,7 @@ public class FieldComplexTest extends CalculusFieldElementAbstractTest<FieldComp
             assertFalse(build(FastMath.nextAfter(d, Double.NEGATIVE_INFINITY), imaginary).isMathematicalInteger());
         }
 
-        double minNoFractional = 0x1l << 52;
+        double minNoFractional = 0x1L << 52;
         assertEquals(expectedForInteger, build(minNoFractional, imaginary).isMathematicalInteger());
         assertFalse(build(minNoFractional - 0.5, imaginary).isMathematicalInteger());
         assertEquals(expectedForInteger, build(minNoFractional + 0.5, imaginary).isMathematicalInteger());
@@ -2186,23 +2187,11 @@ public class FieldComplexTest extends CalculusFieldElementAbstractTest<FieldComp
 
     }
 
-    /**
-     * Class to test extending Complex
-     */
-    public static class TestComplex extends FieldComplex<Binary64> {
-
-        public TestComplex(Binary64 real, Binary64 imaginary) {
-            super(real, imaginary);
-        }
-
-        public TestComplex(FieldComplex<Binary64> other) {
-            this(other.getRealPart(), other.getImaginaryPart());
-        }
-
-        @Override
-        protected TestComplex createComplex(Binary64 real, Binary64 imaginary) {
-            return new TestComplex(real, imaginary);
-        }
-
+    @Test
+    public void testIsSmall() {
+        Assertions.assertTrue(build(1.0e-13, 1.0e-13).isSmall(build(1.0, 1.0), 1.0e-12));
+        Assertions.assertFalse(build(1.0e-11, 1.0e-13).isSmall(build(1.0, 1.0), 1.0e-12));
+        Assertions.assertFalse(build(1.0e-13, 1.0e-11).isSmall(build(1.0, 1.0), 1.0e-12));
     }
+
 }

@@ -40,6 +40,7 @@ import org.hipparchus.util.FastMath;
 import org.hipparchus.util.FieldSinCos;
 import org.hipparchus.util.FieldSinhCosh;
 import org.hipparchus.util.Precision;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -417,7 +418,7 @@ public class DerivativeStructureTest extends CalculusFieldElementAbstractTest<De
     @Override
     @Test
     public void testUlp() {
-        final RandomGenerator random = new Well19937a(0x85d201920b5be954l);
+        final RandomGenerator random = new Well19937a(0x85d201920b5be954L);
         for (int k = 0; k < 10000; ++k) {
             int maxOrder = 1 + random.nextInt(5);
             DSFactory factory = new DSFactory(3, maxOrder);
@@ -1549,7 +1550,7 @@ public class DerivativeStructureTest extends CalculusFieldElementAbstractTest<De
     @Test
     void testIntegration() {
         // check that first-order integration on two variables does not depend on sequence of operations
-        final RandomGenerator random = new Well19937a(0x87bb96d6e11557bdl);
+        final RandomGenerator random = new Well19937a(0x87bb96d6e11557bdL);
         final DSFactory factory = new DSFactory(3, 7);
         final int size = factory.getCompiler().getSize();
         for (int count = 0; count < 100; ++count) {
@@ -1568,7 +1569,7 @@ public class DerivativeStructureTest extends CalculusFieldElementAbstractTest<De
     void testIntegrationGreaterThanOrder() {
         // check that integration to a too high order generates zero
         // as integration constants are set to zero
-        final RandomGenerator random = new Well19937a(0x4744a847b11e4c6fl);
+        final RandomGenerator random = new Well19937a(0x4744a847b11e4c6fL);
         final DSFactory factory = new DSFactory(3, 7);
         final int size = factory.getCompiler().getSize();
         for (int count = 0; count < 100; ++count) {
@@ -1587,7 +1588,7 @@ public class DerivativeStructureTest extends CalculusFieldElementAbstractTest<De
     @Test
     void testIntegrationNoOp() {
         // check that integration of order 0 is no-op
-        final RandomGenerator random = new Well19937a(0x75a35152f30f644bl);
+        final RandomGenerator random = new Well19937a(0x75a35152f30f644bL);
         final DSFactory factory = new DSFactory(3, 7);
         final int size = factory.getCompiler().getSize();
         for (int count = 0; count < 100; ++count) {
@@ -1606,7 +1607,7 @@ public class DerivativeStructureTest extends CalculusFieldElementAbstractTest<De
     @Test
     void testDifferentiationNoOp() {
         // check that differentiation of order 0 is no-op
-        final RandomGenerator random = new Well19937a(0x3b6ae4c2f1282949l);
+        final RandomGenerator random = new Well19937a(0x3b6ae4c2f1282949L);
         final DSFactory factory = new DSFactory(3, 7);
         final int size = factory.getCompiler().getSize();
         for (int count = 0; count < 100; ++count) {
@@ -1626,7 +1627,7 @@ public class DerivativeStructureTest extends CalculusFieldElementAbstractTest<De
     void testIntegrationDifferentiation() {
         // check that integration and differentiation for univariate functions are each other inverse except for constant
         // term and highest order one
-        final RandomGenerator random = new Well19937a(0x67fe66c05e5ee222l);
+        final RandomGenerator random = new Well19937a(0x67fe66c05e5ee222L);
         final DSFactory factory = new DSFactory(1, 25);
         final int size = factory.getCompiler().getSize();
         for (int count = 0; count < 100; ++count) {
@@ -1674,7 +1675,7 @@ public class DerivativeStructureTest extends CalculusFieldElementAbstractTest<De
     @Test
     void testDifferentiation2() {
         // check that first-order differentiation twice is same as second-order differentiation
-        final RandomGenerator random = new Well19937a(0xec293aaee352de94l);
+        final RandomGenerator random = new Well19937a(0xec293aaee352de94L);
         final DSFactory factory = new DSFactory(5, 4);
         final int size = factory.getCompiler().getSize();
         for (int count = 0; count < 100; ++count) {
@@ -1692,7 +1693,7 @@ public class DerivativeStructureTest extends CalculusFieldElementAbstractTest<De
     @Test
     void testDifferentiation3() {
         // check that first-order differentiation on two variables does not depend on sequence of operations
-        final RandomGenerator random = new Well19937a(0x35409ecc1348e46cl);
+        final RandomGenerator random = new Well19937a(0x35409ecc1348e46cL);
         final DSFactory factory = new DSFactory(3, 7);
         final int size = factory.getCompiler().getSize();
         for (int count = 0; count < 100; ++count) {
@@ -1923,8 +1924,8 @@ public class DerivativeStructureTest extends CalculusFieldElementAbstractTest<De
         DerivativeStructure zero = new DSFactory(3, 2).variable(2, 17.0).getField().getZero();
         double[] a = zero.getAllDerivatives();
         assertEquals(10, a.length);
-        for (int i = 0; i < a.length; ++i) {
-            assertEquals(0.0, a[i], 1.0e-15);
+        for (final double v : a) {
+            assertEquals(0.0, v, 1.0e-15);
         }
     }
 
@@ -2110,6 +2111,23 @@ public class DerivativeStructureTest extends CalculusFieldElementAbstractTest<De
     void testRunTimeClass() {
         Field<DerivativeStructure> field = new DSFactory(3, 2).constant(0.0).getField();
         assertEquals(DerivativeStructure.class, field.getRuntimeClass());
+    }
+
+    @Test
+    public void testIsSmallDimensionMismatch() {
+        try {
+            new DSFactory(3, 2).constant(0.0).isSmall(new DSFactory(3, 4).constant(0.0), 1.0e-15);
+            Assertions.fail("an exception should have been thrown");
+        } catch (MathIllegalArgumentException e) {
+            Assertions.assertEquals(LocalizedCoreFormats.DIMENSIONS_MISMATCH, e.getSpecifier());
+        }
+    }
+
+    @Test
+    public void testIsSmall() {
+        final DSFactory factory = new DSFactory(2, 2);
+        Assertions.assertTrue(factory.variable(1, 2.5).multiply(1.0e-13).isSmall(factory.variable(1, 1.0), 1.0e-12));
+        Assertions.assertFalse(factory.variable(1, 2.5).multiply(1.0e-11).isSmall(factory.variable(1, 1.0), 1.0e-12));
     }
 
     private void checkF0F1(DerivativeStructure ds, double value, double...derivatives) {

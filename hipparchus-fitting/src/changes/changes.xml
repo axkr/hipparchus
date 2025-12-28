@@ -49,6 +49,8 @@ If the output is not quite correct, check for invisible trailing spaces!
     <title>Hipparchus Fitting Release Notes</title>
   </properties>
   <body>
+    <release version="5.0" date="TBD" description="TBD.">
+    </release>
     <release version="4.1" date="TBD" description="TBD">
       <action dev="bryan" type="add" issue="issues/424">
         Added RANSAC algorithm for estimating the parameters of a mathematical model.
