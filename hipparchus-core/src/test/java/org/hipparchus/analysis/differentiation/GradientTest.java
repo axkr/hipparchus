@@ -184,11 +184,11 @@ class GradientTest extends CalculusFieldElementAbstractTest<Gradient> {
         Gradient g = new Gradient(12, -34, 56);
         assertEquals(g, g);
         assertNotEquals("", g);
-        assertEquals(g, new Gradient(12, -34, 56));
-        assertNotEquals(g, new Gradient(21, -34, 56));
-        assertNotEquals(g, new Gradient(12, -43, 56));
-        assertNotEquals(g, new Gradient(12, -34, 65));
-        assertNotEquals(g, new Gradient(21, -43, 65));
+        assertEquals(new Gradient(12, -34, 56), g);
+        assertNotEquals(new Gradient(21, -34, 56), g);
+        assertNotEquals(new Gradient(12, -43, 56), g);
+        assertNotEquals(new Gradient(12, -34, 65), g);
+        assertNotEquals(new Gradient(21, -43, 65), g);
     }
 
     @Test
@@ -555,6 +555,24 @@ class GradientTest extends CalculusFieldElementAbstractTest<Gradient> {
         for (int i = 0; i < one.getFreeParameters(); ++i) {
             assertEquals(0.0, one.getPartialDerivative(i), 1.0e-15);
         }
+    }
+
+
+    @Test
+    public void testIsSmallDimensionMismatch() {
+        try {
+            new Gradient(0.0, 0.0, 0.0).isSmall(new Gradient(0.0, 0.0), 1.0e-15);
+            Assertions.fail("an exception should have been thrown");
+        } catch (MathIllegalArgumentException e) {
+            Assertions.assertEquals(LocalizedCoreFormats.DIMENSIONS_MISMATCH, e.getSpecifier());
+        }
+    }
+
+    @Test
+    public void testIsSmall() {
+        Assertions.assertTrue(new Gradient(1.0e-13, 2.5e-13).isSmall(new Gradient(1.0, 1.0), 1.0e-12));
+        Assertions.assertFalse(new Gradient(1.0e-11, 2.5e-13).isSmall(new Gradient(1.0, 1.0), 1.0e-12));
+        Assertions.assertFalse(new Gradient(1.0e-13, 2.5e-11).isSmall(new Gradient(1.0, 1.0), 1.0e-12));
     }
 
 }

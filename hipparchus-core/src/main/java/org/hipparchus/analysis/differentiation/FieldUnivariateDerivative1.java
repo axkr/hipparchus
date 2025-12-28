@@ -675,6 +675,13 @@ public class FieldUnivariateDerivative1<T extends CalculusFieldElement<T>>
         return new FieldUnivariateDerivative1<>(zero.getPi(), zero);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean isSmall(final FieldUnivariateDerivative1<T> base, final double relativeThreshold) {
+        return f0.isSmall(base.f0, relativeThreshold) &&
+               f1.isSmall(base.f1, relativeThreshold);
+    }
+
     /** Test for the equality of two univariate derivatives.
      * <p>
      * univariate derivatives are considered equal if they have the same derivatives.

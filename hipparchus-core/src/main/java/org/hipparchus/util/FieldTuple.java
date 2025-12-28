@@ -20,6 +20,7 @@ import java.util.Arrays;
 
 import org.hipparchus.CalculusFieldElement;
 import org.hipparchus.Field;
+import org.hipparchus.exception.LocalizedCoreFormats;
 import org.hipparchus.exception.MathIllegalArgumentException;
 
 /**
@@ -782,6 +783,20 @@ public class FieldTuple<T extends CalculusFieldElement<T>> implements CalculusFi
         final FieldTuple<T> result = new FieldTuple<>(field, MathArrays.buildArray(values[0].getField(), values.length));
         Arrays.fill(result.values, values[0].getPi());
         return result;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isSmall(final FieldTuple<T> base, final double relativeThreshold) {
+        if (values.length != base.values.length) {
+            throw new MathIllegalArgumentException(LocalizedCoreFormats.DIMENSIONS_MISMATCH,
+                                                   values.length, base.values.length);
+        }
+        boolean ok = true;
+        for (int i = 0; i < values.length && ok; ++i) {
+            ok = values[i].isSmall(base.values[i], relativeThreshold);
+        }
+        return ok;
     }
 
     /** Field for {link FieldTuple} instances.

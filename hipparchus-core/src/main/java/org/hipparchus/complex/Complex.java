@@ -1885,6 +1885,13 @@ public class Complex implements CalculusFieldElement<Complex>, Comparable<Comple
         return createComplex(FastMath.toRadians(getRealPart()), FastMath.toRadians(getImaginaryPart()));
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean isSmall(final Complex base, final double relativeThreshold) {
+        return FastMath.abs(getRealPart())      <= FastMath.abs(base.getRealPart()      * relativeThreshold) &&
+               FastMath.abs(getImaginaryPart()) <= FastMath.abs(base.getImaginaryPart() * relativeThreshold);
+    }
+
     /** {@inheritDoc}
      * <p>
      * Comparison us performed using real ordering as the primary sort order and

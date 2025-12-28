@@ -21,7 +21,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.hipparchus</groupId>
   <artifactId>hipparchus</artifactId>
-  <version>4.1-SNAPSHOT</version>
+  <version>5.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Hipparchus</name>
@@ -568,6 +568,7 @@
     <hipparchus.mockito-core.version>4.11.0</hipparchus.mockito-core.version>
     <hipparchus.hamcrest.version>3.0</hipparchus.hamcrest.version>
     <hipparchus.reflow-velocity-tools.version>2.0.0</hipparchus.reflow-velocity-tools.version>
+    <hipparchus.sonar-maven-plugin.version>5.5.0.6356</hipparchus.sonar-maven-plugin.version>
     <hipparchus.mathjax.enable>&lt;script src=&quot;https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js&quot; id=&quot;MathJax-script&quot;&gt;&lt;/script&gt;</hipparchus.mathjax.enable>
   </properties>
 
@@ -857,8 +858,13 @@
         <artifactId>maven-project-info-reports-plugin</artifactId>
         <version>${hipparchus.maven-project-info-reports-plugin.version}</version>
       </plugin>
-      </plugins>
-    </pluginManagement>
+      <plugin>
+        <groupId>org.sonarsource.scanner.maven</groupId>
+        <artifactId>sonar-maven-plugin</artifactId>
+        <version>${hipparchus.sonar-maven-plugin.version}</version>
+      </plugin>
+    </plugins>
+  </pluginManagement>
 
     <plugins>
       <plugin>

@@ -20,6 +20,7 @@ package org.hipparchus.analysis.differentiation;
 import org.hipparchus.util.Binary64;
 import org.hipparchus.util.Binary64Field;
 import org.hipparchus.util.FastMath;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -50,4 +51,12 @@ class FieldUnivariateDerivative1Binary64Test extends FieldUnivariateDerivative1A
     public void testLinearCombinationReference() {
         doTestLinearCombinationReference(this::build, 5.0e-9, 1.0);
     }
+
+    @Test
+    public void testIsSmall() {
+        Assertions.assertTrue(build(1.0e-13, 2.5e-13).isSmall(build(1.0, 1.0), 1.0e-12));
+        Assertions.assertFalse(build(1.0e-11, 2.5e-13).isSmall(build(1.0, 1.0), 1.0e-12));
+        Assertions.assertFalse(build(1.0e-13, 2.5e-11).isSmall(build(1.0, 1.0), 1.0e-12));
+    }
+
 }

@@ -769,6 +769,17 @@ public class SparseGradient implements Derivative1<SparseGradient>, Serializable
         return new SparseGradient(FastMath.PI, null);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean isSmall(final SparseGradient base, final double relativeThreshold) {
+        boolean ok = FastMath.abs(value) <= FastMath.abs(base.value * relativeThreshold);
+        for (final Map.Entry<Integer, Double> entry : derivatives.entrySet()) {
+            ok &= FastMath.abs(entry.getValue()) <=
+                  FastMath.abs(base.getDerivative(entry.getKey()) * relativeThreshold);
+        }
+        return ok;
+    }
+
     /**
      * Test for the equality of two sparse gradients.
      * <p>
