@@ -39,7 +39,7 @@ import org.hipparchus.exception.MathRuntimeException;
  * to native code present in many JVMs today and use of large tables.
  * The larger tables are lazily initialized on first use, so that the setup
  * time does not penalize methods that don't need them.
- * 
+ *
  * <p>
  * Note that FastMath is
  * extensively used inside Hipparchus, so by calling some algorithms,
@@ -312,7 +312,7 @@ public class FastMath {
     private static final int MASK_NON_SIGN_INT = 0x7fffffff;
 
     /** Mask used to clear the non-sign part of a long. */
-    private static final long MASK_NON_SIGN_LONG = 0x7fffffffffffffffl;
+    private static final long MASK_NON_SIGN_LONG = 0x7fffffffffffffffL;
 
     /** Mask used to extract exponent from double bits. */
     private static final long MASK_DOUBLE_EXPONENT = 0x7ff0000000000000L;
@@ -4359,9 +4359,9 @@ public class FastMath {
 
         // split numbers in two 32 bits parts
         final long aHigh  = a >>> 32;
-        final long aLow   = a & 0xFFFFFFFFl;
+        final long aLow   = a & 0xFFFFFFFFL;
         final long bHigh  = b >>> 32;
-        final long bLow   = b & 0xFFFFFFFFl;
+        final long bLow   = b & 0xFFFFFFFFL;
 
         // ab = aHigh * bHigh * 2⁶⁴ + (aHigh * bLow + aLow * bHigh) * 2³² + aLow * bLow
         final long hh     = aHigh * bHigh;
@@ -4371,7 +4371,7 @@ public class FastMath {
 
         // adds up everything in the above 64 bit part, taking care to avoid overflow
         final long hlHigh = (hl1 >>> 32) + (hl2 >>> 32);
-        final long hlLow  = (hl1 & 0xFFFFFFFFl) + (hl2 & 0xFFFFFFFFl);
+        final long hlLow  = (hl1 & 0xFFFFFFFFL) + (hl2 & 0xFFFFFFFFL);
         final long carry  = (hlLow + (ll >>> 32)) >>> 32;
 
         return hh + hlHigh + carry;
@@ -4403,10 +4403,10 @@ public class FastMath {
      * @since 3.0
      */
     public static long divideExact(final long x, final long y) {
-        if (y == 0l) {
+        if (y == 0L) {
             throw new MathRuntimeException(LocalizedCoreFormats.ZERO_DENOMINATOR);
         }
-        if (y == -1l && x == Long.MIN_VALUE) {
+        if (y == -1L && x == Long.MIN_VALUE) {
             throw new MathRuntimeException(LocalizedCoreFormats.OVERFLOW_IN_FRACTION, x, y);
         }
         return x / y;
@@ -4477,17 +4477,17 @@ public class FastMath {
      */
     public static long ceilDiv(final long a, final long b) throws MathRuntimeException {
 
-        if (b == 0l) {
+        if (b == 0L) {
             throw new MathRuntimeException(LocalizedCoreFormats.ZERO_DENOMINATOR);
         }
 
         final long m = a % b;
-        if ((a ^ b) < 0 || m == 0l) {
+        if ((a ^ b) < 0 || m == 0L) {
             // a and b have opposite signs, or division is exact
             return a / b;
         } else {
             // a and b have same signs and division is not exact
-            return (a / b) + 1l;
+            return (a / b) + 1L;
         }
 
     }
@@ -4506,7 +4506,7 @@ public class FastMath {
      */
     public static long ceilDivExact(final long a, final long b) throws MathRuntimeException {
 
-        if (a == Long.MIN_VALUE && b == -1l) {
+        if (a == Long.MIN_VALUE && b == -1L) {
             throw new MathRuntimeException(LocalizedCoreFormats.OVERFLOW_IN_FRACTION, a, b);
         }
 
@@ -4589,12 +4589,12 @@ public class FastMath {
      */
     public static long ceilMod(final long a, final long b) throws MathRuntimeException {
 
-        if (b == 0l) {
+        if (b == 0L) {
             throw new MathRuntimeException(LocalizedCoreFormats.ZERO_DENOMINATOR);
         }
 
         final long m = a % b;
-        if ((a ^ b) < 0l || m == 0l) {
+        if ((a ^ b) < 0L || m == 0L) {
             // a and b have opposite signs, or division is exact
             return m;
         } else {
@@ -4687,17 +4687,17 @@ public class FastMath {
      */
     public static long floorDiv(final long a, final long b) throws MathRuntimeException {
 
-        if (b == 0l) {
+        if (b == 0L) {
             throw new MathRuntimeException(LocalizedCoreFormats.ZERO_DENOMINATOR);
         }
 
         final long m = a % b;
-        if ((a ^ b) >= 0l || m == 0l) {
+        if ((a ^ b) >= 0L || m == 0L) {
             // a and b have same sign, or division is exact
             return a / b;
         } else {
             // a and b have opposite signs and division is not exact
-            return (a / b) - 1l;
+            return (a / b) - 1L;
         }
 
     }
@@ -4717,7 +4717,7 @@ public class FastMath {
      */
     public static long floorDivExact(final long a, final long b) throws MathRuntimeException {
 
-        if (a == Long.MIN_VALUE && b == -1l) {
+        if (a == Long.MIN_VALUE && b == -1L) {
             throw new MathRuntimeException(LocalizedCoreFormats.OVERFLOW_IN_FRACTION, a, b);
         }
 
@@ -4785,12 +4785,12 @@ public class FastMath {
      */
     public static long floorMod(final long a, final long b) {
 
-        if (b == 0l) {
+        if (b == 0L) {
             throw new MathRuntimeException(LocalizedCoreFormats.ZERO_DENOMINATOR);
         }
 
         final long m = a % b;
-        if ((a ^ b) >= 0l || m == 0l) {
+        if ((a ^ b) >= 0L || m == 0L) {
             // a and b have same sign, or division is exact
             return m;
         } else {
