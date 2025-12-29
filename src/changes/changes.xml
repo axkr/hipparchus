@@ -49,12 +49,10 @@ If the output is not quite correct, check for invisible trailing spaces!
     <title>Hipparchus Release Notes</title>
   </properties>
   <body>
-    <release version="5.0" date="TBD" description="TBD.">
+    <release version="4.1" date="TBD" description="TBD">
       <action dev="luc" type="add" issue="issues/439">
         Added Field.isSmall to help convergence checks in Field iterative algorithms.
       </action>
-    </release>
-    <release version="4.1" date="TBD" description="TBD">
       <action dev="krys06" type="add" issue="issues/355">
         Added evaluation of bicubic and tricubic interpolation functions with CalculusFieldElement
       </action>
