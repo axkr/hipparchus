@@ -904,6 +904,20 @@ public class FieldGradient<T extends CalculusFieldElement<T>> implements FieldDe
         return new FieldGradient<>(getValueField().getZero().getPi(), getFreeParameters());
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean isSmall(final FieldGradient<T> base, final double relativeThreshold) {
+        if (grad.length != base.grad.length) {
+            throw new MathIllegalArgumentException(LocalizedCoreFormats.DIMENSIONS_MISMATCH,
+                                                   grad.length, base.grad.length);
+        }
+        boolean ok = value.isSmall(base.value, relativeThreshold);
+        for (int i = 0; i < grad.length && ok; ++i) {
+            ok = grad[i].isSmall(base.grad[i], relativeThreshold);
+        }
+        return ok;
+    }
+
     /** Test for the equality of two univariate derivatives.
      * <p>
      * univariate derivatives are considered equal if they have the same derivatives.

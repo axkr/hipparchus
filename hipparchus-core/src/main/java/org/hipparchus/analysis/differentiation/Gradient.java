@@ -733,6 +733,20 @@ public class Gradient implements Derivative1<Gradient>, Serializable {
         return new Gradient(gradient, this.getValue());
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean isSmall(final Gradient base, final double relativeThreshold) {
+        if (grad.length != base.grad.length) {
+            throw new MathIllegalArgumentException(LocalizedCoreFormats.DIMENSIONS_MISMATCH,
+                                                   grad.length, base.grad.length);
+        }
+        boolean ok = FastMath.abs(value) <= FastMath.abs(base.value * relativeThreshold);
+        for (int i = 0; i < grad.length && ok; ++i) {
+            ok = FastMath.abs(grad[i]) <= FastMath.abs(base.grad[i] * relativeThreshold);
+        }
+        return ok;
+    }
+
     /** Test for the equality of two univariate derivatives.
      * <p>
      * univariate derivatives are considered equal if they have the same derivatives.

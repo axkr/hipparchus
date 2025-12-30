@@ -18,6 +18,7 @@ package org.hipparchus.analysis.differentiation;
 
 import org.hipparchus.CalculusFieldElement;
 import org.hipparchus.Field;
+import org.hipparchus.exception.LocalizedCoreFormats;
 import org.hipparchus.exception.MathIllegalArgumentException;
 import org.hipparchus.exception.MathRuntimeException;
 import org.hipparchus.util.FieldSinCos;
@@ -1319,6 +1320,20 @@ public class FieldDerivativeStructure<T extends CalculusFieldElement<T>>
     @Override
     public FieldDerivativeStructure<T> getPi() {
         return factory.getDerivativeField().getPi();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isSmall(final FieldDerivativeStructure<T> base, final double relativeThreshold) {
+        if (data.length != base.data.length) {
+            throw new MathIllegalArgumentException(LocalizedCoreFormats.DIMENSIONS_MISMATCH,
+                                                   data.length, base.data.length);
+        }
+        boolean ok = true;
+        for (int i = 0; i < data.length && ok; ++i) {
+            ok = data[i].isSmall(base.data[i], relativeThreshold);
+        }
+        return ok;
     }
 
     /**

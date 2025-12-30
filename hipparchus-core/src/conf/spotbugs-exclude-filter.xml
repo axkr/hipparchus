@@ -496,6 +496,7 @@
       <Class name="org.hipparchus.linear.DefaultIterativeLinearSolverEvent"/>
       <Class name="org.hipparchus.linear.IterativeLinearSolver"/>
       <Class name="org.hipparchus.linear.RealVector$Entry"/>
+      <Class name="org.hipparchus.random.AbstractNonUniformGenerator"/>
       <Class name="org.hipparchus.random.GaussianRandomGenerator"/>
       <Class name="org.hipparchus.random.JDKRandomGenerator"/>
       <Class name="org.hipparchus.random.RandomAdaptor"/>

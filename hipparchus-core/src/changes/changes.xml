@@ -53,6 +53,9 @@ If the output is not quite correct, check for invisible trailing spaces!
       <action dev="krys06" type="add" issue="issues/437">
         Added trilinear interpolation
       </action>
+      <action dev="luc" type="add" issue="issues/439">
+        Added Field.isSmall to help convergence checks in Field iterative algorithms.
+      </action>
       <action dev="krys06" type="add" issue="issues/355">
         Added evaluation of bicubic and tricubic interpolation functions with CalculusFieldElement
       </action>
