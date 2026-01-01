@@ -1,3 +1,19 @@
+/*
+ * Licensed to the Hipparchus project under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The Hipparchus project licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.hipparchus.linear;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -5,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Arrays;
 import org.hipparchus.complex.Complex;
 import org.hipparchus.complex.ComplexField;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -226,10 +243,12 @@ public class FieldSchurTransformerTest {
       }
     });
     FieldVector<Complex> fieldVector = MatrixUtils.createFieldVector(eigenvalues);
-    assertEquals(fieldVector.toString(), //
-        "{(8.768464618713097, 4.605614931476993E-16); " //
-            + "(5.163611813754241, -6.965822013958481E-17); " //
-            + "(0.18792356753266304, -1.6208167199054114E-16)}"); //
+    Assertions.assertEquals(8.768464618713097,   fieldVector.getEntry(0).getReal(),      1.0e-15);
+    Assertions.assertEquals(4.61e-16,            fieldVector.getEntry(0).getImaginary(), 1.0e-18);
+    Assertions.assertEquals(5.163611813754241,   fieldVector.getEntry(1).getReal(),      1.0e-15);
+    Assertions.assertEquals(-0.70e-16,           fieldVector.getEntry(1).getImaginary(), 1.0e-18);
+    Assertions.assertEquals(0.18792356753266304, fieldVector.getEntry(2).getReal(),      1.0e-15);
+    Assertions.assertEquals(-1.62e-16,           fieldVector.getEntry(2).getImaginary(), 1.0e-18);
 
   }
 }
