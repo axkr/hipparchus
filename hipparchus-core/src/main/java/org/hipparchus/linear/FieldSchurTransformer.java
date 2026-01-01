@@ -248,7 +248,7 @@ public class FieldSchurTransformer {
                 iu--;
                 iteration = 0;
             } else {
-                computeShift(il, iu, iteration, shift);
+                computeShift(iu, iteration, shift);
 
                 if (++iteration > MAX_ITERATIONS) {
                     throw new MathIllegalStateException(LocalizedCoreFormats.CONVERGENCE_FAILED,
@@ -265,9 +265,9 @@ public class FieldSchurTransformer {
 
     private double getNorm() {
         double norm = 0.0;
-        for (int i = 0; i < matrixT.length; i++) {
+        for (final Complex[] complexes : matrixT) {
             for (int j = 0; j < matrixT.length; j++) {
-                norm += matrixT[i][j].norm();
+                norm += complexes[j].norm();
             }
         }
         return norm;
@@ -288,7 +288,7 @@ public class FieldSchurTransformer {
         return l;
     }
 
-    private void computeShift(final int l, final int idx, final int iteration, final ComplexShiftInfo shift) {
+    private void computeShift(final int idx, final int iteration, final ComplexShiftInfo shift) {
         if (iteration == 10 || iteration == 30) {
             shift.exShift = shift.exShift.add(shift.x);
             shift.x = new Complex(0.75 * (matrixT[idx][idx - 1].norm() + matrixT[idx - 1][idx - 2].norm()));
@@ -331,11 +331,15 @@ public class FieldSchurTransformer {
 
             double absX = x.norm();
             double absY = y.norm();
-            
-            if (absY == 0) continue; 
+
+            if (absY == 0) {
+                continue;
+            }
 
             double norm = FastMath.hypot(absX, absY);
-            if (norm == 0) continue;
+            if (norm == 0) {
+                continue;
+            }
 
             double c = absX / norm;
             Complex alpha = (absX == 0) ? Complex.ONE : x.divide(absX);
@@ -374,25 +378,30 @@ public class FieldSchurTransformer {
     }
 
     private static class ComplexShiftInfo {
-        Complex x = Complex.ZERO;
-        Complex exShift = Complex.ZERO;
+
+        /** Current shift. */
+        private Complex x = Complex.ZERO;
+
+        /** Accumulated shift. */
+        private Complex exShift = Complex.ZERO;
+
     }
-    
+
     public static Complex[] getEigenvalues(FieldMatrix<Complex> matrix) {
       // 1. Perform the Schur Decomposition
       FieldSchurTransformer transformer = new FieldSchurTransformer(matrix);
-      
+
       // 2. Get the upper triangular matrix T
       FieldMatrix<Complex> T = transformer.getT();
-      
+
       // 3. Extract the diagonal entries
       int n = T.getRowDimension();
       Complex[] eigenvalues = new Complex[n];
-      
+
       for (int i = 0; i < n; i++) {
           eigenvalues[i] = T.getEntry(i, i);
       }
-      
+
       return eigenvalues;
   }
 }

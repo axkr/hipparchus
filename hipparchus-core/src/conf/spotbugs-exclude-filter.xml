@@ -373,7 +373,10 @@
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
   <Match>
-    <Class name="org.hipparchus.linear.SchurTransformer"/>
+    <Or>
+      <Class name="org.hipparchus.linear.FieldSchurTransformer"/>
+      <Class name="org.hipparchus.linear.SchurTransformer"/>
+    </Or>
     <Or>
       <Method name="getP"/>
       <Method name="getPT"/>
