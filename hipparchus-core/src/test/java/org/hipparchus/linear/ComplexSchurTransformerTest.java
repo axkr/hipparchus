@@ -18,16 +18,20 @@ package org.hipparchus.linear;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Arrays;
 import org.hipparchus.complex.Complex;
 import org.hipparchus.complex.ComplexField;
+import org.hipparchus.exception.LocalizedCoreFormats;
+import org.hipparchus.exception.MathIllegalArgumentException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
  * Test class for FieldSchurTransformer.
  */
-public class FieldSchurTransformerTest {
+public class ComplexSchurTransformerTest {
 
   private final double epsilon = 1.0e-10;
 
@@ -36,10 +40,15 @@ public class FieldSchurTransformerTest {
    * 2. Check if P is Unitary (P * P^H = I). 3. Check if A = P * T * P^H.
    */
   private void checkSchurDecomposition(FieldMatrix<Complex> A) {
-    FieldSchurTransformer transformer = new FieldSchurTransformer(A);
-    FieldMatrix<Complex> P = transformer.getP();
+    ComplexSchurTransformer transformer = new ComplexSchurTransformer(A);
+    FieldMatrix<Complex>    P           = transformer.getP();
     FieldMatrix<Complex> T = transformer.getT();
     FieldMatrix<Complex> PT = transformer.getPT(); // P^H (Conjugate Transpose)
+
+    // check cache
+    Assertions.assertSame(P, transformer.getP());
+    Assertions.assertSame(PT, transformer.getPT());
+    Assertions.assertSame(T, transformer.getT());
 
     // System.out.println(P);
     // System.out.println(T);
@@ -94,8 +103,8 @@ public class FieldSchurTransformerTest {
 
     // Additional check: The diagonal of T should contain the eigenvalues (-1 and -2).
     // Note: The order depends on the pivot strategy, so we check if they are present.
-    FieldSchurTransformer transformer = new FieldSchurTransformer(matrix);
-    FieldMatrix<Complex> T = transformer.getT();
+    ComplexSchurTransformer transformer = new ComplexSchurTransformer(matrix);
+    FieldMatrix<Complex>    T           = transformer.getT();
 
     Complex t00 = T.getEntry(0, 0);
     Complex t11 = T.getEntry(1, 1);
@@ -123,8 +132,8 @@ public class FieldSchurTransformerTest {
     checkSchurDecomposition(matrix);
 
     // Verify eigenvalues +/- Sqrt(2)
-    FieldSchurTransformer transformer = new FieldSchurTransformer(matrix);
-    FieldMatrix<Complex> T = transformer.getT();
+    ComplexSchurTransformer transformer = new ComplexSchurTransformer(matrix);
+    FieldMatrix<Complex>    T           = transformer.getT();
 
     double sqrt2 = Math.sqrt(2.0);
     Complex t00 = T.getEntry(0, 0);
@@ -188,8 +197,9 @@ public class FieldSchurTransformerTest {
 
     checkSchurDecomposition(matrix);
 
-    FieldSchurTransformer transformer = new FieldSchurTransformer(matrix);
-    FieldMatrix<Complex> T = transformer.getT();
+    ComplexSchurTransformer transformer = new ComplexSchurTransformer(matrix);
+    FieldMatrix<Complex>    T           = transformer.getT();
+    Assertions.assertSame(T, transformer.getT());
 
     // Should roughly remain the same (order might flip depending on implementation stability)
     double norm0 = T.getEntry(0, 0).norm();
@@ -210,8 +220,9 @@ public class FieldSchurTransformerTest {
 
     checkSchurDecomposition(matrix);
 
-    FieldSchurTransformer transformer = new FieldSchurTransformer(matrix);
-    FieldMatrix<Complex> T = transformer.getT();
+    ComplexSchurTransformer transformer = new ComplexSchurTransformer(matrix);
+    FieldMatrix<Complex>    T           = transformer.getT();
+    Assertions.assertSame(T, transformer.getT());
 
     // T should still be {{1, 1}, {0, 1}} or similar
     assertEquals(1.0, T.getEntry(0, 0).getReal(), epsilon);
@@ -232,7 +243,7 @@ public class FieldSchurTransformerTest {
     FieldMatrix<Complex> matrix = MatrixUtils.createFieldMatrix(data);
     checkSchurDecomposition(matrix);
 
-    Complex[] eigenvalues = FieldSchurTransformer.getEigenvalues(matrix);
+    Complex[] eigenvalues = ComplexSchurTransformer.getEigenvalues(matrix);
     // sort descending
     Arrays.sort(eigenvalues, (a, b) -> {
       int realComp = Double.compare(b.getReal(), a.getReal());
@@ -251,4 +262,21 @@ public class FieldSchurTransformerTest {
     Assertions.assertEquals(-1.62e-16,           fieldVector.getEntry(2).getImaginary(), 1.0e-18);
 
   }
+
+  @Test
+  void testNonSquare() {
+    Complex[][] data = {
+            { new Complex(5.42),          new Complex(3.26, 0.643) }, //
+            { new Complex(3.26, -0.643),  new Complex(3.82)        }, //
+            { new Complex(-0.467, 0.193), new Complex(1.04, 2.35)  }
+    };
+    FieldMatrix<Complex> matrix = MatrixUtils.createFieldMatrix(data);
+    try {
+      new ComplexSchurTransformer(matrix);
+      fail("an exception should have been thrown");
+    } catch (MathIllegalArgumentException ime) {
+      assertEquals(LocalizedCoreFormats.NON_SQUARE_MATRIX, ime.getSpecifier());
+    }
+  }
+
 }

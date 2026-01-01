@@ -36,7 +36,7 @@ import org.hipparchus.util.Precision;
  *
  * @see <a href="http://mathworld.wolfram.com/SchurDecomposition.html">Schur Decomposition - MathWorld</a>
  */
-public class FieldSchurTransformer {
+public class ComplexSchurTransformer {
     /** Maximum allowed iterations for convergence of the transformation. */
     private static final int MAX_ITERATIONS = 100;
 
@@ -60,7 +60,7 @@ public class FieldSchurTransformer {
      * @param matrix matrix to transform
      * @throws MathIllegalArgumentException if the matrix is not square
      */
-    public FieldSchurTransformer(final FieldMatrix<Complex> matrix) {
+    public ComplexSchurTransformer(final FieldMatrix<Complex> matrix) {
         this(matrix, Precision.EPSILON);
     }
 
@@ -71,7 +71,7 @@ public class FieldSchurTransformer {
      * @param epsilon convergence criteria
      * @throws MathIllegalArgumentException if the matrix is not square
      */
-    public FieldSchurTransformer(final FieldMatrix<Complex> matrix, final double epsilon) {
+    public ComplexSchurTransformer(final FieldMatrix<Complex> matrix, final double epsilon) {
         if (!matrix.isSquare()) {
             throw new MathIllegalArgumentException(LocalizedCoreFormats.NON_SQUARE_MATRIX,
                                                    matrix.getRowDimension(), matrix.getColumnDimension());
@@ -389,7 +389,7 @@ public class FieldSchurTransformer {
 
     public static Complex[] getEigenvalues(FieldMatrix<Complex> matrix) {
       // 1. Perform the Schur Decomposition
-      FieldSchurTransformer transformer = new FieldSchurTransformer(matrix);
+      ComplexSchurTransformer transformer = new ComplexSchurTransformer(matrix);
 
       // 2. Get the upper triangular matrix T
       FieldMatrix<Complex> T = transformer.getT();

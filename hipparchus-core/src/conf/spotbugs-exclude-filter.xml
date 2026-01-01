@@ -374,7 +374,7 @@
   </Match>
   <Match>
     <Or>
-      <Class name="org.hipparchus.linear.FieldSchurTransformer"/>
+      <Class name="org.hipparchus.linear.ComplexSchurTransformer"/>
       <Class name="org.hipparchus.linear.SchurTransformer"/>
     </Or>
     <Or>
