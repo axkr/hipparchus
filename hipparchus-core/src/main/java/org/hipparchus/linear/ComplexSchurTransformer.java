@@ -249,7 +249,6 @@ public class ComplexSchurTransformer {
                 iteration = 0;
             } else {
                 computeShift(iu, iteration, shift);
-
                 if (++iteration > MAX_ITERATIONS) {
                     throw new MathIllegalStateException(LocalizedCoreFormats.CONVERGENCE_FAILED,
                                                         MAX_ITERATIONS);
@@ -288,37 +287,60 @@ public class ComplexSchurTransformer {
         return l;
     }
 
-    private void computeShift(final int idx, final int iteration, final ComplexShiftInfo shift) {
-        if (iteration == 10 || iteration == 30) {
-            shift.exShift = shift.exShift.add(shift.x);
-            shift.x = new Complex(0.75 * (matrixT[idx][idx - 1].norm() + matrixT[idx - 1][idx - 2].norm()));
-            for (int i = 0; i <= idx; i++) {
-                matrixT[i][i] = matrixT[i][i].subtract(shift.x);
-            }
-            return;
+    private void computeShift(final int idx, final int iteration,
+        final ComplexShiftInfo shift) { 
+      // If iterations are high, use ad-hoc (exceptional) shifts to break cycles.
+      // We check iterations 10, 20, and 30 to inject shifts if convergence is stalling.
+      if (iteration == 10 || iteration == 20 || iteration == 30) {
+        // Accumulate the previous shift into the total shift
+        shift.exShift = shift.exShift.add(shift.x);
+
+        // Calculate the magnitude of the sub-diagonal elements to determine the scale
+        // Safe check for bounds is included.
+        double norm1 = matrixT[idx][idx - 1].norm();
+        double norm2 = (idx > 1) ? matrixT[idx - 1][idx - 2].norm() : 0.0;
+        double s = norm1 + norm2;
+
+        // Vary the shift strategy to ensure we don't get stuck in a specific cycle.
+        // - Iteration 10 & 20: Use the classic empirical shift factor 0.75
+        // - Iteration 30: Use 0.964, a heuristic value (from JAMA/EISPACK) known to break 
+        //   cycles that are stable under 0.75.
+        double alpha = (iteration == 30) ? 0.964 : 0.75;
+
+        shift.x = new Complex(alpha * s);
+
+        // Subtract this new exceptional shift from the diagonal to stabilize the matrix
+        for (int i = 0; i <= idx; i++) {
+          matrixT[i][i] = matrixT[i][i].subtract(shift.x);
         }
+        return;
+      }
 
-        Complex a = matrixT[idx - 1][idx - 1];
-        Complex b = matrixT[idx - 1][idx];
-        Complex c = matrixT[idx][idx - 1];
-        Complex d = matrixT[idx][idx];
+      // Standard Wilkinson Shift
+      // Computes the eigenvalues of the bottom 2x2 block and selects the one closest to T[idx][idx]
+      Complex a = matrixT[idx - 1][idx - 1];
+      Complex b = matrixT[idx - 1][idx];
+      Complex c = matrixT[idx][idx - 1];
+      Complex d = matrixT[idx][idx];
 
-        Complex tr = a.add(d);
-        Complex det = a.multiply(d).subtract(b.multiply(c));
+      Complex tr = a.add(d);
+      Complex det = a.multiply(d).subtract(b.multiply(c));
 
-        Complex discriminant = tr.multiply(tr).subtract(det.multiply(4));
-        Complex sqrtDisc = discriminant.sqrt();
+      // Roots of characteristic equation: x^2 - tr*x + det = 0
+      Complex discriminant = tr.multiply(tr).subtract(det.multiply(4));
+      Complex sqrtDisc = discriminant.sqrt();
 
-        Complex root1 = tr.add(sqrtDisc).multiply(0.5);
-        Complex root2 = tr.subtract(sqrtDisc).multiply(0.5);
+      Complex root1 = tr.add(sqrtDisc).multiply(0.5);
+      Complex root2 = tr.subtract(sqrtDisc).multiply(0.5);
 
-        if (root1.subtract(d).norm() < root2.subtract(d).norm()) {
-            shift.x = root1;
-        } else {
-            shift.x = root2;
-        }
+      // Choose the root closer to d (the bottom-right element) to maximize convergence
+      if (root1.subtract(d).norm() < root2.subtract(d).norm()) {
+        shift.x = root1;
+      } else {
+        shift.x = root2;
+      }
     }
-
+    
     private void performQRStep(final int il, final int iu, final ComplexShiftInfo shift) {
         Complex x = matrixT[il][il].subtract(shift.x);
         Complex y = matrixT[il + 1][il];
