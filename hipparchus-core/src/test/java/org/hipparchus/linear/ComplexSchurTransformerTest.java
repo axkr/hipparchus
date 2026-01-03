@@ -1,47 +1,50 @@
 /*
- * Licensed to the Hipparchus project under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The Hipparchus project licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Licensed to the Hipparchus project under one or more contributor license agreements. See the
+ * NOTICE file distributed with this work for additional information regarding copyright ownership.
+ * The Hipparchus project licenses this file to You under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License. You may obtain a
+ * copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  */
 package org.hipparchus.linear;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-
 import java.util.Arrays;
 import org.hipparchus.complex.Complex;
 import org.hipparchus.complex.ComplexField;
 import org.hipparchus.exception.LocalizedCoreFormats;
 import org.hipparchus.exception.MathIllegalArgumentException;
+import org.hipparchus.exception.MathIllegalStateException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
- * Test class for FieldSchurTransformer.
+ * Test class for ComplexSchurTransformer.
  */
 public class ComplexSchurTransformerTest {
 
   private final double epsilon = 1.0e-10;
 
   /**
-   * Helper method to verify the Schur Decomposition properties. 1. Check if T is Upper Triangular.
-   * 2. Check if P is Unitary (P * P^H = I). 3. Check if A = P * T * P^H.
+   * Helper method to verify the Schur Decomposition properties.
+   * <p>
+   * <ul>
+   * <li>Check if T is Upper Triangular.</li>
+   * <li>Check if P is Unitary (P * P^H = I).</li>
+   * <li>Check if A = P * T * P^H.</li>
+   * </ul>
    */
   private void checkSchurDecomposition(FieldMatrix<Complex> A) {
     ComplexSchurTransformer transformer = new ComplexSchurTransformer(A);
-    FieldMatrix<Complex>    P           = transformer.getP();
+    FieldMatrix<Complex> P = transformer.getP();
     FieldMatrix<Complex> T = transformer.getT();
     FieldMatrix<Complex> PT = transformer.getPT(); // P^H (Conjugate Transpose)
 
@@ -104,7 +107,7 @@ public class ComplexSchurTransformerTest {
     // Additional check: The diagonal of T should contain the eigenvalues (-1 and -2).
     // Note: The order depends on the pivot strategy, so we check if they are present.
     ComplexSchurTransformer transformer = new ComplexSchurTransformer(matrix);
-    FieldMatrix<Complex>    T           = transformer.getT();
+    FieldMatrix<Complex> T = transformer.getT();
 
     Complex t00 = T.getEntry(0, 0);
     Complex t11 = T.getEntry(1, 1);
@@ -133,7 +136,7 @@ public class ComplexSchurTransformerTest {
 
     // Verify eigenvalues +/- Sqrt(2)
     ComplexSchurTransformer transformer = new ComplexSchurTransformer(matrix);
-    FieldMatrix<Complex>    T           = transformer.getT();
+    FieldMatrix<Complex> T = transformer.getT();
 
     double sqrt2 = Math.sqrt(2.0);
     Complex t00 = T.getEntry(0, 0);
@@ -185,6 +188,30 @@ public class ComplexSchurTransformerTest {
     checkSchurDecomposition(matrix);
   }
 
+  @Test
+  public void testExample6() {
+    // Matrix A = {{2.7, 4.8, 8.1}, {-.6, 0, 0}, {.1, 0, .3}};
+    Complex[][] data = {{new Complex(2.7), new Complex(4.8), new Complex(8.1)}, //
+        {new Complex(-0.6), new Complex(0.0), new Complex(0.0)}, //
+        {new Complex(0.1), new Complex(0.0), new Complex(0.3)}};
+    FieldMatrix<Complex> matrix = MatrixUtils.createFieldMatrix(data);
+
+    checkSchurDecomposition(matrix);
+  }
+
+  @Test
+  public void testExample7() {
+    // Matrix A = {{1.81066, 0.31066, 1.5}, {-0.53033, 2.03033, 0.43934}, {-0.96967, -0.53033,
+    // 2.56066}};;
+    Complex[][] data = {{new Complex(1.81066), new Complex(0.31066), new Complex(1.5)}, //
+        {new Complex(-0.53033), new Complex(2.03033), new Complex(0.43934)}, //
+        {new Complex(-0.96967), new Complex(-0.53033), new Complex(2.56066)}};
+    FieldMatrix<Complex> matrix = MatrixUtils.createFieldMatrix(data);
+
+    checkSchurDecomposition(matrix);
+
+  }
+
   /**
    * Additional Test: Purely Imaginary Diagonal. A = {{3i, 0}, {0, -2i}} Already in Schur form
    * (Diagonal).
@@ -198,7 +225,7 @@ public class ComplexSchurTransformerTest {
     checkSchurDecomposition(matrix);
 
     ComplexSchurTransformer transformer = new ComplexSchurTransformer(matrix);
-    FieldMatrix<Complex>    T           = transformer.getT();
+    FieldMatrix<Complex> T = transformer.getT();
     Assertions.assertSame(T, transformer.getT());
 
     // Should roughly remain the same (order might flip depending on implementation stability)
@@ -221,12 +248,27 @@ public class ComplexSchurTransformerTest {
     checkSchurDecomposition(matrix);
 
     ComplexSchurTransformer transformer = new ComplexSchurTransformer(matrix);
-    FieldMatrix<Complex>    T           = transformer.getT();
+    FieldMatrix<Complex> T = transformer.getT();
     Assertions.assertSame(T, transformer.getT());
 
     // T should still be {{1, 1}, {0, 1}} or similar
     assertEquals(1.0, T.getEntry(0, 0).getReal(), epsilon);
     assertEquals(1.0, T.getEntry(1, 1).getReal(), epsilon);
+  }
+
+  @Test
+  public void testNaN() {
+    try {
+      Complex[][] data = {{new Complex(-4, 0), new Complex(-3, Double.NaN)},
+          {new Complex(2, 0), new Complex(1, 0)}};
+      FieldMatrix<Complex> matrix = MatrixUtils.createFieldMatrix(data);
+
+      checkSchurDecomposition(matrix);
+
+      fail();
+    } catch (MathIllegalStateException mise) {
+      assertEquals("convergence failed", mise.getMessage());
+    }
   }
 
   /**
@@ -254,22 +296,20 @@ public class ComplexSchurTransformerTest {
       }
     });
     FieldVector<Complex> fieldVector = MatrixUtils.createFieldVector(eigenvalues);
-    Assertions.assertEquals(8.768464618713097,   fieldVector.getEntry(0).getReal(),      1.0e-15);
-    Assertions.assertEquals(4.61e-16,            fieldVector.getEntry(0).getImaginary(), 1.0e-18);
-    Assertions.assertEquals(5.163611813754241,   fieldVector.getEntry(1).getReal(),      1.0e-15);
-    Assertions.assertEquals(-0.70e-16,           fieldVector.getEntry(1).getImaginary(), 1.0e-18);
-    Assertions.assertEquals(0.18792356753266304, fieldVector.getEntry(2).getReal(),      1.0e-15);
-    Assertions.assertEquals(-1.62e-16,           fieldVector.getEntry(2).getImaginary(), 1.0e-18);
+    Assertions.assertEquals(8.768464618713097, fieldVector.getEntry(0).getReal(), 1.0e-15);
+    Assertions.assertEquals(4.61e-16, fieldVector.getEntry(0).getImaginary(), 1.0e-18);
+    Assertions.assertEquals(5.163611813754241, fieldVector.getEntry(1).getReal(), 1.0e-15);
+    Assertions.assertEquals(-0.70e-16, fieldVector.getEntry(1).getImaginary(), 1.0e-18);
+    Assertions.assertEquals(0.18792356753266304, fieldVector.getEntry(2).getReal(), 1.0e-15);
+    Assertions.assertEquals(-1.62e-16, fieldVector.getEntry(2).getImaginary(), 1.0e-18);
 
   }
 
   @Test
   void testNonSquare() {
-    Complex[][] data = {
-            { new Complex(5.42),          new Complex(3.26, 0.643) }, //
-            { new Complex(3.26, -0.643),  new Complex(3.82)        }, //
-            { new Complex(-0.467, 0.193), new Complex(1.04, 2.35)  }
-    };
+    Complex[][] data = {{new Complex(5.42), new Complex(3.26, 0.643)}, //
+        {new Complex(3.26, -0.643), new Complex(3.82)}, //
+        {new Complex(-0.467, 0.193), new Complex(1.04, 2.35)}};
     FieldMatrix<Complex> matrix = MatrixUtils.createFieldMatrix(data);
     try {
       new ComplexSchurTransformer(matrix);
