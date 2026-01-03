@@ -288,7 +288,7 @@ public class ComplexSchurTransformer {
     }
 
     private void computeShift(final int idx, final int iteration,
-        final ComplexShiftInfo shift) { 
+        final ComplexShiftInfo shift) {
       // If iterations are high, use ad-hoc (exceptional) shifts to break cycles.
       // We check iterations 10, 20, and 30 to inject shifts if convergence is stalling.
       if (iteration == 10 || iteration == 20 || iteration == 30) {
@@ -303,7 +303,7 @@ public class ComplexSchurTransformer {
 
         // Vary the shift strategy to ensure we don't get stuck in a specific cycle.
         // - Iteration 10 & 20: Use the classic empirical shift factor 0.75
-        // - Iteration 30: Use 0.964, a heuristic value (from JAMA/EISPACK) known to break 
+        // - Iteration 30: Use 0.964, a heuristic value (from JAMA/EISPACK) known to break
         //   cycles that are stable under 0.75.
         double alpha = (iteration == 30) ? 0.964 : 0.75;
 
@@ -340,7 +340,7 @@ public class ComplexSchurTransformer {
         shift.x = root2;
       }
     }
-    
+
     private void performQRStep(final int il, final int iu, final ComplexShiftInfo shift) {
         Complex x = matrixT[il][il].subtract(shift.x);
         Complex y = matrixT[il + 1][il];
